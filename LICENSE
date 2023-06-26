@@ -1,21 +1,34 @@
-MIT License
-
 Copyright (c) 2023 Enguerran
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+3D Platformer Maker License Agreement
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This License Agreement ("Agreement") is entered into between [Enguerran COBERT] ("Licensor") and the user ("Licensee") of the [3D Platformer Maker] Unreal plugin ("Plugin").
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+1. Grant of License:
+   Licensor grants Licensee a non-exclusive, non-transferable license to use the Plugin for commercial purposes, subject to the terms and conditions of this Agreement. The license is valid only for Licensee's use of the Plugin obtained through a valid purchase from an authorized marketplace.
+
+2. Purchase:
+   Licensee acknowledges that the Plugin must be purchased from an authorized marketplace. The terms of the purchase, including pricing, usage restrictions, and license duration, are determined by the marketplace's terms and conditions. Licensee is solely responsible for complying with the marketplace's terms and obtaining a valid license.
+
+3. Restrictions:
+   Licensee shall not:
+   - Distribute, sublicense, sell, rent, lease, or otherwise transfer the Plugin or any part thereof without prior written consent from Licensor.
+   - Modify, decompile, reverse engineer, or disassemble the Plugin, except as permitted by applicable law.
+   - Use the Plugin in a manner that violates any applicable laws or infringes upon any intellectual property rights.
+
+4. Support and Updates:
+   Licensor may, at its discretion, provide support and updates for the Plugin during the period specified by the marketplace's terms. Licensee is not entitled to any support or updates unless explicitly stated in the marketplace's terms.
+
+5. Intellectual Property:
+   The Plugin, including any related documentation, remains the exclusive property of Licensor. Licensee acknowledges that the Plugin is protected by copyright and other intellectual property laws.
+
+6. Liability and Warranty:
+   The Plugin is provided "as is" without warranty of any kind, either expressed or implied, including, but not limited to, the implied warranties of merchantability, fitness for a particular purpose, or non-infringement. Licensor shall not be liable for any direct, indirect, incidental, special, or consequential damages arising out of the use or inability to use the Plugin.
+
+7. Termination:
+   This Agreement may be terminated by Licensor if Licensee breaches any of its terms. Upon termination, Licensee shall immediately cease using the Plugin and destroy all copies of the Plugin in its possession.
+
+8. Governing Law:
+   This Agreement shall be governed by and construed in accordance with the laws of [Jurisdiction]. Any disputes arising from this Agreement shall be subject to the exclusive jurisdiction of the courts in [Jurisdiction].
+
+Please note that this is a simplified example and may not cover all legal considerations or address specific requirements. It is strongly recommended to consult with a legal professional to ensure that the license agreement meets your specific needs, complies with the terms of the marketplace, and adheres to the relevant laws and regulations in your jurisdiction.

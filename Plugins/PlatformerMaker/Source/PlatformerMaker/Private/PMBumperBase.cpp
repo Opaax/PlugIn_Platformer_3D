@@ -2,6 +2,7 @@
 
 
 #include "PMBumperBase.h"
+#include "PlatformerMaker.h"
 
 //Unreal
 #include "Components/BoxComponent.h"
@@ -26,6 +27,9 @@ APMBumperBase::APMBumperBase()
 
 	m_topBumper = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TopBumper"));
 	m_topBumper->SetupAttachment(m_baseBumper);
+
+	//Add by default Character class
+	m_validClassToBump.Add(ACharacter::StaticClass());
 }
 
 void APMBumperBase::BeginPlay()
@@ -64,6 +68,8 @@ void APMBumperBase::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComp
 
 			lCharac->LaunchCharacter(lForceVector, false, true);
 
+			OnBumped();
+
 			return;
 		}
 
@@ -71,17 +77,22 @@ void APMBumperBase::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComp
 		{
 			FVector lForceVector = OtherActor->GetActorUpVector() * (m_bumperForce * m_bumperActorForceFactor);
 
-			UE_LOG(LogPlatformerPlugin, Warning, TEXT("%f"), lPrimitive->GetPhysicsLinearVelocity().Z);
-
 			if (lPrimitive->GetPhysicsLinearVelocity().Z != 0)
 			{
 				lPrimitive->SetPhysicsLinearVelocity(FVector::Zero());
 			}
 
-			UE_LOG(LogPlatformerPlugin, Warning, TEXT("%f"), lPrimitive->GetPhysicsLinearVelocity().Z);
-
 			lPrimitive->AddImpulse(lForceVector);
+
+			OnBumped();
 		}
 	}
+}
+
+void APMBumperBase::OnBumped()
+{
+	OnBumpedDelegate.Broadcast();
+
+	ReceiveOnBumped();
 }
 

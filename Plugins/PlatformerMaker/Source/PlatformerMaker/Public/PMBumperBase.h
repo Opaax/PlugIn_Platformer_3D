@@ -10,6 +10,8 @@ class UBoxComponent;
 class USceneComponent;
 class UStaticMeshComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBumpedEventSignature);
+
 UCLASS()
 class PLATFORMERMAKER_API APMBumperBase : public AActor
 {
@@ -35,6 +37,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "BumperForce"))
 	float m_bumperActorForceFactor = 100.f;
 
+	/*
+	* Classes that can be Bumped
+	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "ValidClassToBump"))
 	TArray<TSubclassOf<AActor>> m_validClassToBump;
 
@@ -54,6 +59,9 @@ protected:
 
 public:
 
+	UPROPERTY(BlueprintAssignable, Category = Bumped)
+	FBumpedEventSignature OnBumpedDelegate;
+
 	/**************************** FUNCTION ******************************/
 public:
 
@@ -61,7 +69,12 @@ public:
 
 protected:
 
-	UFUNCTION()
+	virtual void OnBumped();
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnBumped"))
+	void ReceiveOnBumped();
+
+	UFUNCTION(BlueprintCallable)
 	virtual void BindBoxComponentEvent();
 
 	UFUNCTION(BlueprintCallable)

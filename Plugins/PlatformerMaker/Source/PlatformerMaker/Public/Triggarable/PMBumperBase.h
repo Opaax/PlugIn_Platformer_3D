@@ -3,17 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "../Public/Triggarable/PMTriggerableActor.h"
 #include "PMBumperBase.generated.h"
 
-class UBoxComponent;
-class USceneComponent;
 class UStaticMeshComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBumpedEventSignature);
 
 UCLASS()
-class PLATFORMERMAKER_API APMBumperBase : public AActor
+class PLATFORMERMAKER_API APMBumperBase : public ATriggerableActor
 {
 	GENERATED_BODY()
 
@@ -37,19 +35,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "BumperForce"))
 	float m_bumperActorForceFactor = 100.f;
 
-	/*
-	* Classes that can be Bumped
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "ValidClassToBump"))
-	TArray<TSubclassOf<AActor>> m_validClassToBump;
-
 	/**************************** End Settings ******************************/
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UBoxComponent> m_boxComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USceneComponent> m_root;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 	TObjectPtr<UStaticMeshComponent> m_baseBumper;
@@ -65,7 +51,7 @@ public:
 	/**************************** FUNCTION ******************************/
 public:
 
-	APMBumperBase();
+	APMBumperBase(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
 

@@ -1,26 +1,18 @@
 // Copyright Enguerran COBERT, All Rights Reserved.
 
 
-#include "PMBumperBase.h"
+#include "../Public/Triggarable/PMBumperBase.h"
 #include "PlatformerMaker.h"
 
 //Unreal
-#include "Components/BoxComponent.h"
-#include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "GameFramework/Actor.h"
 #include "GameFramework/Character.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/BoxComponent.h"
 
-APMBumperBase::APMBumperBase()
+APMBumperBase::APMBumperBase(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer.SetDefaultSubobjectClass<UBoxComponent>(TriggerComponentName))
 {
 	PrimaryActorTick.bCanEverTick = false;
-
-	m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	SetRootComponent(m_root);
-
-	m_boxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-	m_boxComponent->SetupAttachment(m_root);
 
 	m_baseBumper = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseBumper"));
 	m_baseBumper->SetupAttachment(m_root);
@@ -46,9 +38,9 @@ void APMBumperBase::Tick(float DeltaTime)
 
 void APMBumperBase::BindBoxComponentEvent()
 {
-	if (m_boxComponent)
+	if (m_triggerComponent)
 	{
-		m_boxComponent->OnComponentBeginOverlap.AddDynamic(this, &APMBumperBase::OnBoxComponentOverlapped);
+		m_triggerComponent->OnComponentBeginOverlap.AddDynamic(this, &APMBumperBase::OnBoxComponentOverlapped);
 	}
 	else
 	{

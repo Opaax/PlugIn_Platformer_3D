@@ -55,7 +55,7 @@ void ATriggerableActor::BindBoxComponentEvent()
 	}
 	else
 	{
-		UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, box component is not constructed"), *GetName());
+		UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, trigger component is not constructed"), *GetName());
 	}
 }
 

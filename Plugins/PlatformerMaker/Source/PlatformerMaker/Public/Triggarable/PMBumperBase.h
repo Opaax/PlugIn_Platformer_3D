@@ -60,16 +60,14 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnBumped"))
 	void ReceiveOnBumped();
 
-	UFUNCTION(BlueprintCallable)
-	virtual void BindBoxComponentEvent();
-
-	UFUNCTION(BlueprintCallable)
-	virtual void OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 
 	/**************************** OVERRIDE ******************************/
 protected:
 
 	virtual void BeginPlay() override;
+
+	virtual void TriggerBeginPlay() override;
 
 public:	
 

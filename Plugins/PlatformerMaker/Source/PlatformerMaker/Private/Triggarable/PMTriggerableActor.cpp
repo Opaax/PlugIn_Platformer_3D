@@ -2,6 +2,8 @@
 
 
 #include "Triggarable/PMTriggerableActor.h"
+#include "PlatformerMaker.h"
+
 
 #include "Components/ShapeComponent.h"
 #include "Components/SceneComponent.h"
@@ -22,17 +24,47 @@ ATriggerableActor::ATriggerableActor(const FObjectInitializer& ObjectInitializer
 
 	m_triggerComponent = CreateDefaultSubobject<UShapeComponent>(TriggerComponentName);
 
-	if (m_triggerComponent)
+	if (m_triggerComponent && m_root)
+	{
 		m_triggerComponent->SetupAttachment(m_root);
+	}
+}
+
+bool ATriggerableActor::CanBeTriggerBy(AActor* OtherActor)
+{
+	return IsValid(OtherActor) && m_validClassToTrigger.Contains(OtherActor->GetClass());
 }
 
 void ATriggerableActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	TriggerBeginPlay();
 }
 
 void ATriggerableActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ATriggerableActor::BindBoxComponentEvent()
+{
+	if (m_triggerComponent)
+	{
+		m_triggerComponent->OnComponentBeginOverlap.AddDynamic(this, &ATriggerableActor::OnBoxComponentOverlapped);
+	}
+	else
+	{
+		UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, box component is not constructed"), *GetName());
+	}
+}
+
+void ATriggerableActor::TriggerBeginPlay()
+{
+	BindBoxComponentEvent();
+}
+
+void ATriggerableActor::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
 }
 

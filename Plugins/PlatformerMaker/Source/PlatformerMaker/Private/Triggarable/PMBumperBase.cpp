@@ -21,14 +21,17 @@ APMBumperBase::APMBumperBase(const FObjectInitializer& ObjectInitializer):Super(
 	m_topBumper->SetupAttachment(m_baseBumper);
 
 	//Add by default Character class
-	m_validClassToBump.Add(ACharacter::StaticClass());
+	m_validClassToTrigger.Add(ACharacter::StaticClass());
 }
 
 void APMBumperBase::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-	BindBoxComponentEvent();
+void APMBumperBase::TriggerBeginPlay()
+{
+	Super::TriggerBeginPlay();
 }
 
 void APMBumperBase::Tick(float DeltaTime)
@@ -36,21 +39,9 @@ void APMBumperBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void APMBumperBase::BindBoxComponentEvent()
-{
-	if (m_triggerComponent)
-	{
-		m_triggerComponent->OnComponentBeginOverlap.AddDynamic(this, &APMBumperBase::OnBoxComponentOverlapped);
-	}
-	else
-	{
-		UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, box component is not constructed"), *GetName());
-	}
-}
-
 void APMBumperBase::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (IsValid(OtherActor) && m_validClassToBump.Contains(OtherActor->GetClass()))
+	if (CanBeTriggerBy(OtherActor))
 	{
 		UE_LOG(LogPlatformerPlugin, Warning, TEXT("Valid Bump"));
 

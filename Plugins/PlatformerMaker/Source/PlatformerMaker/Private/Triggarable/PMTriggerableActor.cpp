@@ -1,7 +1,7 @@
 // Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 
-#include "Triggarable/PMTriggerableActor.h"
+#include "Triggerable/PMTriggerableActor.h"
 #include "PlatformerMaker.h"
 
 

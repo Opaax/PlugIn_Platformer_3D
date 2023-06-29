@@ -1,7 +1,7 @@
 // Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 
-#include "Triggarable/PMCoin.h"
+#include "Triggerable/PMCoin.h"
 
 //Unreal
 #include "Components/SphereComponent.h"

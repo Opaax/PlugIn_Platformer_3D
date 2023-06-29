@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../Public/Triggarable/PMTriggerableActor.h"
+#include "../Public/Triggerable/PMTriggerableActor.h"
 #include "PMBumperBase.generated.h"
 
 class UStaticMeshComponent;

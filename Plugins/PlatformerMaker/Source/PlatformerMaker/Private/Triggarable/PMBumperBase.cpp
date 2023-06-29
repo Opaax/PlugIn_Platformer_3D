@@ -1,7 +1,7 @@
 // Copyright Enguerran COBERT, All Rights Reserved.
 
 
-#include "../Public/Triggarable/PMBumperBase.h"
+#include "../Public/Triggerable/PMBumperBase.h"
 #include "PlatformerMaker.h"
 
 //Unreal

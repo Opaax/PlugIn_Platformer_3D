@@ -6,21 +6,32 @@
 #include "GameFramework/Actor.h"
 #include "PMPlatform.generated.h"
 
+class UStaticMeshComponent;
+class USceneComponent;
+
 UCLASS()
 class PLATFORMERMAKER_API APMPlatform : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	APMPlatform();
-
+	/**************************** MEMBERS ******************************/
 protected:
-	// Called when the game starts or when spawned
+
+	UPROPERTY(VisibleAnywhere, Category = Component, meta = (allowPrivateAccess = "true"))
+	TObjectPtr<USceneComponent> m_root;
+
+	UPROPERTY(VisibleAnywhere, Category = Mesh, meta = (allowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> m_meshPlatform;
+
+	/**************************** FUNCTION ******************************/
+public:	
+	APMPlatform(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	/**************************** OVERRIDE ******************************/
+protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 };

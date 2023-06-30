@@ -44,6 +44,12 @@ protected:
 	UFUNCTION()
 	virtual bool CanSpawnActors();
 
+	/*
+	* Override this to make your custom begin play for this actor
+	*/
+	UFUNCTION(BlueprintCallable)
+	virtual void BeginPlayPlacer();
+
 public:	
 	APMActorPlacer(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

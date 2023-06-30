@@ -24,7 +24,16 @@ APMActorPlacer::APMActorPlacer(const FObjectInitializer& ObjectInitializer)
 void APMActorPlacer::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	BeginPlayPlacer();
+}
+
+void APMActorPlacer::BeginPlayPlacer()
+{
+	//Remove this actor. is not usefull in gameplay
+	m_actorPlaced.Empty();
+
+	Destroy();
 }
 
 // Called every frame

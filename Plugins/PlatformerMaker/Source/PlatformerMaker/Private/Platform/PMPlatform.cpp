@@ -2,26 +2,31 @@
 
 
 #include "../Public/Platform/PMPlatform.h"
+#include "PlatformerMaker.h"
 
-// Sets default values
-APMPlatform::APMPlatform()
+//Unreal
+#include "Components/StaticMeshComponent.h"
+#include "Components/SceneComponent.h"
+
+APMPlatform::APMPlatform(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
+	m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(m_root);
+
+	m_meshPlatform = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshPlatform"));
+	m_meshPlatform->SetupAttachment(m_root);
 }
 
-// Called when the game starts or when spawned
 void APMPlatform::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void APMPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 

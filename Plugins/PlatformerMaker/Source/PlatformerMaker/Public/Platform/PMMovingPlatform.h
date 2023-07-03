@@ -7,7 +7,7 @@
 #include "PMMovingPlatform.generated.h"
 
 class USplineComponent;
-class UInterpToMovementComponent;
+class UPMInterpToMovementComponent;
 
 /**
  * 
@@ -27,7 +27,7 @@ protected:
 	* BUT it do not care about tangent. Add more points on spline to make curves
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInterpToMovementComponent > m_interpToMovementComponent;
+	TObjectPtr<UPMInterpToMovementComponent> m_interpToMovementComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting", meta = (AllowPrivateAccess = "true", DisplayName = "MoveDuration"))
 	float m_moveDuration = 2.f;

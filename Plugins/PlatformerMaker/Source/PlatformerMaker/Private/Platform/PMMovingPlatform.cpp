@@ -2,17 +2,17 @@
 
 
 #include "Platform/PMMovingPlatform.h"
+#include "../../Public/Components/PMInterpToMovementComponent.h"
 
 //Unreal
 #include "Components/SplineComponent.h"
-#include "Components/InterpToMovementComponent.h"
 
 APMMovingPlatform::APMMovingPlatform(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
 	m_splineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	m_splineComponent->SetupAttachment(m_root);
 
-	m_interpToMovementComponent = CreateDefaultSubobject<UInterpToMovementComponent>(TEXT("InterpComponent"));
+	m_interpToMovementComponent = CreateDefaultSubobject<UPMInterpToMovementComponent>(TEXT("InterpComponent"));
 
 	m_interpToMovementComponent->BehaviourType = EInterpToBehaviourType::PingPong;
 }

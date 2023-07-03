@@ -28,7 +28,7 @@ protected:
 	* Classes that can trigger this actor
 	* It could be other actor such as character, boxes actor,...
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Triggerable|Setting", meta = (DisplayName = "ValidClassToBump"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Triggerable|Setting", meta = (DisplayName = "ValidClassToTrigger"))
 	TArray<TSubclassOf<AActor>> m_validClassToTrigger;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", BlueprintGetter = "GetTriggerComponent", meta = (AllowPrivateAccess = "true"))

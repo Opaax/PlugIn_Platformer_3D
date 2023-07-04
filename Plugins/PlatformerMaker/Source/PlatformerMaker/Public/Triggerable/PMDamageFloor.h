@@ -17,11 +17,13 @@ class PLATFORMERMAKER_API APMDamageFloor : public ATriggerableActor
 	/**************************** MEMBERS ******************************/
 protected:
 
+	/*
+	* Base damage that floor will gave to actor that trigger the floor
+	*/
 	UPROPERTY(EditAnywhere, Category = "Damage", meta = (AllowPrivateAcess = "true", DisplayName = "BaseDamage"))
 	float m_baseDamage = 2.f;
 
 	/**************************** FUNCTION ******************************/
-protected:
 public:
 	APMDamageFloor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

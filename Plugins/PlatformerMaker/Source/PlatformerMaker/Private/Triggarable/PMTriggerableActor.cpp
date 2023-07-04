@@ -66,5 +66,14 @@ void ATriggerableActor::TriggerBeginPlay()
 
 void ATriggerableActor::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (CanBeTriggerBy(OtherActor))
+	{
+		OnTrigger(OtherActor);
+	}
+}
+
+void ATriggerableActor::OnTrigger(AActor* OtherTrigger)
+{
+	ReceiveOnTrigger(OtherTrigger);
 }
 

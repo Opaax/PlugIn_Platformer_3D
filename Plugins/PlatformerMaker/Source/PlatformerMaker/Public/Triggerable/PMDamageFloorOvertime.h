@@ -37,16 +37,23 @@ protected:
 	/**************************** FUNCTION ******************************/
 protected:
 	/*
-	* Whill add an actor to the pool that will take damage
+	* Will add an actor to the pool that will take damage
 	*/
 	UFUNCTION(Blueprintcallable)
-	void AddActorOnPool(AActor* Actor);
+	virtual void AddActorOnPool(AActor* Actor);
 
 	/*
 	* Will remove actor from pool
 	*/
 	UFUNCTION(Blueprintcallable)
-	void RemoveActorOnPool(AActor* Actor);
+	virtual void RemoveActorOnPool(AActor* Actor);
+
+	/*
+	* Add time on pool object
+	* damage if needed
+	*/
+	UFUNCTION(BlueprintCallable)
+	virtual void ApplyDamageTimeToPool(float DeltaTime);
 
 public:
 	APMDamageFloorOvertime(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

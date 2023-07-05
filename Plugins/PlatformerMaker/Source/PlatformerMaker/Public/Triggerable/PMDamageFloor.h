@@ -24,6 +24,10 @@ protected:
 	float m_baseDamage = 2.f;
 
 	/**************************** FUNCTION ******************************/
+protected:
+	UFUNCTION(BlueprintCallable)
+	virtual void DamageActor(AActor* DamageActor);
+
 public:
 	APMDamageFloor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

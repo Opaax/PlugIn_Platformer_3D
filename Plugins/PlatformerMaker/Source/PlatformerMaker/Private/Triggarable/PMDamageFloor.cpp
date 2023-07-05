@@ -26,7 +26,12 @@ void APMDamageFloor::OnTrigger(AActor* OtherActor)
 {
 	Super::OnTrigger(OtherActor);
 
+	DamageActor(OtherActor);
+}
+
+void APMDamageFloor::DamageActor(AActor* DamageActor)
+{
 	//Apply damage on default damage system that UE provide
 	const FDamageEvent lDamageEvent = FDamageEvent();
-	OtherActor->TakeDamage(m_baseDamage, lDamageEvent, nullptr, this);
+	DamageActor->TakeDamage(m_baseDamage, lDamageEvent, nullptr, this);
 }

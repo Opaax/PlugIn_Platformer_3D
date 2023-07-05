@@ -32,12 +32,11 @@ void APMCoin::BeginPlay()
 	Super::BeginPlay();	
 }
 
-void APMCoin::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void APMCoin::OnTrigger(AActor* OtherTrigger)
 {
-	if (CanBeTriggerBy(OtherActor))
-	{
-		OnCoinTrigger(m_coinValue, OtherActor);
-	}
+	Super::OnTrigger(OtherTrigger);
+
+	OnCoinTrigger(m_coinValue,OtherTrigger);
 }
 
 void APMCoin::Tick(float DeltaTime)

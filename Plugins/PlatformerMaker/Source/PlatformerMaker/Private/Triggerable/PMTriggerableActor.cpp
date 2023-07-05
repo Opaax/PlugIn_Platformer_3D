@@ -47,11 +47,12 @@ void ATriggerableActor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ATriggerableActor::BindBoxComponentEvent()
+void ATriggerableActor::BindTriggerComponentEvent()
 {
 	if (m_triggerComponent)
 	{
 		m_triggerComponent->OnComponentBeginOverlap.AddDynamic(this, &ATriggerableActor::OnBoxComponentOverlapped);
+		m_triggerComponent->OnComponentEndOverlap.AddDynamic(this, &ATriggerableActor::OnBoxComponentEndOverlapped);
 	}
 	else
 	{
@@ -61,10 +62,32 @@ void ATriggerableActor::BindBoxComponentEvent()
 
 void ATriggerableActor::TriggerBeginPlay()
 {
-	BindBoxComponentEvent();
+	BindTriggerComponentEvent();
 }
 
 void ATriggerableActor::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (CanBeTriggerBy(OtherActor))
+	{
+		OnTrigger(OtherActor);
+	}
+}
+
+void ATriggerableActor::OnBoxComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (CanBeTriggerBy(OtherActor))
+	{
+		OnOutTrigger(OtherActor);
+	}
+}
+
+void ATriggerableActor::OnTrigger(AActor* OtherTrigger)
+{
+	ReceiveOnTrigger(OtherTrigger);
+}
+
+void ATriggerableActor::OnOutTrigger(AActor* OtherTrigger)
+{
+	ReceiveOnOutTrigger(OtherTrigger);
 }
 

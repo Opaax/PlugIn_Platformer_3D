@@ -45,7 +45,7 @@ public:
 protected:
 
 	UFUNCTION(BlueprintCallable)
-	virtual void BindBoxComponentEvent();
+	virtual void BindTriggerComponentEvent();
 
 	/*
 	* Custom begin play for trigger classes
@@ -55,6 +55,18 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+	UFUNCTION(BlueprintCallable)
+	virtual void OnBoxComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	virtual void OnTrigger(AActor* OtherTrigger);
+	virtual void OnOutTrigger(AActor* OtherTrigger);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnTrigger"))
+	void ReceiveOnTrigger(AActor* OtherTrigger);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnOutTrigger"))
+	void ReceiveOnOutTrigger(AActor* OtherTrigger);
 
 public:	
 	ATriggerableActor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

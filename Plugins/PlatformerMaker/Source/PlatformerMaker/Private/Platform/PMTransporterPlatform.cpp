@@ -74,8 +74,6 @@ bool APMTransporterPlatform::CanTrigger(AActor* OtherActor)
 
 void APMTransporterPlatform::OnInterpComponentStop(const FHitResult& ImpactResult, float Time)
 {
-	GEngine->AddOnScreenDebugMessage(1, 5.f, FColor::Red, FString::Printf(TEXT("%f"), Time));
-
 	EnableMovingPlatform(false);
 
 	if (Time > .9f)

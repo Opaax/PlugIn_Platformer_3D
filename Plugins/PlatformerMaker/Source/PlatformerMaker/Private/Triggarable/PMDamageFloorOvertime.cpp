@@ -15,6 +15,13 @@ void APMDamageFloorOvertime::OnTrigger(AActor* OtherTrigger)
 	AddActorOnPool(OtherTrigger);
 }
 
+void APMDamageFloorOvertime::OnOutTrigger(AActor* OtherTrigger)
+{
+	ReceiveOnOutTrigger(OtherTrigger);
+
+	RemoveActorOnPool(OtherTrigger);
+}
+
 void APMDamageFloorOvertime::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

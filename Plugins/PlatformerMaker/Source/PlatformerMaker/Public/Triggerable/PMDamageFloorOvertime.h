@@ -28,7 +28,7 @@ protected:
 	* if set to true, the floor will gave first damage while on trigger
 	* otherwise, the first damage will be gave after the first rate
 	*/
-	UPROPERTY(EditAnywhere, Category = "Setting", meta = (AllowPrivateAccess = "true", DisplayName = "RateDamage"))
+	UPROPERTY(EditAnywhere, Category = "Setting", meta = (AllowPrivateAccess = "true", DisplayName = "IsGivingInstantDamage"))
 	bool bIsGivingInstantDamage = false;
 
 	UPROPERTY(Visibleanywhere, BlueprintReadOnly, Category = "Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "PoolToDamage"))
@@ -61,6 +61,7 @@ public:
 	/**************************** OVERRIDE ******************************/
 protected:
 	virtual void OnTrigger(AActor* OtherTrigger) override;
+	virtual void OnOutTrigger(AActor* OtherTrigger) override;
 
 public:
 

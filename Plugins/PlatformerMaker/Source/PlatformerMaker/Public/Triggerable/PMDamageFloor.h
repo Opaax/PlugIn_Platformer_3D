@@ -28,6 +28,11 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void DamageActor(AActor* DamageActor);
 
+	virtual void OnActorDamage(AActor* DamageActor);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnActorDamage"))
+	void ReceiveOnActorDamage(AActor* DamageActor);
+
 public:
 	APMDamageFloor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

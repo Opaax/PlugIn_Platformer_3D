@@ -34,4 +34,11 @@ void APMDamageFloor::DamageActor(AActor* DamageActor)
 	//Apply damage on default damage system that UE provide
 	const FDamageEvent lDamageEvent = FDamageEvent();
 	DamageActor->TakeDamage(m_baseDamage, lDamageEvent, nullptr, this);
+
+	OnActorDamage(DamageActor);
+}
+
+void APMDamageFloor::OnActorDamage(AActor* DamageActor)
+{
+	ReceiveOnActorDamage(DamageActor);
 }

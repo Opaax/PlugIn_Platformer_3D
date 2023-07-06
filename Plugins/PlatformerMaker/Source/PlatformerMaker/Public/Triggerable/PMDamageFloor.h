@@ -7,7 +7,10 @@
 #include "PMDamageFloor.generated.h"
 
 /**
+ * This class can be use to create basics trap such as spike trap
  * 
+ * TODO:
+ * Rename this class, it could be use as "ceilings" like spike start from ceiling
  */
 UCLASS()
 class PLATFORMERMAKER_API APMDamageFloor : public ATriggerableActor

@@ -9,7 +9,7 @@
 
 class USceneComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDoorEventSignature, APMDoor*, Door);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPMDoorEventSignature, APMDoor*, Door);
 
 /*
 * Simple class to manage event for doors
@@ -47,25 +47,25 @@ public:
 	* Call when start Open()
 	*/
 	UPROPERTY(BlueprintAssignable, Category = Event)
-	FDoorEventSignature OnDoorOpeningDelegate;
+	FPMDoorEventSignature OnDoorOpeningDelegate;
 
 	/*
 	* Call when start Close()s
 	*/
-	UPROPERTY(BlueprintAssignable, EditAnywhere, Category = Event)
-	FDoorEventSignature OnDoorClosingDelegate;
+	UPROPERTY(BlueprintAssignable, Category = Event)
+	FPMDoorEventSignature OnDoorClosingDelegate;
 
 	/*
 	* Call when FinishOpenDoor()
 	*/
 	UPROPERTY(BlueprintAssignable, Category = Event)
-	FDoorEventSignature OnDoorOpenDelegate;
+	FPMDoorEventSignature OnDoorOpenDelegate;
 
 	/*
 	* Call when FinishCloseDoor()
 	*/
 	UPROPERTY(BlueprintAssignable, Category = Event)
-	FDoorEventSignature OnDoorCloseDelegate;
+	FPMDoorEventSignature OnDoorCloseDelegate;
 	/**************************** End Delegate ******************************/
 
 	/**************************** FUNCTION ******************************/

@@ -31,7 +31,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Triggerable|Setting", meta = (DisplayName = "ValidClassToTrigger"))
 	TArray<TSubclassOf<AActor>> m_validClassToTrigger;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component", BlueprintGetter = "GetTriggerComponent", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", BlueprintGetter = "GetTriggerComponent", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UShapeComponent> m_triggerComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", meta = (AllowPrivateAccess = "true"))

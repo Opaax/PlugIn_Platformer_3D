@@ -2,6 +2,7 @@
 
 
 #include "Door/PMDoor.h"
+#include "PlatformerMaker.h"
 
 //Unreal
 #include "Components/SceneComponent.h"
@@ -37,10 +38,12 @@ void APMDoor::CheckForStartState()
 	{
 	case EPMDoorStartState::EDSS_Open:
 		Open();
+		m_currentStateDoor = EPMDoorState::EDS_Open;
 		break;
 	case EPMDoorStartState::EDSS_Close:
 	default:
 		Close();
+		m_currentStateDoor = EPMDoorState::EDS_Close;
 		break;
 	}
 }
@@ -52,11 +55,11 @@ void APMDoor::OnOpen()
 
 void APMDoor::OnFinishOpenDoor()
 {
-	ReceiveOnFinishOpenDoor();
-
-	SetCurrentDoorState(EPMDoorState::EDS_Open);
+	m_currentStateDoor = EPMDoorState::EDS_Open;
 
 	OnDoorOpenDelegate.Broadcast(this);
+
+	ReceiveOnFinishOpenDoor();
 }
 
 void APMDoor::OnClose()
@@ -66,28 +69,32 @@ void APMDoor::OnClose()
 
 void APMDoor::OnFinishCloseDoor()
 {
-	ReceiveOnFinishCloseDoor();
-
-	SetCurrentDoorState(EPMDoorState::EDS_Close);
+	m_currentStateDoor = EPMDoorState::EDS_Close;
 
 	OnDoorCloseDelegate.Broadcast(this);
+
+	ReceiveOnFinishCloseDoor();
 }
 
 void APMDoor::Open()
 {
 	OnOpen();
 
-	SetCurrentDoorState(EPMDoorState::EDS_OnOpening);
+	m_currentStateDoor = EPMDoorState::EDS_OnOpening;
 
 	OnDoorOpeningDelegate.Broadcast(this);
+
+	UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, Door Open"), *GetName());
 }
 
 void APMDoor::Close()
 {
 	OnClose();
 
-	SetCurrentDoorState(EPMDoorState::EDS_OnClosing);
+	m_currentStateDoor = EPMDoorState::EDS_OnClosing;
 
 	OnDoorClosingDelegate.Broadcast(this);
+
+	UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, Door Close"), *GetName());
 }
 

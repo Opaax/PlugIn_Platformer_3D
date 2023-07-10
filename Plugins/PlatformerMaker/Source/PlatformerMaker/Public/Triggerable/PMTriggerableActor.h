@@ -17,7 +17,7 @@ class USceneComponent;
 * All inherited classe need to set it's trigger shape type
 */
 UCLASS()
-class PLATFORMERMAKER_API ATriggerableActor : public AActor
+class PLATFORMERMAKER_API APMTriggerableActor : public AActor
 {
 	GENERATED_BODY()
 
@@ -69,7 +69,7 @@ protected:
 	void ReceiveOnOutTrigger(AActor* OtherTrigger);
 
 public:	
-	ATriggerableActor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	APMTriggerableActor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintCallable)
 	bool CanBeTriggerBy(AActor* OtherActor);

@@ -9,13 +9,13 @@
 #include "Components/SceneComponent.h"
 
 //Do not change this
-FName ATriggerableActor::TriggerComponentName(TEXT("TriggerComponent"));
+FName APMTriggerableActor::TriggerComponentName(TEXT("TriggerComponent"));
 
 /*
 * Set default values
 * Trigger component is a box by default
 */
-ATriggerableActor::ATriggerableActor(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
+APMTriggerableActor::APMTriggerableActor(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -30,29 +30,29 @@ ATriggerableActor::ATriggerableActor(const FObjectInitializer& ObjectInitializer
 	}
 }
 
-bool ATriggerableActor::CanBeTriggerBy(AActor* OtherActor)
-{
-	return IsValid(OtherActor) && m_validClassToTrigger.Contains(OtherActor->GetClass());
-}
-
-void ATriggerableActor::BeginPlay()
+void APMTriggerableActor::BeginPlay()
 {
 	Super::BeginPlay();
 
 	TriggerBeginPlay();
 }
 
-void ATriggerableActor::Tick(float DeltaTime)
+void APMTriggerableActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void ATriggerableActor::BindTriggerComponentEvent()
+bool APMTriggerableActor::CanBeTriggerBy(AActor* OtherActor)
+{
+	return IsValid(OtherActor) && m_validClassToTrigger.Contains(OtherActor->GetClass());
+}
+
+void APMTriggerableActor::BindTriggerComponentEvent()
 {
 	if (m_triggerComponent)
 	{
-		m_triggerComponent->OnComponentBeginOverlap.AddDynamic(this, &ATriggerableActor::OnBoxComponentOverlapped);
-		m_triggerComponent->OnComponentEndOverlap.AddDynamic(this, &ATriggerableActor::OnBoxComponentEndOverlapped);
+		m_triggerComponent->OnComponentBeginOverlap.AddDynamic(this, &APMTriggerableActor::OnBoxComponentOverlapped);
+		m_triggerComponent->OnComponentEndOverlap.AddDynamic(this, &APMTriggerableActor::OnBoxComponentEndOverlapped);
 	}
 	else
 	{
@@ -60,12 +60,12 @@ void ATriggerableActor::BindTriggerComponentEvent()
 	}
 }
 
-void ATriggerableActor::TriggerBeginPlay()
+void APMTriggerableActor::TriggerBeginPlay()
 {
 	BindTriggerComponentEvent();
 }
 
-void ATriggerableActor::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void APMTriggerableActor::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (CanBeTriggerBy(OtherActor))
 	{
@@ -73,7 +73,7 @@ void ATriggerableActor::OnBoxComponentOverlapped(UPrimitiveComponent* Overlapped
 	}
 }
 
-void ATriggerableActor::OnBoxComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void APMTriggerableActor::OnBoxComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (CanBeTriggerBy(OtherActor))
 	{
@@ -81,12 +81,12 @@ void ATriggerableActor::OnBoxComponentEndOverlapped(UPrimitiveComponent* Overlap
 	}
 }
 
-void ATriggerableActor::OnTrigger(AActor* OtherTrigger)
+void APMTriggerableActor::OnTrigger(AActor* OtherTrigger)
 {
 	ReceiveOnTrigger(OtherTrigger);
 }
 
-void ATriggerableActor::OnOutTrigger(AActor* OtherTrigger)
+void APMTriggerableActor::OnOutTrigger(AActor* OtherTrigger)
 {
 	ReceiveOnOutTrigger(OtherTrigger);
 }

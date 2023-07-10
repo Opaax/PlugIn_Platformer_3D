@@ -11,7 +11,7 @@ class UStaticMeshComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FBumpedEventSignature);
 
 UCLASS()
-class PLATFORMERMAKER_API APMBumperBase : public ATriggerableActor
+class PLATFORMERMAKER_API APMBumperBase : public APMTriggerableActor
 {
 	GENERATED_BODY()
 

@@ -17,7 +17,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCoinEventSignature, int32, CoinVal
 * DoNotCreateDefaultSubobject with the subobject's name (RotatingComponentName).
 */
 UCLASS()
-class PLATFORMERMAKER_API APMCoin : public ATriggerableActor
+class PLATFORMERMAKER_API APMCoin : public APMTriggerableActor
 {
 	GENERATED_BODY()
 	

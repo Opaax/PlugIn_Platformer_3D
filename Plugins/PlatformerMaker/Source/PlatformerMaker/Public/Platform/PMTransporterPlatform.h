@@ -10,7 +10,9 @@ class UBoxComponent;
 class ACharacter;
 
 /**
- * 
+ * This is a special moving platform
+ * This platform will move only if the player climb up
+ * This can have more function such as "Reset" when player get out of the trigger (going back to the start pos)
  */
 UCLASS()
 class PLATFORMERMAKER_API APMTransporterPlatform : public APMMovingPlatform

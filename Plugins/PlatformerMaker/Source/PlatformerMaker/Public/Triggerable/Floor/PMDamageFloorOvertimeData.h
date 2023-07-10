@@ -12,11 +12,10 @@ struct FPMDamageFloorOvertimeData
 
 	/**************************** MEMBERS ******************************/
 public:
-
 	float CurrentTime = 0;
 	AActor* Actor = nullptr;
 
-	/**************************** Function ******************************/
+	/**************************** FUNCTION ******************************/
 public:
 
 	void Reset()

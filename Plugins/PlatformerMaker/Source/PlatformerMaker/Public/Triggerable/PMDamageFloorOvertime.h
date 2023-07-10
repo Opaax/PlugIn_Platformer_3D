@@ -8,7 +8,10 @@
 #include "PMDamageFloorOvertime.generated.h"
 
 /**
+ * This one is an extend one to create trap such as Toxic smoke/river giving damage overtime
  * 
+ * TODO:
+ * Rename Same as PM Damage floor
  */
 UCLASS()
 class PLATFORMERMAKER_API APMDamageFloorOvertime : public APMDamageFloor

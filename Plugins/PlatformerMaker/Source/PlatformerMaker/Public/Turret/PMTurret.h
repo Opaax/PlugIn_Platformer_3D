@@ -7,6 +7,7 @@
 #include "PMTurret.generated.h"
 
 class UAIPerceptionComponent;
+class USceneComponent;
 
 /*
 */
@@ -16,11 +17,14 @@ class PLATFORMERMAKER_API APMTurret : public APawn
 	GENERATED_BODY()
 		/**************************** MEMBERS ******************************/
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret|Component", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAIPerceptionComponent> m_perceptionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "CurrentActor"))
 	TObjectPtr<AActor> m_currentActor;
+
+	UPROPERTY(VisibleAnywhere, Category = "Turret|Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USceneComponent> m_root;
 
 		/**************************** FUNCTION ******************************/
 protected:

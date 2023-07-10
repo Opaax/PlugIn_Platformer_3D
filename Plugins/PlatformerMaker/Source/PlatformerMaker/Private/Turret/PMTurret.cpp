@@ -5,10 +5,14 @@
 
 //Unreal
 #include "Perception/AIPerceptionComponent.h"
+#include "Components/SceneComponent.h"
 
 APMTurret::APMTurret(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(m_root);
 
 	m_perceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 }
@@ -27,6 +31,9 @@ void APMTurret::OnPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 	//Check valid actor
 	//Check Valid Sight actor
 	//Call On Sight
+
+	UE_LOG(LogTemp, Error, TEXT("TOORWEMWEF"));
+	OnSight(Actor);
 }
 
 void APMTurret::OnSight(AActor* Actor)
@@ -38,6 +45,8 @@ void APMTurret::OnSight(AActor* Actor)
 void APMTurret::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ListenPerceptionComponentEvent();
 	
 }
 

@@ -60,6 +60,22 @@ void APMTriggerableActor::BindTriggerComponentEvent()
 	}
 }
 
+void APMTriggerableActor::RemoveBindTriggerComponentEvent()
+{
+	if (m_triggerComponent)
+	{
+		if(m_triggerComponent->OnComponentBeginOverlap.IsBound())
+			m_triggerComponent->OnComponentBeginOverlap.RemoveAll(this);
+
+		if(m_triggerComponent->OnComponentEndOverlap.IsBound())
+			m_triggerComponent->OnComponentEndOverlap.RemoveAll(this);
+	}
+	else
+	{
+		UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, trigger component is not constructed"), *GetName());
+	}
+}
+
 void APMTriggerableActor::TriggerBeginPlay()
 {
 	BindTriggerComponentEvent();

@@ -9,6 +9,8 @@
 class UAIPerceptionComponent;
 class USceneComponent;
 
+class APMBullet;
+
 /*
 */
 UCLASS()
@@ -24,8 +26,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Turret|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> m_root;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turret|Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USceneComponent> m_spawnBulletPoint;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret|Setting", meta = (AllowPrivateAccess = "true", DisplayName = "FireRate"))
 	float m_fireRate = .4f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret|Setting", meta = (AllowPrivateAccess = "true", DisplayName = "BulletClass"))
+	TSubclassOf<APMBullet> m_bulletClass;
 
 	UPROPERTY(Visibleanywhere, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "LookAtActor"))
 	TObjectPtr<AActor> m_lookAtActor;
@@ -88,6 +96,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnShoot"))
 	void ReceiveOnShoot();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SpawnBullet();
 
 public:
 	APMTurret(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

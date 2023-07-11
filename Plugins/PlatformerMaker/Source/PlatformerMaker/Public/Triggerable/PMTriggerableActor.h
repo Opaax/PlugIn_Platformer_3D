@@ -47,6 +47,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void BindTriggerComponentEvent();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void RemoveBindTriggerComponentEvent();
+
 	/*
 	* Custom begin play for trigger classes
 	*/

@@ -2,6 +2,7 @@
 
 
 #include "Turret/PMTurret.h"
+#include "Turret/PMBullet.h"
 
 //Unreal
 #include "Perception/AIPerceptionComponent.h"
@@ -14,6 +15,9 @@ APMTurret::APMTurret(const FObjectInitializer& ObjectInitializer):Super(ObjectIn
 
 	m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(m_root);
+
+	m_spawnBulletPoint = CreateDefaultSubobject<USceneComponent>(TEXT("SpawnPoint"));
+	//m_spawnBulletPoint->SetupAttachment(m_root);
 
 	m_perceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 }
@@ -111,6 +115,8 @@ void APMTurret::LookAtTarget()
 
 void APMTurret::Shoot()
 {
+	SpawnBullet();
+
 	OnShoot();
 }
 
@@ -134,3 +140,24 @@ void APMTurret::OnShoot()
 	ReceiveOnShoot();
 }
 
+void APMTurret::SpawnBullet()
+{
+	if (UWorld* lWorld = GetWorld())
+	{
+		if (m_spawnBulletPoint)
+		{
+			const FTransform& lTrans = 
+				FTransform(
+					m_spawnBulletPoint->GetComponentTransform().GetRotation(), 
+					m_spawnBulletPoint->GetComponentTransform().GetLocation(), 
+					FVector(1,1,1) //avoid weird stuff while inherited/reorder in blueprint
+				);
+
+			FActorSpawnParameters lParams = FActorSpawnParameters();
+
+			lParams.Owner = this;
+
+			AActor* lBullet = lWorld->SpawnActor<AActor>(m_bulletClass, lTrans, lParams);
+		}
+	}
+}

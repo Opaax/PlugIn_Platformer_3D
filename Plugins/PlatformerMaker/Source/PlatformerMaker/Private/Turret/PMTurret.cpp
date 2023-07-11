@@ -6,6 +6,7 @@
 //Unreal
 #include "Perception/AIPerceptionComponent.h"
 #include "Components/SceneComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 APMTurret::APMTurret(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
@@ -15,6 +16,18 @@ APMTurret::APMTurret(const FObjectInitializer& ObjectInitializer):Super(ObjectIn
 	SetRootComponent(m_root);
 
 	m_perceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
+}
+
+void APMTurret::BeginPlay()
+{
+	Super::BeginPlay();
+
+	ListenPerceptionComponentEvent();
+}
+
+void APMTurret::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
 }
 
 void APMTurret::ListenPerceptionComponentEvent()
@@ -32,8 +45,73 @@ void APMTurret::OnPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 	//Check Valid Sight actor
 	//Call On Sight
 
-	UE_LOG(LogTemp, Error, TEXT("TOORWEMWEF"));
-	OnSight(Actor);
+	if (Stimulus.WasSuccessfullySensed())
+	{
+		OnSight(Actor);
+		StartLookAtTarget(Actor);
+		StartShoot();
+	}
+	else
+	{
+		OnOutSight(Actor);
+		StopLookAtTarget();
+		StopShoot();
+	}
+}
+
+void APMTurret::StartLookAtTarget(AActor* Target)
+{
+	if (IsValid(Target) && GetWorld())
+	{
+		if (UWorld* lWorld = GetWorld())
+		{
+			m_lookAtActor = Target;
+
+			const float lDeltaTime = lWorld->GetDeltaSeconds();
+
+			lWorld->GetTimerManager().SetTimer(m_lookAtTimerHandle, this, &APMTurret::LookAtTarget, lDeltaTime, true);
+		}
+	}
+}
+
+void APMTurret::StartShoot()
+{
+	if (UWorld* lWorld = GetWorld())
+	{
+		lWorld->GetTimerManager().SetTimer(m_shootTimerHandle, this, &APMTurret::Shoot, m_fireRate, true);
+	}
+}
+
+void APMTurret::StopShoot()
+{
+	if (UWorld* lWorld = GetWorld())
+	{
+		lWorld->GetTimerManager().ClearTimer(m_shootTimerHandle);
+	}
+}
+
+void APMTurret::StopLookAtTarget()
+{
+	if (UWorld* lWorld = GetWorld())
+	{
+		lWorld->GetTimerManager().ClearTimer(m_lookAtTimerHandle);
+
+		m_lookAtActor = nullptr;
+	}
+}
+
+void APMTurret::LookAtTarget()
+{
+	if (IsValid(m_lookAtActor))
+	{
+		m_lookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), m_lookAtActor->GetActorLocation());
+		OnLookAtRotationComputed(m_lookAtRotation);
+	}
+}
+
+void APMTurret::Shoot()
+{
+	OnShoot();
 }
 
 void APMTurret::OnSight(AActor* Actor)
@@ -41,19 +119,18 @@ void APMTurret::OnSight(AActor* Actor)
 	ReceiveOnSight(Actor);
 }
 
-// Called when the game starts or when spawned
-void APMTurret::BeginPlay()
+void APMTurret::OnOutSight(AActor* Actor)
 {
-	Super::BeginPlay();
-
-	ListenPerceptionComponentEvent();
-	
+	ReceiveOnOutSight(Actor);
 }
 
-// Called every frame
-void APMTurret::Tick(float DeltaTime)
+void APMTurret::OnLookAtRotationComputed(FRotator Rotator)
 {
-	Super::Tick(DeltaTime);
+	ReceiveOnLookAtRotationComputed(Rotator);
+}
 
+void APMTurret::OnShoot()
+{
+	ReceiveOnShoot();
 }
 

@@ -15,16 +15,29 @@ UCLASS()
 class PLATFORMERMAKER_API APMTurret : public APawn
 {
 	GENERATED_BODY()
+
 		/**************************** MEMBERS ******************************/
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAIPerceptionComponent> m_perceptionComponent;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "CurrentActor"))
-	TObjectPtr<AActor> m_currentActor;
-
 	UPROPERTY(VisibleAnywhere, Category = "Turret|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> m_root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret|Setting", meta = (AllowPrivateAccess = "true", DisplayName = "FireRate"))
+	float m_fireRate = .4f;
+
+	UPROPERTY(Visibleanywhere, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "LookAtActor"))
+	TObjectPtr<AActor> m_lookAtActor;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "LookAtTimerHandle"))
+	FTimerHandle m_lookAtTimerHandle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "ShootTimerHandle"))
+	FTimerHandle m_shootTimerHandle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "LookAtTimerHandle"))
+	FRotator m_lookAtRotation;
 
 		/**************************** FUNCTION ******************************/
 protected:
@@ -35,10 +48,46 @@ protected:
 	void OnPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
 
 	UFUNCTION(BlueprintCallable)
+	virtual void StartLookAtTarget(AActor* Target);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StartShoot();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StopShoot();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StopLookAtTarget();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void LookAtTarget();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void Shoot();
+
+	UFUNCTION(BlueprintCallable)
 	virtual void OnSight(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnOutSight(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnLookAtRotationComputed(FRotator Rotator);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnShoot();
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnSight"))
 	void ReceiveOnSight(AActor* Actor);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnOutSight"))
+	void ReceiveOnOutSight(AActor* Actor);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnLookAtRotationComputed"))
+	void ReceiveOnLookAtRotationComputed(FRotator Rotator);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnShoot"))
+	void ReceiveOnShoot();
 
 public:
 	APMTurret(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

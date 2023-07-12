@@ -3,6 +3,7 @@
 
 #include "Turret/PMTurret.h"
 #include "Turret/PMBullet.h"
+#include "PlatformerMaker.h"
 
 //Unreal
 #include "Perception/AIPerceptionComponent.h"
@@ -51,15 +52,51 @@ void APMTurret::OnPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 
 	if (Stimulus.WasSuccessfullySensed())
 	{
+		//Add the new actor on the on sight list
+		AddActorOnSightList(Actor);
 		OnSight(Actor);
 		StartLookAtTarget(Actor);
 		StartShoot();
 	}
 	else
 	{
+		//Remove actor from on sight list
+		RemoveActorOnSightList(Actor);
+
+		//Call what ever there is no more actors on sight
 		OnOutSight(Actor);
-		StopLookAtTarget();
-		StopShoot();
+
+		//Find out new target to look at if any
+		//Otherwise Look at target set to null
+		CheckForNewPriorityLookAtTarget();
+
+		//If there is no more look at actors
+		//Stop behavior
+		if (!m_lookAtActor)
+		{
+			StopLookAtTarget();
+			StopShoot();
+		}
+	}
+}
+
+void APMTurret::CheckPriorityLookAtTarget_Implementation(AActor* NewActor)
+{
+	if (!m_lookAtActor && NewActor)
+	{
+		m_lookAtActor = NewActor;
+	}
+}
+
+void APMTurret::CheckForNewPriorityLookAtTarget_Implementation()
+{
+	if (m_actorsOnSight.Num() > 0)
+	{
+		m_lookAtActor = m_actorsOnSight[0];
+	}
+	else
+	{
+		m_lookAtActor = nullptr;
 	}
 }
 
@@ -69,7 +106,7 @@ void APMTurret::StartLookAtTarget(AActor* Target)
 	{
 		if (UWorld* lWorld = GetWorld())
 		{
-			m_lookAtActor = Target;
+			CheckPriorityLookAtTarget(Target);
 
 			const float lDeltaTime = lWorld->GetDeltaSeconds();
 
@@ -158,6 +195,57 @@ void APMTurret::SpawnBullet()
 			lParams.Owner = this;
 
 			AActor* lBullet = lWorld->SpawnActor<AActor>(m_bulletClass, lTrans, lParams);
+		}
+	}
+}
+
+void APMTurret::AddActorOnSightList_Implementation(AActor* NewActor)
+{
+	if (!NewActor)
+	{
+		UE_LOG(LogPlatformerPlugin, Warning, TEXT("%s, You looking to add actor on sight list. However, this actor is null"), *GetName());
+		return;
+	}
+
+	if (m_actorsOnSight.IsEmpty())
+	{
+		m_actorsOnSight.Add(NewActor);
+	}
+	else
+	{
+		if (!m_actorsOnSight.Contains(NewActor))
+		{
+			m_actorsOnSight.Add(NewActor);
+		}
+		else
+		{
+			UE_LOG(LogPlatformerPlugin, Warning, TEXT("%s, You looking to add actor on sight list. However, this actor already on the list. Make sure to remove it if out of sight"), *GetName());
+		}
+	}
+}
+
+void APMTurret::RemoveActorOnSightList_Implementation(AActor* RemoveActor)
+{
+	if (!RemoveActor)
+	{
+		UE_LOG(LogPlatformerPlugin, Warning, TEXT("%s, You looking to remove actor from sight list. However, this actor is null"), *GetName());
+		return;
+	}
+
+	if (m_actorsOnSight.IsEmpty())
+	{
+		UE_LOG(LogPlatformerPlugin, Warning, TEXT("%s, You looking to remove actor from sight list. However, the list is empty. Make sure to remove it if out of sight"), *GetName());
+
+	}
+	else
+	{
+		if (m_actorsOnSight.Contains(RemoveActor))
+		{
+			m_actorsOnSight.Remove(RemoveActor);
+		}
+		else
+		{
+			UE_LOG(LogPlatformerPlugin, Warning, TEXT("%s, You looking to remove actor from sight list. However, the actor are not on the list. Make sure to add it if on sight"), *GetName());
 		}
 	}
 }

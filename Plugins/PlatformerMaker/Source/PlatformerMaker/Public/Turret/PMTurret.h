@@ -47,6 +47,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "LookAtTimerHandle"))
 	FRotator m_lookAtRotation;
 
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "ActorsOnSight"))
+	TArray<AActor*> m_actorsOnSight;
+
 		/**************************** FUNCTION ******************************/
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -54,6 +57,14 @@ protected:
 
 	UFUNCTION()
 	void OnPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void CheckPriorityLookAtTarget(AActor* NewActor);
+	virtual void CheckPriorityLookAtTarget_Implementation(AActor* NewActor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void CheckForNewPriorityLookAtTarget();
+	virtual void CheckForNewPriorityLookAtTarget_Implementation();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void StartLookAtTarget(AActor* Target);
@@ -99,6 +110,14 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void SpawnBullet();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void AddActorOnSightList(AActor* NewActor);
+	virtual void AddActorOnSightList_Implementation(AActor* NewActor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void RemoveActorOnSightList(AActor* RemoveActor);
+	virtual void RemoveActorOnSightList_Implementation(AActor* RemoveActor);
 
 public:
 	APMTurret(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

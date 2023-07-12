@@ -51,8 +51,8 @@ void APMTriggerableActor::BindTriggerComponentEvent()
 {
 	if (m_triggerComponent)
 	{
-		m_triggerComponent->OnComponentBeginOverlap.AddDynamic(this, &APMTriggerableActor::OnBoxComponentOverlapped);
-		m_triggerComponent->OnComponentEndOverlap.AddDynamic(this, &APMTriggerableActor::OnBoxComponentEndOverlapped);
+		m_triggerComponent->OnComponentBeginOverlap.AddDynamic(this, &APMTriggerableActor::OnTriggerComponentOverlapped);
+		m_triggerComponent->OnComponentEndOverlap.AddDynamic(this, &APMTriggerableActor::OnTriggerComponentEndOverlapped);
 	}
 	else
 	{
@@ -81,7 +81,7 @@ void APMTriggerableActor::TriggerBeginPlay()
 	BindTriggerComponentEvent();
 }
 
-void APMTriggerableActor::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void APMTriggerableActor::OnTriggerComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (CanBeTriggerBy(OtherActor))
 	{
@@ -89,7 +89,7 @@ void APMTriggerableActor::OnBoxComponentOverlapped(UPrimitiveComponent* Overlapp
 	}
 }
 
-void APMTriggerableActor::OnBoxComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void APMTriggerableActor::OnTriggerComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (CanBeTriggerBy(OtherActor))
 	{

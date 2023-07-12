@@ -18,7 +18,6 @@ class PLATFORMERMAKER_API APMBullet : public AActor
 	
 	/**************************** MEMBERS ******************************/
 protected:	
-
 	UPROPERTY(VisibleAnywhere, Category = "Bullet|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> m_root;
 
@@ -37,7 +36,16 @@ protected:
 	virtual void BulletBeginPlay();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void BindTriggerComponentEvent();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintCallable)
+	virtual void OnHit(AActor* HitActor, UPrimitiveComponent* HitComponent, const FHitResult& SweepResult);
+
+	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnHit"))
+	void ReceiveOnHit(AActor* HitActor, UPrimitiveComponent* HitComponent, const FHitResult& SweepResult);
 
 public:
 	APMBullet(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

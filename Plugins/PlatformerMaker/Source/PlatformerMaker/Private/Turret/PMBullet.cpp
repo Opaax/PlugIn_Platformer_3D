@@ -40,17 +40,27 @@ void APMBullet::BeginPlay()
 
 void APMBullet::BulletBeginPlay()
 {
-	m_trigger->OnComponentBeginOverlap.AddDynamic(this, &APMBullet::OnBoxComponentOverlapped);
+	BindTriggerComponentEvent();
 }
 
-void APMBullet::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void APMBullet::BindTriggerComponentEvent()
+{
+	m_trigger->OnComponentBeginOverlap.AddDynamic(this, &APMBullet::OnComponentOverlapped);
+}
+
+void APMBullet::OnComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(m_trigger->OnComponentBeginOverlap.IsBound())
-		m_trigger->OnComponentBeginOverlap.RemoveDynamic(this, &APMBullet::OnBoxComponentOverlapped);
+		m_trigger->OnComponentBeginOverlap.RemoveDynamic(this, &APMBullet::OnComponentOverlapped);
 
-	//Hit
+	OnHit(OtherActor, OtherComp, SweepResult);
 
 	Destroy();
+}
+
+void APMBullet::OnHit(AActor* HitActor, UPrimitiveComponent* HitComponent, const FHitResult& SweepResult)
+{
+	ReceiveOnHit(HitActor, HitComponent, SweepResult);
 }
 
 // Called every frame

@@ -45,16 +45,17 @@ void APMTurret::ListenPerceptionComponentEvent()
 
 void APMTurret::OnPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 {
-	//Check perception
-	//Check valid actor
-	//Check Valid Sight actor
-	//Call On Sight
-
+	//Check if the Stimulus is positif
+	// Success mean 'a new actor stimulate the component'
 	if (Stimulus.WasSuccessfullySensed())
 	{
 		//Add the new actor on the on sight list
 		AddActorOnSightList(Actor);
+
+		//Call back for bp
 		OnSight(Actor);
+
+		//Start time functions
 		StartLookAtTarget(Actor);
 		StartShoot();
 	}
@@ -63,7 +64,7 @@ void APMTurret::OnPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 		//Remove actor from on sight list
 		RemoveActorOnSightList(Actor);
 
-		//Call what ever there is no more actors on sight
+		//Callback for bp
 		OnOutSight(Actor);
 
 		//Find out new target to look at if any
@@ -71,7 +72,7 @@ void APMTurret::OnPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 		CheckForNewPriorityLookAtTarget();
 
 		//If there is no more look at actors
-		//Stop behavior
+		//Stop behavior, Stop time functions
 		if (!m_lookAtActor)
 		{
 			StopLookAtTarget();
@@ -82,6 +83,8 @@ void APMTurret::OnPerceptionUpdate(AActor* Actor, FAIStimulus Stimulus)
 
 void APMTurret::CheckPriorityLookAtTarget_Implementation(AActor* NewActor)
 {
+	//For the base plugin,
+	//Set the target only if the target is null
 	if (!m_lookAtActor && NewActor)
 	{
 		m_lookAtActor = NewActor;
@@ -90,6 +93,8 @@ void APMTurret::CheckPriorityLookAtTarget_Implementation(AActor* NewActor)
 
 void APMTurret::CheckForNewPriorityLookAtTarget_Implementation()
 {
+	//For the base plugin
+	//Set the first element of the list
 	if (m_actorsOnSight.Num() > 0)
 	{
 		m_lookAtActor = m_actorsOnSight[0];
@@ -102,7 +107,7 @@ void APMTurret::CheckForNewPriorityLookAtTarget_Implementation()
 
 void APMTurret::StartLookAtTarget(AActor* Target)
 {
-	if (IsValid(Target) && GetWorld())
+	if (IsValid(Target))
 	{
 		if (UWorld* lWorld = GetWorld())
 		{
@@ -112,7 +117,16 @@ void APMTurret::StartLookAtTarget(AActor* Target)
 
 			lWorld->GetTimerManager().SetTimer(m_lookAtTimerHandle, this, &APMTurret::LookAtTarget, lDeltaTime, true);
 		}
+		else
+		{
+			UE_LOG(LogPlatformerPlugin, Warning, TEXT("%s, World not valid"), *GetName());
+		}
 	}
+	else
+	{
+		UE_LOG(LogPlatformerPlugin, Warning, TEXT("%s, Start look target, but target is not valid"), *GetName());
+	}
+
 }
 
 void APMTurret::StartShoot()
@@ -146,6 +160,7 @@ void APMTurret::LookAtTarget()
 	if (IsValid(m_lookAtActor))
 	{
 		m_lookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), m_lookAtActor->GetActorLocation());
+
 		OnLookAtRotationComputed(m_lookAtRotation);
 	}
 }

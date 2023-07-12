@@ -17,7 +17,7 @@ class USceneComponent;
 * All inherited classe need to set it's trigger shape type
 */
 UCLASS()
-class PLATFORMERMAKER_API ATriggerableActor : public AActor
+class PLATFORMERMAKER_API APMTriggerableActor : public AActor
 {
 	GENERATED_BODY()
 
@@ -47,6 +47,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void BindTriggerComponentEvent();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void RemoveBindTriggerComponentEvent();
+
 	/*
 	* Custom begin play for trigger classes
 	*/
@@ -54,10 +57,10 @@ protected:
 	virtual void TriggerBeginPlay();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnTriggerComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	UFUNCTION(BlueprintCallable)
-	virtual void OnBoxComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	virtual void OnTriggerComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	virtual void OnTrigger(AActor* OtherTrigger);
 	virtual void OnOutTrigger(AActor* OtherTrigger);
@@ -69,7 +72,7 @@ protected:
 	void ReceiveOnOutTrigger(AActor* OtherTrigger);
 
 public:	
-	ATriggerableActor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	APMTriggerableActor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintCallable)
 	bool CanBeTriggerBy(AActor* OtherActor);

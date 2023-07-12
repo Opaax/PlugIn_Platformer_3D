@@ -13,7 +13,7 @@
  * Rename this class, it could be use as "ceilings" like spike start from ceiling
  */
 UCLASS()
-class PLATFORMERMAKER_API APMDamageFloor : public ATriggerableActor
+class PLATFORMERMAKER_API APMDamageFloor : public APMTriggerableActor
 {
 	GENERATED_BODY()
 

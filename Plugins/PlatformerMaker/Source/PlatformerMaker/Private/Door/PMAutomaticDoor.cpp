@@ -40,9 +40,11 @@ void APMAutomaticDoor::OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedC
 	{
 		switch (m_currentStateDoor)
 		{
+		case EPMDoorState::EDS_OnOpening:
 		case EPMDoorState::EDS_Open:
 			Close();
 			break;
+		case EPMDoorState::EDS_OnClosing:
 		case EPMDoorState::EDS_Close:
 		default:
 			Open();
@@ -58,9 +60,11 @@ void APMAutomaticDoor::OnBoxComponentEndOverlapped(UPrimitiveComponent* Overlapp
 		switch (m_currentStateDoor)
 		{
 		case EPMDoorState::EDS_Open:
+		case EPMDoorState::EDS_OnOpening:
 			Close();
 			break;
 		case EPMDoorState::EDS_Close:
+		case EPMDoorState::EDS_OnClosing:
 		default:
 			Open();
 			break;

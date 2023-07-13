@@ -91,7 +91,7 @@ protected:
 	*/
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadWrite, Category = "Turret|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "ActorsOnSight"))
 	TArray<AActor*> m_actorsOnSight;
-#pragma endregion All runtime variables
+#pragma endregion All Runtime variables
 
 		/**************************** FUNCTION ******************************/
 protected:
@@ -239,7 +239,7 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void RemoveActorOnSightList(AActor* RemoveActor);
 	virtual void RemoveActorOnSightList_Implementation(AActor* RemoveActor);
-#pragma endregion All Function overridable in blueprint
+#pragma endregion All function overridable in blueprint
 
 public:
 	APMTurret(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

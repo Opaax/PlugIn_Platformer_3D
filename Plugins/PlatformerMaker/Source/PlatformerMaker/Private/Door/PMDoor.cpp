@@ -19,6 +19,7 @@ void APMDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Custom begin play
 	DoorBeginPlay();
 }
 
@@ -34,6 +35,7 @@ void APMDoor::DoorBeginPlay()
 
 void APMDoor::CheckForStartState()
 {
+	//Switch on start state to determine if the door is open or close
 	switch (m_startStateDoor)
 	{
 	case EPMDoorStartState::EDSS_Open:
@@ -60,6 +62,8 @@ void APMDoor::OnFinishOpenDoor()
 	OnDoorOpenDelegate.Broadcast(this);
 
 	ReceiveOnFinishOpenDoor();
+
+	UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, The door finish as open"), *GetName());
 }
 
 void APMDoor::OnClose()
@@ -69,31 +73,39 @@ void APMDoor::OnClose()
 
 void APMDoor::OnFinishCloseDoor()
 {
+	//Set state as close
 	m_currentStateDoor = EPMDoorState::EDS_Close;
 
+	//call the delegate to notify listeners
 	OnDoorCloseDelegate.Broadcast(this);
 
+	//call bp event to notify the blueprint
 	ReceiveOnFinishCloseDoor();
+
+	UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, The door finish as close"), *GetName());
 }
 
 void APMDoor::Open()
 {
-	OnOpen();
-
+	//Set state as open on going
 	m_currentStateDoor = EPMDoorState::EDS_OnOpening;
 
+	//call the delegate to notify listeners
 	OnDoorOpeningDelegate.Broadcast(this);
+
+	//call bp event to notify blueprint
+	OnOpen();
 
 	UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, Door Open"), *GetName());
 }
 
 void APMDoor::Close()
 {
-	OnClose();
-
 	m_currentStateDoor = EPMDoorState::EDS_OnClosing;
 
 	OnDoorClosingDelegate.Broadcast(this);
+
+	OnClose();
 
 	UE_LOG(LogPlatformerPlugin, Error, TEXT("%s, Door Close"), *GetName());
 }

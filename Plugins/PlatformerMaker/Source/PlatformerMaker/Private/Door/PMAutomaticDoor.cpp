@@ -9,6 +9,7 @@
 
 APMAutomaticDoor::APMAutomaticDoor(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
+	//Create Trigger Component
 	m_triggerComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerComponent"));
 	m_triggerComponent->SetupAttachment(m_root);
 }

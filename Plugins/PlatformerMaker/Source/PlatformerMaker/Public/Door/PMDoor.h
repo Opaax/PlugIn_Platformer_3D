@@ -41,8 +41,8 @@ protected:
 	EPMDoorStartState m_startStateDoor = EPMDoorStartState::EDSS_Close;
 
 public:
-	/**************************** Delegate ******************************/
 
+#pragma region Delegate
 	/*
 	* Call when start Open()
 	*/
@@ -66,7 +66,7 @@ public:
 	*/
 	UPROPERTY(BlueprintAssignable, Category = Event)
 	FPMDoorEventSignature OnDoorCloseDelegate;
-	/**************************** End Delegate ******************************/
+#pragma endregion All Delegates
 
 	/**************************** FUNCTION ******************************/
 protected:
@@ -82,32 +82,55 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual void CheckForStartState();
 
-	/**************************** Open/Close ******************************/
-
+#pragma region Blueprint Events
 	/*
+	* Call when start to open
 	*/
+	UFUNCTION(BlueprintCallable, Category = Event)
 	virtual void OnOpen();
 
-	UFUNCTION(BlueprintCallable)
-	virtual void OnFinishOpenDoor();
-
+	/*
+	* Blueprint view
+	*/
 	UFUNCTION(BlueprintImplementableEvent, DisplayName = "OnOpen")
 	void ReceiveOnOpen();
 
+	/*
+	* Should be call when the door is open
+	*/
+	UFUNCTION(BlueprintCallable, Category = Event)
+	virtual void OnFinishOpenDoor();
+
+	/*
+	* Blueprint view
+	*/
 	UFUNCTION(BlueprintImplementableEvent, DisplayName = "OnFinishOpenDoor")
 	void ReceiveOnFinishOpenDoor();
 
+	/*
+	* Call when the door start to close
+	*/
+	UFUNCTION(BlueprintCallable, Category = Event)
 	virtual void OnClose();
 
-	UFUNCTION(BlueprintCallable)
-	virtual void OnFinishCloseDoor();
-
+	/*
+	* Blueprint view
+	*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnClose"))
 	void ReceiveOnClose();
 
+	/*
+	* Should be call when the door is close
+	*/
+	UFUNCTION(BlueprintCallable, Category = Event)
+	virtual void OnFinishCloseDoor();
+
+	/*
+	* Blueprint view
+	*/
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnFinishCloseDoor"))
 	void ReceiveOnFinishCloseDoor();
-	/**************************** End Open/Close ******************************/
+#pragma endregion All implementable event
 
 public:
 	APMDoor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -118,11 +141,13 @@ public:
 	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Door")
 	virtual void Close();
 
+#pragma region Getter Setter
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE EPMDoorState GetCurrentDoorState() const { return m_currentStateDoor; }
 
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentDoorState(EPMDoorState NewState) { m_currentStateDoor = NewState; }
+#pragma endregion all getter setter
 
 	/**************************** OVERRIDE ******************************/
 protected:

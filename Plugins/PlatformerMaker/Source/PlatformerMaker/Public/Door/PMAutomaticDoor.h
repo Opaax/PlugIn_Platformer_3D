@@ -22,6 +22,10 @@ class PLATFORMERMAKER_API APMAutomaticDoor : public APMDoor
 
 		/**************************** MEMBERS ******************************/
 protected:
+
+	/*
+	* The component that valid actors will cross to open/close
+	*/
 	UPROPERTY(VisibleAnywhere, Category = "Door|Component", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> m_triggerComponent;
 
@@ -34,18 +38,30 @@ protected:
 
 	/**************************** FUNCTION ******************************/
 protected:
+	/*
+	* Bind to trigger component overlap event
+	*/
 	UFUNCTION(BlueprintCallable)
 	virtual void BindTriggerComponentEvent();
 
+	/*
+	* Begin overlap callback
+	*/
 	UFUNCTION(BlueprintCallable)
 	virtual void OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	/*
+	* en overlap callback
+	*/
 	UFUNCTION(BlueprintCallable)
 	virtual void OnBoxComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	APMAutomaticDoor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	/*
+	* Check if the overlap actor is valid
+	*/
 	UFUNCTION(BlueprintCallable)
 	bool CanBeTriggerBy(AActor* OtherActor);
 

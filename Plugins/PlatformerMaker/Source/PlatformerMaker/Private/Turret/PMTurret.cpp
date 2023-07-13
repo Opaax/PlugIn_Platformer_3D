@@ -9,6 +9,8 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Perception/AISenseConfig.h"
+#include "Perception/AISense_Sight.h"
 
 APMTurret::APMTurret(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {

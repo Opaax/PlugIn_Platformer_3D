@@ -23,6 +23,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = Setting, meta = (AllowPrivateAccess = "true", DisplayName = "ClassToPlace"))
 	TSubclassOf<AActor> m_classToPlace;
+
+	UPROPERTY(EditAnywhere, Category = Setting, meta = (AllowPrivateAccess = "true", DisplayName = "ReplaceOnMoveFinished"))
+	bool bReplaceOnMoveFinished = false;
 	
 	UPROPERTY(EditAnywhere, Category = Setting, meta = (AllowPrivateAccess = "true", DisplayName = "NumberOfInstances", ClampMin = "0"))
 	int32 m_numberOfInstances = 10;
@@ -43,6 +46,9 @@ protected:
 
 	UFUNCTION()
 	virtual bool CanSpawnActors();
+
+	UFUNCTION(BlueprintCallable)
+	virtual void ReplaceSpawnedActors();
 
 	/*
 	* Override this to make your custom begin play for this actor
@@ -66,5 +72,6 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void PostEditUndo() override;
 	virtual void PostEditMove(bool bFinished) override;
+	virtual void PreEditUndo() override;
 #endif//WITH_EDITOR
 };

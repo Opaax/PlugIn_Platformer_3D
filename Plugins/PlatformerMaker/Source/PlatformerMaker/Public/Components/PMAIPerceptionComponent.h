@@ -15,7 +15,6 @@ class PLATFORMERMAKER_API UPMAIPerceptionComponent : public UAIPerceptionCompone
 	GENERATED_BODY()
 	
 protected:
-
 	virtual void OnRegister() override;
 
 };

@@ -27,14 +27,14 @@ public:
 	* Return the Sight angle from sense sight config
 	* 0 if not found
 	*/
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Getter")
 	virtual float GetSightAngle() const;
 
 	/*
 	* Return the Sight radius from sense sight config
 	* 0 if not found
 	*/
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Getter")
 	virtual float GetSightRadius() const;
 
 };

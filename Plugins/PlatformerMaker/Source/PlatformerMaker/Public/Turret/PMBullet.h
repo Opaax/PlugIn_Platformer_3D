@@ -21,25 +21,25 @@ protected:
 	/*
 	* The root Component, where all scene components will be attached
 	*/
-	UPROPERTY(VisibleAnywhere, Category = "Bullet|Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "PMBullet|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> m_root;
 
 	/*
 	* Trigger component.
 	*/
-	UPROPERTY(VisibleAnywhere, Category = "Bullet|Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "PMBullet|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USphereComponent> m_trigger;
 
 	/*
 	* The mesh of the bullet
 	*/
-	UPROPERTY(VisibleAnywhere, Category = "Bullet|Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "PMBullet|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> m_bulletMesh;
 
 	/*
 	* Movement behavior of the bullets
 	*/
-	UPROPERTY(VisibleAnywhere, Category = "Bullet|Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "PMBullet|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UProjectileMovementComponent> m_projectileMoveComp;
 
 	/**************************** FUNCTION ******************************/
@@ -48,31 +48,31 @@ protected:
 	/*
 	* Custom Beginplay called after Unreal Beginplay
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMBullet")
 	virtual void BulletBeginPlay();
 
 	/*
 	*Bind trigger component events
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMBullet")
 	virtual void BindTriggerComponentEvent();
 
 	/*
 	* Called back for OnBeginOverlap from Trigger Component
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMBullet")
 	virtual void OnComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	/*
 	* Event For blueprint
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Event")
 	virtual void OnHit(AActor* HitActor, UPrimitiveComponent* HitComponent, const FHitResult& SweepResult);
 
 	/*
 	* Blueprint view from OnHit
 	*/
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnHit"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event", meta = (DisplayName = "OnHit"))
 	void ReceiveOnHit(AActor* HitActor, UPrimitiveComponent* HitComponent, const FHitResult& SweepResult);
 
 public:

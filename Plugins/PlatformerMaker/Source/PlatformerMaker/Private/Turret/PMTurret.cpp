@@ -9,19 +9,11 @@
 //Unreal
 #include "Components/SceneComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+
+#if WITH_EDITOR
 #include "Perception/AISenseConfig.h"
 #include "Perception/AISense_Sight.h"
-
-void APMTurret::DrawSightView()
-{
-	if (IsValid(m_perceptionComponent) && GetWorld() && IsValid(this))
-	{
-		float lAngle = m_perceptionComponent->GetSightAngle();
-		float lRadius = m_perceptionComponent->GetSightRadius();
-
-		DrawDebugCone(GetWorld(), GetActorLocation(), GetActorForwardVector(), lRadius, FMath::Cos(lAngle), FMath::Cos(lAngle), 12, FColor::Red, false, 0.1f);
-	}
-}
+#endif
 
 APMTurret::APMTurret(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
@@ -291,3 +283,16 @@ void APMTurret::RemoveActorOnSightList_Implementation(AActor* RemoveActor)
 		}
 	}
 }
+
+#if WITH_EDITOR
+void APMTurret::DrawSightView()
+{
+	if (IsValid(m_perceptionComponent) && GetWorld() && IsValid(this))
+	{
+		float lAngle = m_perceptionComponent->GetSightAngle();
+		float lRadius = m_perceptionComponent->GetSightRadius();
+
+		DrawDebugCone(GetWorld(), GetActorLocation(), GetActorForwardVector(), lRadius, FMath::Cos(lAngle), FMath::Cos(lAngle), 12, FColor::Red, false, 0.1f);
+	}
+}
+#endif//WITH EDITOR

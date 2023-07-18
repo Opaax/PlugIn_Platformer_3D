@@ -44,40 +44,40 @@ public:
 	/**************************** FUNCTION ******************************/
 protected:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Triggerable")
 	virtual void BindTriggerComponentEvent();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Triggerable")
 	virtual void RemoveBindTriggerComponentEvent();
 
 	/*
 	* Custom begin play for trigger classes
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Triggerable")
 	virtual void TriggerBeginPlay();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "TriggerableCallback")
 	virtual void OnTriggerComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "TriggerableCallback")
 	virtual void OnTriggerComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	virtual void OnTrigger(AActor* OtherTrigger);
 	virtual void OnOutTrigger(AActor* OtherTrigger);
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnTrigger"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event", meta = (DisplayName = "OnTrigger"))
 	void ReceiveOnTrigger(AActor* OtherTrigger);
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnOutTrigger"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event", meta = (DisplayName = "OnOutTrigger"))
 	void ReceiveOnOutTrigger(AActor* OtherTrigger);
 
 public:	
 	APMTriggerableActor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Triggerable")
 	bool CanBeTriggerBy(AActor* OtherActor);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Getter")
 	FORCEINLINE UShapeComponent* GetTriggerComponent() const { return m_triggerComponent; }
 
 	/**************************** OVERRIDE ******************************/

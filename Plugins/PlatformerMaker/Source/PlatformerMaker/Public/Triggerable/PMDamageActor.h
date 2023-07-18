@@ -20,17 +20,17 @@ protected:
 	/*
 	* Base damage that floor will gave to actor that trigger the floor
 	*/
-	UPROPERTY(EditAnywhere, Category = "Damage", meta = (AllowPrivateAcess = "true", DisplayName = "BaseDamage"))
+	UPROPERTY(EditAnywhere, Category = "PMDamageActor|Setting", meta = (AllowPrivateAcess = "true", DisplayName = "BaseDamage"))
 	float m_baseDamage = 2.f;
 
 	/**************************** FUNCTION ******************************/
 protected:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMDamageActor")
 	virtual void DamageActor(AActor* DamageActor);
 
 	virtual void OnActorDamage(AActor* DamageActor);
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnActorDamage"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "PMDamageActor", meta = (DisplayName = "OnActorDamage"))
 	void ReceiveOnActorDamage(AActor* DamageActor);
 
 public:

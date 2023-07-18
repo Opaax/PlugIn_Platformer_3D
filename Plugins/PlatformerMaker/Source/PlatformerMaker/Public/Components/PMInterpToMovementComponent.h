@@ -18,10 +18,10 @@ class PLATFORMERMAKER_API UPMInterpToMovementComponent : public UInterpToMovemen
 	/**************************** FUNCTION ******************************/
 public:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMInterp")
 	void RestartForReverse();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMInterp")
 	void RestartForNormal();
 
 	/**************************** OVERRIDE ******************************/

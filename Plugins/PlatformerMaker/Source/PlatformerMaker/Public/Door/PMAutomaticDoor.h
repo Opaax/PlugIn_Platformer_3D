@@ -41,19 +41,19 @@ protected:
 	/*
 	* Bind to trigger component overlap event
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMAutomaticDoor")
 	virtual void BindTriggerComponentEvent();
 
 	/*
 	* Begin overlap callback
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMAutomaticDoorCallBack")
 	virtual void OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	/*
-	* en overlap callback
+	* end overlap callback
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMAutomaticDoorCallBack")
 	virtual void OnBoxComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
@@ -62,7 +62,7 @@ public:
 	/*
 	* Check if the overlap actor is valid
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMAutomaticDoor")
 	bool CanBeTriggerBy(AActor* OtherActor);
 
 	/**************************** OVERRIDE ******************************/

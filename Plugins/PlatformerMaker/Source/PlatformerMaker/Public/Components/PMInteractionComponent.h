@@ -38,37 +38,37 @@ public:
 public:	
 	UPMInteractionComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	virtual void StartInteraction();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	virtual void EnableInteraction();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	virtual void DisableInteraction();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	virtual void StopInteraction();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
 	void ReceiveStartInteraction();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
 	void ReceiveStopInteraction();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
 	void ReceiveEnableInteraction();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event")
 	void ReceiveDisableInteraction();
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Getter")
 	FORCEINLINE bool GetIsInteractable() const { return bInteractable; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure , Category = "Getter")
 	FORCEINLINE bool GetIsActivated() const { return bActivated; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Setter")
 	FORCEINLINE void SetActivated(bool NewActivated)
 	{ 
 		bActivated = NewActivated;

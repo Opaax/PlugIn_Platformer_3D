@@ -37,7 +37,7 @@ public:
 
 	static FName RotatingComponentName;
 
-	UPROPERTY(BlueprintAssignable, Category = Event)
+	UPROPERTY(BlueprintAssignable, Category = "PMCoin|Delegate")
 	FCoinEventSignature OnCoinTriggerDelegate;
 
 	/**************************** FUNCTION ******************************/
@@ -48,7 +48,7 @@ protected:
 	* Return the actor that trigger the coin in case some actor do other effect than get coin value
 	* Could be negative things
 	*/
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnCoinTrigger"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event", meta = (DisplayName = "OnCoinTrigger"))
 	void ReceiveOnCoinTrigger(int32 Coinvalue, AActor* TriggerBy);
 
 public:

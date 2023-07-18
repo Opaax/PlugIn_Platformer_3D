@@ -29,16 +29,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPMInterpToMovementComponent> m_interpToMovementComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting", meta = (AllowPrivateAccess = "true", DisplayName = "MoveDuration"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Platform|Setting", meta = (AllowPrivateAccess = "true", DisplayName = "MoveDuration"))
 	float m_moveDuration = 2.f;
 
 	/**************************** FUNCTIONS ******************************/
 protected:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMMovingPlatform")
 	virtual void SetInterpPoints();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMMovingPlatform")
 	virtual void FinalizeInterpComp();
 
 public:

@@ -73,13 +73,13 @@ protected:
 	/*
 	* Call after regular beginplay
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMDoor")
 	virtual void DoorBeginPlay();
 
 	/*
 	* Will determine at beginplay if the door is open or not
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMDoor")
 	virtual void CheckForStartState();
 
 #pragma region Blueprint Events
@@ -92,7 +92,7 @@ protected:
 	/*
 	* Blueprint view
 	*/
-	UFUNCTION(BlueprintImplementableEvent, DisplayName = "OnOpen")
+	UFUNCTION(BlueprintImplementableEvent, Category = Event, DisplayName = "OnOpen")
 	void ReceiveOnOpen();
 
 	/*
@@ -104,7 +104,7 @@ protected:
 	/*
 	* Blueprint view
 	*/
-	UFUNCTION(BlueprintImplementableEvent, DisplayName = "OnFinishOpenDoor")
+	UFUNCTION(BlueprintImplementableEvent, Category = Event, DisplayName = "OnFinishOpenDoor")
 	void ReceiveOnFinishOpenDoor();
 
 	/*
@@ -116,7 +116,7 @@ protected:
 	/*
 	* Blueprint view
 	*/
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnClose"))
+	UFUNCTION(BlueprintImplementableEvent, Category = Event, meta = (DisplayName = "OnClose"))
 	void ReceiveOnClose();
 
 	/*
@@ -128,24 +128,24 @@ protected:
 	/*
 	* Blueprint view
 	*/
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnFinishCloseDoor"))
+	UFUNCTION(BlueprintImplementableEvent, Category = Event, meta = (DisplayName = "OnFinishCloseDoor"))
 	void ReceiveOnFinishCloseDoor();
 #pragma endregion All implementable event
 
 public:
 	APMDoor(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Door")
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "PMDoor")
 	virtual void Open();
 
-	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Door")
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "PMDoor")
 	virtual void Close();
 
 #pragma region Getter Setter
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Getter")
 	FORCEINLINE EPMDoorState GetCurrentDoorState() const { return m_currentStateDoor; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Setter")
 	void SetCurrentDoorState(EPMDoorState NewState) { m_currentStateDoor = NewState; }
 #pragma endregion all getter setter
 

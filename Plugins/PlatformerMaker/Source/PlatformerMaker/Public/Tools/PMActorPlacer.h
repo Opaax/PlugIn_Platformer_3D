@@ -21,16 +21,16 @@ class PLATFORMERMAKER_API APMActorPlacer : public AActor
 	/**************************** MEMBERS ******************************/
 protected:
 
-	UPROPERTY(EditAnywhere, Category = Setting, meta = (AllowPrivateAccess = "true", DisplayName = "ClassToPlace"))
+	UPROPERTY(EditAnywhere, Category = "Placer|Setting", meta = (AllowPrivateAccess = "true", DisplayName = "ClassToPlace"))
 	TSubclassOf<AActor> m_classToPlace;
 
-	UPROPERTY(EditAnywhere, Category = Setting, meta = (AllowPrivateAccess = "true", DisplayName = "ReplaceOnMoveFinished"))
+	UPROPERTY(EditAnywhere, Category = "Placer|Setting", meta = (AllowPrivateAccess = "true", DisplayName = "ReplaceOnMoveFinished"))
 	bool bReplaceOnMoveFinished = false;
 	
-	UPROPERTY(EditAnywhere, Category = Setting, meta = (AllowPrivateAccess = "true", DisplayName = "NumberOfInstances", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, Category = "Placer|Setting", meta = (AllowPrivateAccess = "true", DisplayName = "NumberOfInstances", ClampMin = "0"))
 	int32 m_numberOfInstances = 10;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Debug, meta = (AllowPrivateAccess = "true", DisplayName = "ActorPlaced"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Placer|Debug", meta = (AllowPrivateAccess = "true", DisplayName = "ActorPlaced"))
 	TArray<AActor*> m_actorPlaced;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Component, meta = (AllowPrivateAccess = "true"))
@@ -41,19 +41,19 @@ protected:
 
 	/**************************** FUNCTION ******************************/
 protected:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMPlacer")
 	virtual void SpawnActor();
 
-	UFUNCTION()
+	UFUNCTION(Category = "Placer")
 	virtual bool CanSpawnActors();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMPlacer")
 	virtual void ReplaceSpawnedActors();
 
 	/*
 	* Override this to make your custom begin play for this actor
 	*/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMPlacer")
 	virtual void BeginPlayPlacer();
 
 public:	

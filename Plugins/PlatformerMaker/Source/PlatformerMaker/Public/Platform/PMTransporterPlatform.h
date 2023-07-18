@@ -21,7 +21,7 @@ class PLATFORMERMAKER_API APMTransporterPlatform : public APMMovingPlatform
 
 	/**************************** MEMBERS ******************************/
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Trigger", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, Category = "Component", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> m_triggerComponent;
 
 	/*
@@ -36,18 +36,18 @@ protected:
 
 	/**************************** FUNCTION ******************************/
 protected:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMTransporterPlatform")
 	virtual void OnBoxComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	virtual void OnPlatformTrigger();
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnPlatformTrigger"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "PMTransporterPlatform", meta = (DisplayName = "OnPlatformTrigger"))
 	void ReceiveOnPlatformTrigger();
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool CanTrigger(AActor* OtherActor);
 
-	UFUNCTION()
+	UFUNCTION(Category = "PMTransporterPlatform")
 	void OnInterpComponentStop(const FHitResult& ImpactResult, float Time);
 
 public:
@@ -55,7 +55,7 @@ public:
 
 	virtual void EnableMovingPlatform(bool NewEnable);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMTransporterPlatform")
 	virtual void BindBoxComponentEvent();
 
 	/**************************** OVERRIDE ******************************/

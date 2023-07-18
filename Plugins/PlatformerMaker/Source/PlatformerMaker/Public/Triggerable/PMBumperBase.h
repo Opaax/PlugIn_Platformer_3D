@@ -45,7 +45,7 @@ protected:
 
 public:
 
-	UPROPERTY(BlueprintAssignable, Category = Bumped)
+	UPROPERTY(BlueprintAssignable, Category = "Bumper|Delegate")
 	FBumpedEventSignature OnBumpedDelegate;
 
 	/**************************** FUNCTION ******************************/
@@ -57,7 +57,7 @@ protected:
 
 	virtual void OnBumped();
 
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "OnBumped"))
+	UFUNCTION(BlueprintImplementableEvent, Category = "Events", meta = (DisplayName = "OnBumped"))
 	void ReceiveOnBumped();
 
 	virtual void OnTriggerComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;

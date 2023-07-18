@@ -15,6 +15,7 @@ class PLATFORMERMAKER_API UPMInterpToMovementComponent : public UInterpToMovemen
 	GENERATED_BODY()
 
 	/**************************** MEMBERS ******************************/
+		//NO MEMBERS
 	/**************************** FUNCTION ******************************/
 public:
 

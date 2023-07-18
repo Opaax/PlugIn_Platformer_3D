@@ -6,6 +6,9 @@
 #include "GameFramework/Pawn.h"
 #include "PMTurret.generated.h"
 
+//PlugIn
+class UPMAIPerceptionComponent;
+
 //Unreal
 class UAIPerceptionComponent;
 class USceneComponent;
@@ -37,7 +40,7 @@ protected:
 	* The perception component
 	*/
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret|Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UAIPerceptionComponent> m_perceptionComponent;
+	TObjectPtr<UPMAIPerceptionComponent> m_perceptionComponent;
 
 	/*
 	* Where the bullet will spawn
@@ -241,6 +244,8 @@ protected:
 	virtual void RemoveActorOnSightList_Implementation(AActor* RemoveActor);
 #pragma endregion All function overridable in blueprint
 
+	UFUNCTION()
+	void DrawSightView();
 public:
 	APMTurret(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
@@ -250,4 +255,5 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+	virtual bool ShouldTickIfViewportsOnly() const override;
 };

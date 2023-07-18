@@ -7,7 +7,9 @@
 #include "PMAIPerceptionComponent.generated.h"
 
 /**
- * 
+ * I need to make a custom Perception to get data from this
+ * By default all the the data  is protected/private
+ * I write 2 getter for this
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class PLATFORMERMAKER_API UPMAIPerceptionComponent : public UAIPerceptionComponent
@@ -16,5 +18,23 @@ class PLATFORMERMAKER_API UPMAIPerceptionComponent : public UAIPerceptionCompone
 	
 protected:
 	virtual void OnRegister() override;
+
+public:
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	/*
+	* Return the Sight angle from sense sight config
+	* 0 if not found
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	virtual float GetSightAngle() const;
+
+	/*
+	* Return the Sight radius from sense sight config
+	* 0 if not found
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	virtual float GetSightRadius() const;
 
 };

@@ -4,17 +4,29 @@
 #include "Turret/PMTurret.h"
 #include "Turret/PMBullet.h"
 #include "PlatformerMaker.h"
+#include "Components/PMAIPerceptionComponent.h"
 
 //Unreal
-#include "Perception/AIPerceptionComponent.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Perception/AISenseConfig.h"
 #include "Perception/AISense_Sight.h"
 
+void APMTurret::DrawSightView()
+{
+	if (IsValid(m_perceptionComponent) && GetWorld() && IsValid(this))
+	{
+		float lAngle = m_perceptionComponent->GetSightAngle();
+		float lRadius = m_perceptionComponent->GetSightRadius();
+
+		DrawDebugCone(GetWorld(), GetActorLocation(), GetActorForwardVector(), lRadius, FMath::Cos(lAngle), FMath::Cos(lAngle), 12, FColor::Red, false, 0.1f);
+	}
+}
+
 APMTurret::APMTurret(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(m_root);
@@ -22,7 +34,7 @@ APMTurret::APMTurret(const FObjectInitializer& ObjectInitializer):Super(ObjectIn
 	m_spawnBulletPoint = CreateDefaultSubobject<USceneComponent>(TEXT("SpawnPoint"));
 	//m_spawnBulletPoint->SetupAttachment(m_root);
 
-	m_perceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
+	m_perceptionComponent = CreateDefaultSubobject<UPMAIPerceptionComponent>(TEXT("PerceptionComponent"));
 }
 
 void APMTurret::BeginPlay()
@@ -35,6 +47,19 @@ void APMTurret::BeginPlay()
 void APMTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+#if WITH_EDITOR
+	if (GetWorld())
+	{
+		if(!GetWorld()->IsGameWorld())
+			DrawSightView();
+	}
+#endif//Editor
+}
+
+bool APMTurret::ShouldTickIfViewportsOnly() const
+{
+	return true;
 }
 
 void APMTurret::ListenPerceptionComponentEvent()

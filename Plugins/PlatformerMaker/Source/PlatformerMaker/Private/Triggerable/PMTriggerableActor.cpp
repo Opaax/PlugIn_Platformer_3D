@@ -13,7 +13,6 @@ FName APMTriggerableActor::TriggerComponentName(TEXT("TriggerComponent"));
 
 /*
 * Set default values
-* Trigger component is a box by default
 */
 APMTriggerableActor::APMTriggerableActor(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {

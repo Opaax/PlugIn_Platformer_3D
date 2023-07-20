@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+//#include "GameFramework/Actor.h"
+#include "../Triggerable/PMDamageActor.h"
 #include "PMBullet.generated.h"
 
 class UStaticMeshComponent;
@@ -12,23 +13,12 @@ class UProjectileMovementComponent;
 class USphereComponent;
 
 UCLASS()
-class PLATFORMERMAKER_API APMBullet : public AActor
+class PLATFORMERMAKER_API APMBullet : public APMDamageActor
 {
 	GENERATED_BODY()
 	
 	/**************************** MEMBERS ******************************/
 protected:
-	/*
-	* The root Component, where all scene components will be attached
-	*/
-	UPROPERTY(VisibleAnywhere, Category = "PMBullet|Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USceneComponent> m_root;
-
-	/*
-	* Trigger component.
-	*/
-	UPROPERTY(VisibleAnywhere, Category = "PMBullet|Components", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USphereComponent> m_trigger;
 
 	/*
 	* The mesh of the bullet
@@ -44,25 +34,6 @@ protected:
 
 	/**************************** FUNCTION ******************************/
 protected:
-
-	/*
-	* Custom Beginplay called after Unreal Beginplay
-	*/
-	UFUNCTION(BlueprintCallable, Category = "PMBullet")
-	virtual void BulletBeginPlay();
-
-	/*
-	*Bind trigger component events
-	*/
-	UFUNCTION(BlueprintCallable, Category = "PMBullet")
-	virtual void BindTriggerComponentEvent();
-
-	/*
-	* Called back for OnBeginOverlap from Trigger Component
-	*/
-	UFUNCTION(BlueprintCallable, Category = "PMBullet")
-	virtual void OnComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
 	/*
 	* Event For blueprint
 	*/
@@ -82,7 +53,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void OnTriggerComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void BeginDestroy() override;
 };

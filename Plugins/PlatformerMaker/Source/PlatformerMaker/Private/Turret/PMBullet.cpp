@@ -8,17 +8,17 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
-APMBullet::APMBullet(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
+APMBullet::APMBullet(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer.SetDefaultSubobjectClass<USphereComponent>(TriggerComponentName))
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	//Create root and set it
-	m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	SetRootComponent(m_root);
+	////Create root and set it
+	//m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	//SetRootComponent(m_root);
 
-	//Create Trigger comp
-	m_trigger = CreateDefaultSubobject<USphereComponent>(TEXT("Trigger"));
-	m_trigger->SetupAttachment(m_root);
+	////Create Trigger comp
+	//m_trigger = CreateDefaultSubobject<USphereComponent>(TEXT("Trigger"));
+	//m_trigger->SetupAttachment(m_root);
 
 	//Create Mesh comp
 	m_bulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));
@@ -38,28 +38,16 @@ APMBullet::APMBullet(const FObjectInitializer& ObjectInitializer):Super(ObjectIn
 void APMBullet::BeginPlay()
 {
 	Super::BeginPlay();
-
-	BulletBeginPlay();
 }
 
-void APMBullet::BulletBeginPlay()
+void APMBullet::OnTriggerComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	BindTriggerComponentEvent();
-}
+	// the owner should be the turret
+	if (OtherActor == GetOwner()) return;
 
-void APMBullet::BindTriggerComponentEvent()
-{
-	m_trigger->OnComponentBeginOverlap.AddDynamic(this, &APMBullet::OnComponentOverlapped);
-}
-
-void APMBullet::OnComponentOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	//Remove listener from trigger
-	if(m_trigger->OnComponentBeginOverlap.IsBound())
-		m_trigger->OnComponentBeginOverlap.RemoveDynamic(this, &APMBullet::OnComponentOverlapped);
-
+	RemoveBindTriggerComponentEvent();
+	OnTrigger(OtherActor);
 	OnHit(OtherActor, OtherComp, SweepResult);
-
 	Destroy();
 }
 
@@ -71,5 +59,12 @@ void APMBullet::OnHit(AActor* HitActor, UPrimitiveComponent* HitComponent, const
 void APMBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void APMBullet::BeginDestroy()
+{
+	RemoveBindTriggerComponentEvent();
+
+	Super::BeginDestroy();
 }
 

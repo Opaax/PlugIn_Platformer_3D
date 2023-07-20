@@ -24,7 +24,7 @@ protected:
 	* base force that bumper while apply on character and actors
 	* if the overlapped actor is a character, consider that the bumper while launch character, otherwise will impulse on the root
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "BumperForce"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "BumperCharacterForce"))
 	float m_bumperForce = 2000.f;
 
 	/*
@@ -32,7 +32,7 @@ protected:
 	* The character is manage by it's movement component
 	* Actors by it's root component with physics enable
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "BumperForce"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "BumperActorForce"))
 	float m_bumperActorForceFactor = 100.f;
 
 	/**************************** End Settings ******************************/

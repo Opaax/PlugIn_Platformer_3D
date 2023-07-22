@@ -9,6 +9,7 @@
 //Unreal
 #include "Components/SceneComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "TimerManager.h"
 
 #if WITH_EDITOR
 #include "Perception/AISenseConfig.h"

@@ -3,7 +3,7 @@
 	"Version": 1,
 	"VersionName": "1.0",
 	"FriendlyName": "PlatformerMaker",
-	"Description": "some content asset to speed up proptotyping for 3D games",
+	"Description": "Some content asset to speed up proptotyping for 3D games",
 	"Category": "Other",
 	"CreatedBy": "Enguerran Cobert",
 	"CreatedByURL": "",
@@ -18,7 +18,8 @@
 		{
 			"Name": "PlatformerMaker",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [ "Win64", "Win32", "Mac" ]
 		}
 	]
 }

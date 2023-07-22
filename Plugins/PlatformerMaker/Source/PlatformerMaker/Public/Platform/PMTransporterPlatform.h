@@ -44,7 +44,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "PMTransporterPlatform", meta = (DisplayName = "OnPlatformTrigger"))
 	void ReceiveOnPlatformTrigger();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PMTransporterPlatform")
 	virtual bool CanTrigger(AActor* OtherActor);
 
 	UFUNCTION(Category = "PMTransporterPlatform")

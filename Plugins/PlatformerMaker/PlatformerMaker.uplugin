@@ -2,14 +2,14 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "PlatformerMaker",
+	"FriendlyName": "Platformer Maker",
 	"Description": "Some content asset to speed up proptotyping for 3D games",
-	"Category": "Other",
+	"Category": "Blueprint",
 	"CreatedBy": "Enguerran Cobert",
-	"CreatedByURL": "",
-	"DocsURL": "",
-	"MarketplaceURL": "",
-	"SupportURL": "",
+	"CreatedByURL": "https://ecobert.myportfolio.com/home",
+	"DocsURL": "https://docs.google.com/document/d/1r_UC-YYqa7B5qvbaMzt4BNNO8NNb3kQBHd8pATapr9Y/edit?usp=sharing",
+	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/",
+	"SupportURL": "https://discord.gg/U9c7Svpe",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
@@ -19,7 +19,7 @@
 			"Name": "PlatformerMaker",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
-			"PlatformAllowList": [ "Win64", "Win32", "Mac" ]
+			"PlatformAllowList": [ "Win64", "Mac" ]
 		}
 	]
 }

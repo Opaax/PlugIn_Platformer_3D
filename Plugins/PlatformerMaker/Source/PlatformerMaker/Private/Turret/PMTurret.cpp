@@ -1,5 +1,4 @@
-// Copyright Enguerran COBERT, Inc. All Rights Reserved.
-
+// 2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 #include "Turret/PMTurret.h"
 #include "Turret/PMBullet.h"

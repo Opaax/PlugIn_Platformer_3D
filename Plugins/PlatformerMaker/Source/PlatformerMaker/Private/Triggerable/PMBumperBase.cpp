@@ -1,5 +1,4 @@
-// Copyright Enguerran COBERT, All Rights Reserved.
-
+// 2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 #include "../Public/Triggerable/PMBumperBase.h"
 #include "PlatformerMaker.h"

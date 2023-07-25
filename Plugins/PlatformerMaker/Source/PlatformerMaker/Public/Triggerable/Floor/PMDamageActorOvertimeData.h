@@ -1,3 +1,5 @@
+// 2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
+
 #pragma once
 
 #include "CoreMinimal.h"

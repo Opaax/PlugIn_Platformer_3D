@@ -1,5 +1,4 @@
-// Copyright Enguerran COBERT, Inc. All Rights Reserved.
-
+// 2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 #include "Platform/PMMovingPlatform.h"
 #include "../../Public/Components/PMInterpToMovementComponent.h"

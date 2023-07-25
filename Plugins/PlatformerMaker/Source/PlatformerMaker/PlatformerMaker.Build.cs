@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// 2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
 

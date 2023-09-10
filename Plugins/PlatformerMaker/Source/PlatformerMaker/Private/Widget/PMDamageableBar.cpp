@@ -17,7 +17,6 @@ void UPMDamageableBar::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
-	m_animationSpeed = 10.f;
 	SetImageMaterial();
 }
 

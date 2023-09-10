@@ -11,6 +11,8 @@ UPMLifeComponent::UPMLifeComponent(const FObjectInitializer& ObjectInitializer):
 void UPMLifeComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	m_currentLife = bStartWithMaxLife ? m_maxLife : m_startLife;
 }
 
 void UPMLifeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

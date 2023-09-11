@@ -68,7 +68,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Damageable")
 	void SetBarMaterialParameters(const float TopProgress, const float BottomProgress);
 
-	UFUNCTION(BlueprintCallablel, Category = "Damageable")
+	UFUNCTION(BlueprintCallable, Category = "Damageable")
 	void SetInitialProgressValues(const float TopProgress, const float BottomProgress);
 
 	UFUNCTION(BlueprintCallable, Category = "Damageable")

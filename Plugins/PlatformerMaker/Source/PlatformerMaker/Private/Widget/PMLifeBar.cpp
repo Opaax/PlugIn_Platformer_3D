@@ -1,6 +1,5 @@
 // 2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
-
 #include "Widget/PMLifeBar.h"
 #include "Widget/PMDamageableBar.h"
 

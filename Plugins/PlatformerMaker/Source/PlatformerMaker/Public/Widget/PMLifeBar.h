@@ -26,10 +26,10 @@ protected:
 	float m_currentLife = 100;
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Life, meta = (BindWidget))
 	TObjectPtr<UPMDamageableBar> LifeBar;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (BindWidget))
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Life, meta = (BindWidget))
 	TObjectPtr<UOverlay> OverlayContainer;
 
 	/**************************** FUNCTION ******************************/
@@ -47,9 +47,5 @@ public:
 	* @LifeRatio: value between 0 - 1
 	*/
 	UFUNCTION(BlueprintCallable, Category = "LifeBar")
-	void UpdateLife(const float NextLife, const float LifeRatio);
-
-	/**************************** OVERRIDE ******************************/
-protected:
-	
+	void UpdateLife(const float NextLife, const float LifeRatio);	
 };

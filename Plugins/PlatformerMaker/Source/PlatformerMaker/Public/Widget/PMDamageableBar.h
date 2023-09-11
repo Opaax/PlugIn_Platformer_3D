@@ -58,22 +58,20 @@ public:
 
 	/**************************** FUNCTIONS ******************************/
 protected:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Damageable")
 	void SetImageMaterial();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Damageable")
 	void AnimLifeBar(const float DeltaTime);
 
 public:
-	//(const FObjectInitializer& ObjectInitializer);
-
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Damageable")
 	void SetBarMaterialParameters(const float TopProgress, const float BottomProgress);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallablel, Category = "Damageable")
 	void SetInitialProgressValues(const float TopProgress, const float BottomProgress);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Damageable")
 	FORCEINLINE void SetTopProgress(const float NextProgress) { m_topProgress = NextProgress; }
 
 	/**************************** OVERRIDE ******************************/
@@ -82,5 +80,4 @@ protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime);
-
 };

@@ -1,4 +1,4 @@
-// Copyright Enguerran COBERT, Inc. All Rights Reserved.
+//2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 
 #include "Widget/PMDamageableBar.h"
@@ -8,10 +8,6 @@
 #include "Materials/MaterialInstance.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Components/Image.h"
-
-//UPMDamageableBar::UPMDamageableBar(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
-//{
-//}
 
 void UPMDamageableBar::NativePreConstruct()
 {

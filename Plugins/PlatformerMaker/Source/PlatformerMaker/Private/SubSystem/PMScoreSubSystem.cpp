@@ -14,7 +14,7 @@ void UPMScoreSubSystem::AddScore_Implementation(int32 AddScore)
 {
 	m_currentScore += AddScore;
 
-	UE_LOG(LogTemp, Warning, TEXT("Current Score %d"), m_currentScore);
+	UE_LOG(LogTemp, Log, TEXT("Current Score %d"), m_currentScore);
 
 	OnScoreUpdated.Broadcast(m_currentScore);
 }
@@ -22,6 +22,8 @@ void UPMScoreSubSystem::AddScore_Implementation(int32 AddScore)
 void UPMScoreSubSystem::RemoveScore_Implementation(int32 RemoveScore)
 {
 	m_currentScore = FMath::Clamp(m_currentScore -= RemoveScore, 0, TNumericLimits<int32>::Max());
+
+	UE_LOG(LogTemp, Log, TEXT("Current Score %d"), m_currentScore);
 
 	OnScoreUpdated.Broadcast(m_currentScore);
 }
@@ -36,7 +38,6 @@ bool UPMScoreSubSystem::ShouldCreateSubsystem(UObject* Outer) const
 
 	return Super::ShouldCreateSubsystem(Outer);
 }
-
 void UPMScoreSubSystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
@@ -61,6 +62,11 @@ void UPMScoreSubSystem::Deinitialize()
 
 	//Unregister some cmd
 #if WITH_EDITOR
+	if (m_cmdSubScore.Num() < 1)
+	{
+		return;
+	}
+
 	for (auto& CmdConsole : m_cmdSubScore)
 	{
 		if (CmdConsole != nullptr)

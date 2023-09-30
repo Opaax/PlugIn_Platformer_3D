@@ -22,16 +22,16 @@ class PLATFORMERMAKER_API UPMDamageableBar : public UUserWidget
 	
 	/**************************** MEMBERS ******************************/
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damageable|Setting", meta = (DisplayName = "DamageableMaterial"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damageable|Setting", meta = (DisplayName = "DamageableMaterial"))
 	TObjectPtr<UMaterialInstance> m_damageableMaterial;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damageable|Setting", meta = (DisplayName = "TopProgressParameterName"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damageable|Setting", meta = (DisplayName = "TopProgressParameterName"))
 	FName m_topProgressParameterName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damageable|Setting", meta = (DisplayName = "BottomProgressParameterName"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Damageable|Setting", meta = (DisplayName = "BottomProgressParameterName"))
 	FName m_bottomProgressParameterName;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damageable|Setting", meta = (DisplayName = "AnimationSpeed"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damageable|Setting", meta = (DisplayName = "AnimationSpeed"))
 	float m_animationSpeed;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, BlueprintSetter = SetTopProgress, Category = "Damageable|Runtime", meta = (DisplayName = "TopProgress"))

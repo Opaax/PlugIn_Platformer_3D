@@ -13,7 +13,9 @@ UPMLifeComponent::UPMLifeComponent(const FObjectInitializer& ObjectInitializer):
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
+#if WITH_EDITORONLY_DATA
 	bRegisterConsoleFunctions = true;
+#endif
 }
 
 void UPMLifeComponent::BeginPlay()

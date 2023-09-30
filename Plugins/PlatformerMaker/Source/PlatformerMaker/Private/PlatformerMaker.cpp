@@ -1,7 +1,7 @@
 // 2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 #include "PlatformerMaker.h"
-#include "ISettingsModule.h"
+#include "Developer/Settings/Public/ISettingsModule.h"
 #include "Settings/PlatformerMaker_Settings.h"
 
 #define LOCTEXT_NAMESPACE "FPlatformerMakerModule"

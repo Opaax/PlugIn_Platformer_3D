@@ -32,6 +32,15 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Life|Runtime", BlueprintGetter = "GetCurrentLife", meta = (DisplayName = "CurrentLife"))
 	float m_currentLife;
 
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Life|Debug", meta = (DisplayName = "RegisterConsoleFunctions"))
+	bool bRegisterConsoleFunctions;
+#endif
+
+#if WITH_EDITOR
+	TArray<IConsoleObject*> m_cmdFunctions;
+#endif
+
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Life|Delegate")
 	FLifeComponentSignature OnNoMoreLife;
@@ -40,6 +49,20 @@ public:
 	FLifeUpdateSignature OnLifeUpdated;
 
 	/**************************** FUNCTIONS ******************************/
+protected:
+#if WITH_EDITOR
+	UFUNCTION(BlueprintCallable, Category = "Life|Console")
+	virtual void RegisterCMDFunctions();
+
+	UFUNCTION(BlueprintCallable, Category = "Life|Console")
+	virtual void UnregisterCMDFunctions();
+
+	UFUNCTION(Category = "Life|Console")
+	void DebugRemoveLife(const TArray<FString>& Args);
+
+	UFUNCTION(Category = "Life|Console")
+	void DebugAddLife(const TArray<FString>& Args);
+#endif
 
 public:
 	UPMLifeComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -94,4 +117,7 @@ protected:
 
 public:	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	virtual void OnRegister() override;
+	virtual void OnUnregister() override;
 };

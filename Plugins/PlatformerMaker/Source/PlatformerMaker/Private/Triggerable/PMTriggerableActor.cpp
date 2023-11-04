@@ -60,7 +60,7 @@ void APMTriggerableActor::BindTriggerComponentEvent()
 
 void APMTriggerableActor::RemoveBindTriggerComponentEvent()
 {
-	if (m_triggerComponent)
+	if (m_triggerComponent != nullptr)
 	{
 		if(m_triggerComponent->OnComponentBeginOverlap.IsBound())
 			m_triggerComponent->OnComponentBeginOverlap.RemoveAll(this);

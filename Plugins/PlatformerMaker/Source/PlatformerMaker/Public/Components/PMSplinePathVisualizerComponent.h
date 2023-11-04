@@ -13,7 +13,7 @@ class USplineComponent;
 * Component to visualize the path of the spline while playing
 */
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PLATFORM_PLUGIN_API UPMSplinePathVisualizerComponent : public USceneComponent
+class PLATFORMERMAKER_API UPMSplinePathVisualizerComponent : public USceneComponent
 {
 	GENERATED_BODY()
 

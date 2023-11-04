@@ -1,7 +1,7 @@
 // Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 
-#include "PMSplinePathVisualizerComponent.h"
+#include "Components/PMSplinePathVisualizerComponent.h"
 
 #if WITH_EDITOR
 #include "Utils/DebugMacro.h"
@@ -19,6 +19,8 @@ UPMSplinePathVisualizerComponent::UPMSplinePathVisualizerComponent(const FObject
 	PrimaryComponentTick.bCanEverTick = false;
 
 	m_distanceBetweenPoints = 100.f;
+
+	m_meshInstanceScale = FVector(1,1,1);
 }
 
 void UPMSplinePathVisualizerComponent::BeginPlay()
@@ -35,9 +37,9 @@ void UPMSplinePathVisualizerComponent::SetupMeshVisualization_Implementation()
 		m_meshVisualization->ClearInstances();
 
 		const float& lLength = m_splineInOwner->GetSplineLength();
-		const int32 lNumDots = FMath::RoundToInt32(lLength / m_distanceBetweenPoints);
+		const int32 lNumDots = FMath::RoundToInt32(lLength / m_distanceBetweenPoints) + 1;
 
-		float lCurrentDist = m_distanceBetweenPoints;
+		float lCurrentDist = 0;
 		FVector lCurrentLoc = FVector();
 		FTransform lTrans = FTransform();
 
@@ -50,10 +52,6 @@ void UPMSplinePathVisualizerComponent::SetupMeshVisualization_Implementation()
 			m_meshVisualization->SetCustomDataValue(i,0, lCurrentDist / lLength);
 
 			lCurrentDist += m_distanceBetweenPoints;
-
-#if WITH_EDITOR
-			DRAW_SPHERE_AT(lCurrentLoc, 5.f);
-#endif
 		}
 
 		m_meshVisualization->SetCollisionEnabled(ECollisionEnabled::NoCollision);

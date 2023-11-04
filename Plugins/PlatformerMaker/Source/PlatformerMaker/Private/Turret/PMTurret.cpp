@@ -215,7 +215,7 @@ void APMTurret::SpawnBullet()
 {
 	if (UWorld* lWorld = GetWorld())
 	{
-		if (m_spawnBulletPoint)
+		if (m_spawnBulletPoint != nullptr)
 		{
 			const FTransform& lTrans = 
 				FTransform(

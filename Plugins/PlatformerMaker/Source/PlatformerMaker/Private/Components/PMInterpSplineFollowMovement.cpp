@@ -5,18 +5,21 @@
 #include "PlatformerMaker.h"
 
 //Unreal
-
+#include "Components/SplineComponent.h"
 
 const float UPMInterpSplineFollowMovement::MIN_TICK_TIME = 0.0002f;
 
 UPMInterpSplineFollowMovement::UPMInterpSplineFollowMovement(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
+	PrimaryComponentTick.bCanEverTick = true;
+
 	bUpdateOnlyIfRendered = false;
 	bForceSubStepping = false;
 
 	bWantsInitializeComponent = true;
 	bAutoRegisterPhysicsVolumeUpdates = false;
 	bComponentShouldUpdatePhysicsVolume = false;
+	m_teleportType = ETeleportType::None;
 
 	MaxSimulationTimeStep = 0.05f;
 	//MaxSimulationIterations = 8;
@@ -29,17 +32,34 @@ UPMInterpSplineFollowMovement::UPMInterpSplineFollowMovement(const FObjectInitia
 	//bPointsFinalized = false;
 }
 
+void UPMInterpSplineFollowMovement::SetSpline(USplineComponent* InSpline)
+{
+	m_splineTarget = InSpline;
+
+	if (m_splineTarget == nullptr || !IsValid(UpdatedComponent))
+	{
+		return;
+	}
+
+	const FVector& lStartLoc = m_splineTarget->GetLocationAtSplineInputKey(0, ESplineCoordinateSpace::World);
+
+	UpdatedComponent->SetWorldLocation(lStartLoc);
+}
+
 void UPMInterpSplineFollowMovement::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (!CanBeginUpdateMovement(DeltaTime)) 
 	{
+		UE_LOG(LogPlatformerPlugin, Error, TEXT("Can't begin Update movement"));
+
 		return;
 	}
 
 	float lRemainingTime = DeltaTime;
 	int32 lIterations = 0;
+	FHitResult lHit(1.f);
 
 	while (lRemainingTime >= MIN_TICK_TIME && (lIterations < MaxSimulationIterations) && IsValid(GetOwner()) && UpdatedComponent != nullptr && IsActive())
 	{
@@ -49,7 +69,7 @@ void UPMInterpSplineFollowMovement::TickComponent(float DeltaTime, ELevelTick Ti
 		lRemainingTime -= lTimeTick;
 
 		// Calculate the current alpha with this tick iteration
-		const float lTargetTime = FMath::Clamp(m_currentTime + ((lTimeTick * m_timeMultiplier) * m_currentDirection), 0.0f, 1.0f);
+		const float lTargetTime = FMath::Clamp(m_currentTime + ((lTimeTick * m_timeMultiplier) * m_currentDirection), 0.0f, m_duration);
 		FVector MoveDelta = ComputeMoveDelta(lTargetTime);
 
 		// Update velocity
@@ -58,6 +78,16 @@ void UPMInterpSplineFollowMovement::TickComponent(float DeltaTime, ELevelTick Ti
 		// Update the rotation on the spline if required
 		FRotator CurrentRotation = UpdatedComponent->GetComponentRotation(); //-V595
 
+		// Update current time
+		float lAlphaRemainder = 0.0f;
+
+		// Compute time used out of tick time to get to the hit
+		const float TimeDeltaAtHit = lTimeTick * lHit.Time;
+
+		m_currentTime = CalculateNewTime(m_currentTime, TimeDeltaAtHit, lHit, true, bStopped, lAlphaRemainder);
+
+		MoveUpdatedComponent(MoveDelta, CurrentRotation, bSweep, &lHit, m_teleportType);
+	}
 		// Move the component
 	//	if ((bPauseOnImpact == false) && (BehaviourType != EInterpToBehaviourType::OneShot))
 	//	{
@@ -227,7 +257,7 @@ bool UPMInterpSplineFollowMovement::CheckStillInWorld()
 
 bool UPMInterpSplineFollowMovement::ShouldUseSubStepping() const
 {
-	return bForceSubStepping;
+	return (bool)bForceSubStepping;
 }
 
 float UPMInterpSplineFollowMovement::GetSimulationTimeStep(float RemainingTime, int32 Iterations) const
@@ -241,7 +271,8 @@ float UPMInterpSplineFollowMovement::GetSimulationTimeStep(float RemainingTime, 
 		}
 		else
 		{
-			// If this is the last iteration, just use all the remaining time. This is usually better than cutting things short, as the simulation won't move far enough otherwise.
+			// If this is the last iteration, just use all the remaining time. 
+			// This is usually better than cutting things short, as the simulation won't move far enough otherwise.
 			// Print a throttled warning.
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 			static uint32 s_WarningCount = 0;
@@ -262,5 +293,29 @@ FVector UPMInterpSplineFollowMovement::ComputeMoveDelta(float Time) const
 	FVector lMoveDelta = FVector::ZeroVector;
 	FVector lNewPosition = FVector::ZeroVector;
 
+	//Cache Current Update Comp
+	const FVector& lCurrentPosition = UpdatedComponent->GetComponentLocation();
+	//Compute next alpha 
+	float lAlpha = FMath::Clamp(Time / m_duration, 0.f, 1.f);
+	//Compute spline Alpha
+	float lAlphaSpline = FMath::Lerp(0.f, 1.f, lAlpha);
+
+	lNewPosition = m_splineTarget->GetLocationAtTime(lAlphaSpline, ESplineCoordinateSpace::World);
+	lMoveDelta = lNewPosition - lCurrentPosition;
+
 	return lMoveDelta;
+}
+
+float UPMInterpSplineFollowMovement::CalculateNewTime(float TimeNow, float Delta, FHitResult& HitResult, bool InBroadcastEvent, bool& OutStopped, float& OutTimeRemainder)
+{
+	float lNewTime = TimeNow;
+
+	lNewTime += ((Delta * m_timeMultiplier) * m_currentDirection);
+
+	if (lNewTime >= m_duration)
+	{
+		lNewTime = 0;
+	}
+	
+	return lNewTime;
 }

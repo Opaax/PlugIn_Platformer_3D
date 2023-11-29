@@ -14,7 +14,7 @@ class USplineComponent;
 UCLASS(ClassGroup = Movement, meta = (BlueprintSpawnableComponent), HideCategories = Velocity)
 class PLATFORMERMAKER_API UPMInterpSplineFollowMovement : public UMovementComponent
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
 	
 	/**************************** STATICS ******************************/
 protected:
@@ -60,7 +60,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Simulation")
 	uint8 bForceSubStepping;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PM|Refs")
+	/** Physics teleport type. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Behaviour)
+	ETeleportType m_teleportType = ETeleportType::None;
+
+	/** If true, will sweep for blocking collision during movement. If false, it will simply teleport to the next position and ignore collision. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Behaviour)
+	bool bSweep = true;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, BlueprintGetter = "GetSpline", BlueprintSetter = "SetSpline", Category = "PM|Refs")
 	TObjectPtr<USplineComponent> m_splineTarget;
 
 	float TotalDistance;
@@ -71,6 +79,9 @@ protected:
 	int32 m_currentDirection;
 
 	FVector StartLocation;
+
+	/* Have we stopped (because we hit something, or reached the end of the cycle */
+	bool bStopped;
 	/**************************** FUNCTION ******************************/
 protected:
 
@@ -108,8 +119,17 @@ protected:
 	/** Compute the distance for the given time. */
 	virtual FVector ComputeMoveDelta(float Time) const;
 
+	/* Calculate the new current time */
+	virtual float CalculateNewTime(float TimeNow, float Delta, FHitResult& HitResult, bool InBroadcastEvent, bool& OutStopped, float& OutTimeRemainder);
+
 public:
 	UPMInterpSplineFollowMovement(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE USplineComponent* GetSpline() const { return m_splineTarget; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetSpline(USplineComponent* InSpline);
 	/**************************** OVERRIDE ******************************/
 protected:
 	//Begin UActorComponent Interface

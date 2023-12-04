@@ -312,9 +312,33 @@ float UPMInterpSplineFollowMovement::CalculateNewTime(float TimeNow, float Delta
 
 	lNewTime += ((Delta * m_timeMultiplier) * m_currentDirection);
 
-	if (lNewTime >= m_duration)
+	switch (m_movementType)
 	{
-		lNewTime = 0;
+	case EPMInterpSplineFollowMovement::EIFM_OneShoot:
+		if (lNewTime >= m_duration)
+		{
+			lNewTime = m_duration;
+		}
+		break;
+	case EPMInterpSplineFollowMovement::EIFM_LoopRestart:
+		if (lNewTime >= m_duration)
+		{
+			lNewTime = 0;
+		}
+		break;
+	case EPMInterpSplineFollowMovement::EIFM_PingPongLoop:
+		if (lNewTime >= m_duration)
+		{
+			lNewTime = m_duration;
+			m_currentDirection = -1;
+		}
+		else if (lNewTime < 0) {
+			lNewTime = 0;
+			m_currentDirection = 1;
+		}
+		break;
+	default:
+		break;
 	}
 	
 	return lNewTime;

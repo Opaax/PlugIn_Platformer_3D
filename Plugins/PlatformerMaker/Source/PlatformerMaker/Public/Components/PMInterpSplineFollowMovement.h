@@ -8,6 +8,14 @@
 
 class USplineComponent;
 
+UENUM()
+enum class EPMInterpSplineFollowMovement : uint8
+{
+	EIFM_OneShoot UMETA(DisplayName = "One Shoot"),
+	EIFM_LoopRestart UMETA(DisplayName = "Loop Restart"),
+	EIFM_PingPongLoop UMETA(DisplayName = "Ping Pong Loop"),
+};
+
 /**
  * Move the root component along a spline over a given time
  */
@@ -30,6 +38,10 @@ protected:
 	/* User to  aplly some time dilatation*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Setting", meta = (UIMin = 0.1f, ClampMin = 0.1f, DisplayName = "TimeMultiplier"))
 	float m_timeMultiplier;
+
+	/* The behavior that the component will be moved*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Setting", meta = (DisplayName = "MovementType"))
+	EPMInterpSplineFollowMovement m_movementType;
 
 	/**
 	 * Max number of iterations used for each discrete simulation step.

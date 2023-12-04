@@ -40,8 +40,8 @@ protected:
 	float m_timeMultiplier;
 
 	/* The behavior that the component will be moved*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Setting", meta = (DisplayName = "MovementType"))
-	EPMInterpSplineFollowMovement m_movementType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Setting", meta = (DisplayName = "BehaviorType"))
+	EPMInterpSplineFollowMovement m_behaviorType;
 
 	/**
 	 * Max number of iterations used for each discrete simulation step.
@@ -80,6 +80,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Behaviour)
 	bool bSweep = true;
 
+	/** If true, will pause movement on impact. If false it will behave as if the end of the movement range was reached based on the BehaviourType. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Behaviour)
+	uint8 bPauseOnImpact;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, BlueprintGetter = "GetSpline", BlueprintSetter = "SetSpline", Category = "PM|Refs")
 	TObjectPtr<USplineComponent> m_splineTarget;
 
@@ -91,6 +95,9 @@ protected:
 	int32 m_currentDirection;
 
 	FVector StartLocation;
+
+	/* Have we hit something and are waiting for it to move to carry on moving */
+	bool bIsWaiting;
 
 	/* Have we stopped (because we hit something, or reached the end of the cycle */
 	bool bStopped;
@@ -128,12 +135,21 @@ protected:
 	 */
 	float GetSimulationTimeStep(float RemainingTime, int32 Iterations) const;
 
+	/** @return true if the simulation should stop. */
+	bool HandleHitWall(const FHitResult& Hit, float TimeTick, const FVector& MoveDelta);
+
+	/** Deal with an impact. Change direction, stop etc depending on the current behaviour setting. */
+	virtual void HandleImpact(const FHitResult& Hit, float TimeSlice = 0.f, const FVector& MoveDelta = FVector::ZeroVector) override;
+
 	/** Compute the distance for the given time. */
 	virtual FVector ComputeMoveDelta(float Time) const;
 
 	/* Calculate the new current time */
 	virtual float CalculateNewTime(float TimeNow, float Delta, FHitResult& HitResult, bool InBroadcastEvent, bool& OutStopped, float& OutTimeRemainder);
 
+	/** Clears the reference to UpdatedComponent, fires stop event, and stops ticking. */
+	UFUNCTION(BlueprintCallable, Category = "Game|Components|InterpSplineMovement")
+	void StopSimulating();
 public:
 	UPMInterpSplineFollowMovement(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

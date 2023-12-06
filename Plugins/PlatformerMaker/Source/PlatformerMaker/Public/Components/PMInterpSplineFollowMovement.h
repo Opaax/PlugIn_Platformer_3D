@@ -73,28 +73,25 @@ protected:
 	uint8 bForceSubStepping;
 
 	/** Physics teleport type. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Behaviour)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Behaviour")
 	ETeleportType m_teleportType = ETeleportType::None;
 
 	/** If true, will sweep for blocking collision during movement. If false, it will simply teleport to the next position and ignore collision. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Behaviour)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Behaviour")
 	bool bSweep = true;
 
 	/** If true, will pause movement on impact. If false it will behave as if the end of the movement range was reached based on the BehaviourType. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Behaviour)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Behaviour")
 	uint8 bPauseOnImpact;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, BlueprintGetter = "GetSpline", BlueprintSetter = "SetSpline", Category = "PM|Refs")
 	TObjectPtr<USplineComponent> m_splineTarget;
 
-	float TotalDistance;
-
 	/* Current position on spline */
 	float m_currentTime;
-
+	
+	/*The current direction on the spline*/
 	int32 m_currentDirection;
-
-	FVector StartLocation;
 
 	/* Have we hit something and are waiting for it to move to carry on moving */
 	bool bIsWaiting;
@@ -150,6 +147,12 @@ protected:
 	/** Clears the reference to UpdatedComponent, fires stop event, and stops ticking. */
 	UFUNCTION(BlueprintCallable, Category = "Game|Components|InterpSplineMovement")
 	void StopSimulating();
+
+#if WITH_EDITOR
+	UFUNCTION()
+	void CheckOwnerRootComp();
+#endif
+
 public:
 	UPMInterpSplineFollowMovement(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

@@ -6,6 +6,7 @@
 
 //Unreal
 #include "Components/SplineComponent.h"
+#include "Components/ShapeComponent.h"
 
 const float UPMInterpSplineFollowMovement::MIN_TICK_TIME = 0.0002f;
 
@@ -22,9 +23,9 @@ UPMInterpSplineFollowMovement::UPMInterpSplineFollowMovement(const FObjectInitia
 	m_teleportType = ETeleportType::None;
 
 	MaxSimulationTimeStep = 0.05f;
-	//MaxSimulationIterations = 8;
+	MaxSimulationIterations = 8;
 
-	//bIsWaiting = false;
+	bIsWaiting = false;
 	m_timeMultiplier = 1.0f;
 	m_duration = 5.f;
 	m_currentDirection = 1;
@@ -77,7 +78,7 @@ void UPMInterpSplineFollowMovement::TickComponent(float DeltaTime, ELevelTick Ti
 		Velocity = lMoveDelta / lTimeTick;
 
 		// Update the rotation on the spline if required
-		FRotator lCurrentRotation = UpdatedComponent->GetComponentRotation(); //-V595
+		FRotator lCurrentRotation = UpdatedComponent->GetComponentRotation();
 
 		// Move the component
 		if ((bPauseOnImpact == false) && (m_behaviorType != EPMInterpSplineFollowMovement::EIFM_OneShoot))
@@ -162,6 +163,10 @@ void UPMInterpSplineFollowMovement::TickComponent(float DeltaTime, ELevelTick Ti
 void UPMInterpSplineFollowMovement::BeginPlay()
 {
 	Super::BeginPlay();
+
+#if WITH_EDITOR
+	CheckOwnerRootComp();
+#endif
 }
 
 void UPMInterpSplineFollowMovement::StopMovementImmediately()
@@ -309,6 +314,7 @@ float UPMInterpSplineFollowMovement::CalculateNewTime(float TimeNow, float Delta
 		if (lNewTime >= m_duration)
 		{
 			lNewTime = m_duration;
+			bStopped = true;
 		}
 		break;
 	case EPMInterpSplineFollowMovement::EIFM_LoopRestart:
@@ -390,5 +396,15 @@ void UPMInterpSplineFollowMovement::StopSimulating()
 {
 	SetUpdatedComponent(nullptr);
 	Velocity = FVector::ZeroVector;
+	bStopped = true;
 	//OnInterpToStop.Broadcast(HitResult, CurrentTime);
+}
+
+void UPMInterpSplineFollowMovement::CheckOwnerRootComp()
+{
+	if (IsValid(GetOwner()) && IsValid(GetOwner()->GetRootComponent())) {
+		if (!GetOwner()->GetRootComponent()->IsA(UShapeComponent::StaticClass()) && bPauseOnImpact) {
+			UE_LOG(LogPlatformerPlugin, Warning, TEXT("%s, its owner:%s, hasn't a shape component as root comp. This may handle impact not right"), *GetNameSafe(this), *GetNameSafe(GetOwner()));
+		}
+	}
 }

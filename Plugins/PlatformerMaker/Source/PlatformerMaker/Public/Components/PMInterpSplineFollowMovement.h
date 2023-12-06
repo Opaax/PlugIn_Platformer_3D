@@ -1,4 +1,4 @@
-// Copyright Enguerran COBERT, Inc. All Rights Reserved.
+//2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -151,15 +151,15 @@ protected:
 #if WITH_EDITOR
 	UFUNCTION()
 	void CheckOwnerRootComp();
-#endif
+#endif //WITH_EDITOR
 
 public:
 	UPMInterpSplineFollowMovement(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "PM|Getter")
 	FORCEINLINE USplineComponent* GetSpline() const { return m_splineTarget; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PM|Setter")
 	void SetSpline(USplineComponent* InSpline);
 	/**************************** OVERRIDE ******************************/
 protected:

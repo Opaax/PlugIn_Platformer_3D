@@ -43,6 +43,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Setting", meta = (DisplayName = "BehaviorType"))
 	EPMInterpSplineFollowMovement m_behaviorType;
 
+	/* rotate the component on spline rotation*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Setting", meta = (DisplayName = "UseSplineRotation"))
+	bool bUseSplineRotation;
+
 	/**
 	 * Max number of iterations used for each discrete simulation step.
 	 * Increasing this value can address issues with fast-moving objects or complex collision scenarios, at the cost of performance.
@@ -140,6 +144,9 @@ protected:
 
 	/** Compute the distance for the given time. */
 	virtual FVector ComputeMoveDelta(float Time) const;
+
+	/*Compute the rotation for given time*/
+	virtual FRotator ComputeRotationDelta(float Time) const;
 
 	/* Calculate the new current time */
 	virtual float CalculateNewTime(float TimeNow, float Delta, FHitResult& HitResult, bool InBroadcastEvent, bool& OutStopped, float& OutTimeRemainder);

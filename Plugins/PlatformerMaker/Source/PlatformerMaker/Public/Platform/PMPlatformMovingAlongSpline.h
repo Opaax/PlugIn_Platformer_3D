@@ -38,10 +38,24 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	virtual void OnConstruction(const FTransform& Transform);
+
 #if WITH_EDITOR
+	FDelegateHandle m_editSplineActorMoveHandle;
+
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	virtual void PostEditUndo() override;
 	virtual void PostEditMove(bool bFinished) override;
 	virtual void PreEditUndo() override;
+
+	void ReplaceOnSplineEdit();
+
+	void BindSplineActorEditMove();
+
+	void UnbindSplineActorEditMove();
+
+	UFUNCTION()
+	void OnSplineActorMoved(AActor* MovedActor);
 #endif//WITH_EDITOR
 };

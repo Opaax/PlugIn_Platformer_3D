@@ -29,6 +29,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "PM|SplineActor")
 	void CheckDestroyAtBeginPlay();
 
+public:
 	UFUNCTION(BlueprintCallable, Category = "PM|Getter")
 	FORCEINLINE USplineComponent* GetSplineComponent() const { return m_splineComp; }
 

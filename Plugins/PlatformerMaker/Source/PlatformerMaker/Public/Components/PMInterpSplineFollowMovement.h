@@ -156,7 +156,7 @@ protected:
 	void StopSimulating();
 
 #if WITH_EDITOR
-	UFUNCTION()
+	UFUNCTION(Category = "Editor")
 	void CheckOwnerRootComp();
 #endif //WITH_EDITOR
 

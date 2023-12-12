@@ -28,10 +28,10 @@ protected:
 	/**************************** FUNCTION ******************************/
 protected:
 public:
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SplineFollow")
 	FORCEINLINE APMSplineActor* GetSplineActor() const { return m_splineActor; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "SplineFollow")
 	FORCEINLINE UPMInterpSplineFollowMovement* GetInterpSplineFollowComp() const { return m_interpSplineFollowComp; }
 
 	/**************************** OVERRIDE ******************************/
@@ -55,7 +55,7 @@ public:
 
 	void UnbindSplineActorEditMove();
 
-	UFUNCTION()
+	UFUNCTION(Category = "Editor")
 	void OnSplineActorMoved(AActor* MovedActor);
 #endif//WITH_EDITOR
 };

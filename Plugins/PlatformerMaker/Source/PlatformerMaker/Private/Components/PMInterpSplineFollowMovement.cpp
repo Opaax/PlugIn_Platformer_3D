@@ -8,6 +8,7 @@
 //Unreal
 #include "Components/SplineComponent.h"
 #include "Components/ShapeComponent.h"
+#include "GameFramework/WorldSettings.h"
 
 const float UPMInterpSplineFollowMovement::MIN_TICK_TIME = 0.0002f;
 
@@ -428,6 +429,7 @@ void UPMInterpSplineFollowMovement::StopSimulating()
 	//OnInterpToStop.Broadcast(HitResult, CurrentTime);
 }
 
+#if WITH_EDITOR
 void UPMInterpSplineFollowMovement::CheckOwnerRootComp()
 {
 	if (IsValid(GetOwner()) && IsValid(GetOwner()->GetRootComponent())) {
@@ -436,3 +438,4 @@ void UPMInterpSplineFollowMovement::CheckOwnerRootComp()
 		}
 	}
 }
+#endif // WITH_EDITOR

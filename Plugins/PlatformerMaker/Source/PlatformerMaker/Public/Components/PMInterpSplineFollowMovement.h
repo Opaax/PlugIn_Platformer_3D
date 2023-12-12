@@ -1,4 +1,4 @@
-// Copyright Enguerran COBERT, Inc. All Rights Reserved.
+//2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -42,6 +42,10 @@ protected:
 	/* The behavior that the component will be moved*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Setting", meta = (DisplayName = "BehaviorType"))
 	EPMInterpSplineFollowMovement m_behaviorType;
+
+	/* rotate the component on spline rotation*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PM|Setting", meta = (DisplayName = "UseSplineRotation"))
+	bool bUseSplineRotation;
 
 	/**
 	 * Max number of iterations used for each discrete simulation step.
@@ -141,6 +145,9 @@ protected:
 	/** Compute the distance for the given time. */
 	virtual FVector ComputeMoveDelta(float Time) const;
 
+	/*Compute the rotation for given time*/
+	virtual FRotator ComputeRotationDelta(float Time) const;
+
 	/* Calculate the new current time */
 	virtual float CalculateNewTime(float TimeNow, float Delta, FHitResult& HitResult, bool InBroadcastEvent, bool& OutStopped, float& OutTimeRemainder);
 
@@ -149,17 +156,17 @@ protected:
 	void StopSimulating();
 
 #if WITH_EDITOR
-	UFUNCTION()
+	UFUNCTION(Category = "Editor")
 	void CheckOwnerRootComp();
-#endif
+#endif //WITH_EDITOR
 
 public:
 	UPMInterpSplineFollowMovement(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "PM|Getter")
 	FORCEINLINE USplineComponent* GetSpline() const { return m_splineTarget; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "PM|Setter")
 	void SetSpline(USplineComponent* InSpline);
 	/**************************** OVERRIDE ******************************/
 protected:

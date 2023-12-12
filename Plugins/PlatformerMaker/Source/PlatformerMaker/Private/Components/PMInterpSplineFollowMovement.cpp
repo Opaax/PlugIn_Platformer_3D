@@ -1,8 +1,9 @@
-// Copyright Enguerran COBERT, Inc. All Rights Reserved.
+//2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 
 #include "Components/PMInterpSplineFollowMovement.h"
 #include "PlatformerMaker.h"
+#include "Utils/DebugMacro.h"
 
 //Unreal
 #include "Components/SplineComponent.h"
@@ -31,6 +32,7 @@ UPMInterpSplineFollowMovement::UPMInterpSplineFollowMovement(const FObjectInitia
 	m_currentDirection = 1;
 	bStopped = false;
 	bPauseOnImpact = true;
+	bUseSplineRotation = false;
 }
 
 void UPMInterpSplineFollowMovement::SetSpline(USplineComponent* InSpline)
@@ -79,6 +81,10 @@ void UPMInterpSplineFollowMovement::TickComponent(float DeltaTime, ELevelTick Ti
 
 		// Update the rotation on the spline if required
 		FRotator lCurrentRotation = UpdatedComponent->GetComponentRotation();
+
+		if (bUseSplineRotation) {
+			lCurrentRotation = ComputeRotationDelta(lTargetTime);
+		}
 
 		// Move the component
 		if ((bPauseOnImpact == false) && (m_behaviorType != EPMInterpSplineFollowMovement::EIFM_OneShoot))
@@ -186,6 +192,10 @@ bool UPMInterpSplineFollowMovement::CanBeginUpdateMovement(const float& DeltaTim
 
 	if (!lOwner || !CheckStillInWorld())
 	{
+		return false;
+	}
+
+	if (bStopped) {
 		return false;
 	}
 
@@ -300,6 +310,24 @@ FVector UPMInterpSplineFollowMovement::ComputeMoveDelta(float Time) const
 	lMoveDelta = lNewPosition - lCurrentPosition;
 
 	return lMoveDelta;
+}
+
+FRotator UPMInterpSplineFollowMovement::ComputeRotationDelta(float Time) const
+{
+	FRotator lRotDelta = FRotator();
+	FRotator lNewRot = FRotator();
+
+	//Cache Current Update Comp
+	const FRotator& lCurrentRot = UpdatedComponent->GetComponentRotation();
+	//Compute next alpha 
+	float lAlpha = FMath::Clamp(Time / m_duration, 0.f, 1.f);
+	//Compute spline Alpha
+	float lAlphaSpline = FMath::Lerp(0.f, 1.f, lAlpha);
+
+	lNewRot = m_splineTarget->GetRotationAtTime(lAlphaSpline, ESplineCoordinateSpace::World);
+	lRotDelta = lNewRot;
+
+	return lRotDelta;
 }
 
 float UPMInterpSplineFollowMovement::CalculateNewTime(float TimeNow, float Delta, FHitResult& HitResult, bool InBroadcastEvent, bool& OutStopped, float& OutTimeRemainder)

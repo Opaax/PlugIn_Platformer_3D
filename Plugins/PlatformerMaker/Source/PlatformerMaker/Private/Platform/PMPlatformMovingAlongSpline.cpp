@@ -91,8 +91,6 @@ void APMPlatformMovingAlongSpline::ReplaceOnSplineEdit()
 void APMPlatformMovingAlongSpline::BindSplineActorEditMove()
 {
 	if (!GEngine->OnActorMoved().IsBoundToObject(this)) {
-		DEBUG_ERROR(TEXT("Bind"));
-
 		m_editSplineActorMoveHandle = GEngine->OnActorMoved().AddUObject(this, &APMPlatformMovingAlongSpline::OnSplineActorMoved);
 	}
 }
@@ -100,8 +98,6 @@ void APMPlatformMovingAlongSpline::BindSplineActorEditMove()
 void APMPlatformMovingAlongSpline::UnbindSplineActorEditMove()
 {
 	if (GEngine->OnActorMoved().IsBoundToObject(this)) {
-		DEBUG_ERROR(TEXT("Unbind"));
-
 		GEngine->OnActorMoved().Remove(m_editSplineActorMoveHandle);
 	}
 }
@@ -109,7 +105,7 @@ void APMPlatformMovingAlongSpline::UnbindSplineActorEditMove()
 void APMPlatformMovingAlongSpline::OnSplineActorMoved(AActor* MovedActor)
 {
 	if (m_splineActor == nullptr || MovedActor == nullptr) {
-		DEBUG_ERROR(TEXT("Looks like the platform as its spline actor set to null ptr. Set it to consider replacing on spline actor"));
+		DEBUG_ERROR(TEXT("%s, Looks like the platform as its spline actor set to null ptr. Set it to consider replacing on spline actor"), *GetNameSafe(this));
 		return;
 	}
 

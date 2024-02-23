@@ -38,7 +38,8 @@ public class PlatformerMaker : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"AIModule"
+				"AIModule",
+                "EnhancedInput"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

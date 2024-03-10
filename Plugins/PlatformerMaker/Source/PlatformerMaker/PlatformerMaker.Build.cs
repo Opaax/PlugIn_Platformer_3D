@@ -25,7 +25,7 @@ public class PlatformerMaker : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core", "UMG",
+				"Core", "UMG","EnhancedInput","GameplayTags"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -39,7 +39,8 @@ public class PlatformerMaker : ModuleRules
 				"Slate",
 				"SlateCore",
 				"AIModule",
-                "EnhancedInput"
+                "EnhancedInput",
+				"ModularGameplay"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

@@ -3,6 +3,8 @@
 
 #include "Demo/PM_CharacterDemo.h"
 #include "Demo/PM_PlayerControllerDemo.h"
+#include "Demo/Components/PM_PlayableInputCompDemo.h"
+#include "Utils/DebugMacro.h"
 
 //Unreal
 #include "Components/CapsuleComponent.h"
@@ -39,9 +41,7 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 	bUseControllerRotationRoll = false;
 	bUseControllerRotationYaw = false;
 
-	m_defaultInputMappingContextPriority = 0;
-	m_defaultInputMappingContext = nullptr;
-	bAutoAddMappingContext = true;
+	m_playableInputComp = CreateDefaultSubobject<UPM_PlayableInputCompDemo>(TEXT("PlayableInputComp"));
 
 	// Structure to hold one-time initialization
 	struct FConstructorStaticsDemoCharacter
@@ -72,6 +72,22 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 #endif // WITH_EDITORONLY_DATA
 }
 
+void APM_CharacterDemo::Input_Movement(const FInputActionValue& InputActionValue)
+{
+	const FVector2D Value = InputActionValue.Get<FVector2D>();
+	const FRotator MovementRotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
+
+	if (Value.X != 0.0f) {
+		const FVector MovementDirection = MovementRotation.RotateVector(FVector::RightVector);
+		AddMovementInput(MovementDirection, Value.X);
+	}
+
+	if (Value.Y != 0.0f) {
+		const FVector MovementDirection = MovementRotation.RotateVector(FVector::ForwardVector);
+		AddMovementInput(MovementDirection, Value.Y);
+	}
+}
+
 void APM_CharacterDemo::BeginPlay()
 {
 	Super::BeginPlay();
@@ -81,13 +97,11 @@ void APM_CharacterDemo::BeginPlay()
 void APM_CharacterDemo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void APM_CharacterDemo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 void APM_CharacterDemo::PossessedBy(AController* NewController)
@@ -95,13 +109,29 @@ void APM_CharacterDemo::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	m_pmController = Cast<APM_PlayerControllerDemo>(NewController);
+	
+	if (m_pmController) {
+		m_pmController->SetDemoCharacter(this);
+	}
+}
+
+void APM_CharacterDemo::PawnClientRestart()
+{
+	Super::PawnClientRestart();
 
 	CheckAutoAddMappingContext();
 }
 
+void APM_CharacterDemo::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
+{
+	DEBUG_LOG(TEXT("Add Movement Input"));
+
+	Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
+}
+
 void APM_CharacterDemo::CheckAutoAddMappingContext()
 {
-	if (bAutoAddMappingContext && IsValid(m_pmController)) {
-		m_pmController->AddInputMappingContext(m_defaultInputMappingContext, m_defaultInputMappingContextPriority);
-	}
+	check(m_playableInputComp);
+
+	m_playableInputComp->InitializePlayerInput(m_pmController);
 }

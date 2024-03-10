@@ -10,11 +10,13 @@
 
 //PM Plugin
 class APM_PlayerControllerDemo;
+class UPM_PlayableInputCompDemo;
 
 //Unreal
 class UCapsuleComponent;
 class UInputMappingContext;
 class UArrowComponent;
+
 
 /* 
 * Custom Pawn for the Demo for the plugin 'Platformer Maker'
@@ -29,17 +31,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintGetter = "GetCapsuleComponent", meta = (AllowPrivateAccess = "True"))
 	TObjectPtr<UCapsuleComponent> m_capsuleComponent;
 
-	UPROPERTY(EditDefaultsOnly,Category = "PM|Input", BlueprintGetter = "GetDefaultInputMappingContext", meta = (DisplayName = "DefaultInputMappingContext"))
-	TObjectPtr<UInputMappingContext> m_defaultInputMappingContext;
-
-	UPROPERTY(EditDefaultsOnly, Category = "PM|Input", BlueprintGetter = "GetDefaultInputMappingContextPriority", meta = (DisplayName = "DefaultInputMappingContextPriority"))
-	int32 m_defaultInputMappingContextPriority;
-
-	UPROPERTY(EditDefaultsOnly, Category = "PM|Input", meta = (DisplayName = "bAutoAddMappingContext"))
-	bool bAutoAddMappingContext;
-
 	UPROPERTY(VisibleInstanceOnly, Category = " PM|Runtime",BlueprintGetter = "GetPlayerControllerDemo", meta = (DisplayName = "bAutoAddMappingContext"))
 	TObjectPtr<APM_PlayerControllerDemo> m_pmController;
+
+	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "GetPlayableInputComp")
+	TObjectPtr<UPM_PlayableInputCompDemo> m_playableInputComp;
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY()
@@ -57,19 +53,19 @@ private:
 public:
 	APM_CharacterDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION()
+	void Input_Movement(const FInputActionValue& InputActionValue);
+
 	/*---------------------------------- GETTER / SETTER ----------------------------------*/
 public:
 	UFUNCTION(BlueprintPure, BlueprintCallable)
 	FORCEINLINE UCapsuleComponent* GetCapsuleComponent() const { return m_capsuleComponent; }
 
 	UFUNCTION(BlueprintPure, BlueprintCallable)
-	FORCEINLINE UInputMappingContext* GetDefaultInputMappingContext() const { return m_defaultInputMappingContext; }
-
-	UFUNCTION(BlueprintPure, BlueprintCallable)
-	FORCEINLINE int32 GetDefaultInputMappingContextPriority() const { return m_defaultInputMappingContextPriority; }
-
-	UFUNCTION(BlueprintPure, BlueprintCallable)
 	FORCEINLINE APM_PlayerControllerDemo* GetPlayerControllerDemo() const { return m_pmController; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE UPM_PlayableInputCompDemo* GetPlayableInputComp() const { return m_playableInputComp; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 #pragma region Pawn_Override
@@ -80,5 +76,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void PawnClientRestart() override;
+	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 #pragma endregion Pawn_Override
 };

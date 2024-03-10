@@ -13,6 +13,7 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/Controller.h"
+#include "AbilitySystemComponent.h"
 
 #if WITH_EDITORONLY_DATA
 #include "Components/ArrowComponent.h"
@@ -42,6 +43,7 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 	bUseControllerRotationYaw = false;
 
 	m_playableInputComp = CreateDefaultSubobject<UPM_PlayableInputCompDemo>(TEXT("PlayableInputComp"));
+	m_abilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComp"));
 
 	// Structure to hold one-time initialization
 	struct FConstructorStaticsDemoCharacter
@@ -127,6 +129,47 @@ void APM_CharacterDemo::AddMovementInput(FVector WorldDirection, float ScaleValu
 	DEBUG_LOG(TEXT("Add Movement Input"));
 
 	Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
+}
+
+void APM_CharacterDemo::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	if (IsValid(m_abilitySystemComp)) {
+		m_abilitySystemComp->GetOwnedGameplayTags(TagContainer);
+	}
+
+	TagContainer = FGameplayTagContainer();
+}
+
+bool APM_CharacterDemo::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
+{
+	if (IsValid(m_abilitySystemComp)) {
+		return m_abilitySystemComp->HasMatchingGameplayTag(TagToCheck);
+	}
+
+	return false;
+}
+
+bool APM_CharacterDemo::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	if (IsValid(m_abilitySystemComp)) {
+		return m_abilitySystemComp->HasAllMatchingGameplayTags(TagContainer);
+	}
+
+	return false;
+}
+
+bool APM_CharacterDemo::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	if (IsValid(m_abilitySystemComp)) {
+		return m_abilitySystemComp->HasAnyMatchingGameplayTags(TagContainer);
+	}
+
+	return false;
+}
+
+UAbilitySystemComponent* APM_CharacterDemo::GetAbilitySystemComponent() const
+{
+	return GetAbilitySystemComp();
 }
 
 void APM_CharacterDemo::CheckAutoAddMappingContext()

@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GameplayTagAssetInterface.h"
+#include "AbilitySystemInterface.h"
 #include "PM_CharacterDemo.generated.h"
 
 //Forward
@@ -16,13 +18,14 @@ class UPM_PlayableInputCompDemo;
 class UCapsuleComponent;
 class UInputMappingContext;
 class UArrowComponent;
+class UAbilitySystemComponent;
 
 
 /* 
 * Custom Pawn for the Demo for the plugin 'Platformer Maker'
 */
 UCLASS(Config=DemoGame)
-class PLATFORMERMAKER_API APM_CharacterDemo : public APawn
+class PLATFORMERMAKER_API APM_CharacterDemo : public APawn, public IGameplayTagAssetInterface, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -36,6 +39,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "GetPlayableInputComp")
 	TObjectPtr<UPM_PlayableInputCompDemo> m_playableInputComp;
+
+	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "GetAbilitySystemComp")
+	TObjectPtr<UAbilitySystemComponent> m_abilitySystemComp;
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY()
@@ -67,6 +73,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE UPM_PlayableInputCompDemo* GetPlayableInputComp() const { return m_playableInputComp; }
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE UAbilitySystemComponent* GetAbilitySystemComp() const { return m_abilitySystemComp; }
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 #pragma region Pawn_Override
 protected:
@@ -79,4 +87,15 @@ public:
 	virtual void PawnClientRestart() override;
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 #pragma endregion Pawn_Override
+
+#pragma region Tag_Interface_Override
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+#pragma endregion Tag_Interface_Override
+
+#pragma region Ability_Interface_Override
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+#pragma endregion Ability_Interface_Override
 };

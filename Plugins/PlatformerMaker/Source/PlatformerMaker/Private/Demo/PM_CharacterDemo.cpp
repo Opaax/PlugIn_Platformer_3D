@@ -4,6 +4,7 @@
 #include "Demo/PM_CharacterDemo.h"
 #include "Demo/PM_PlayerControllerDemo.h"
 #include "Demo/Components/PM_PlayableInputCompDemo.h"
+#include "Demo/Components/PM_CharacterMovementDemo.h"
 #include "Utils/DebugMacro.h"
 
 //Unreal
@@ -24,6 +25,7 @@
 DEFINE_LOG_CATEGORY_STATIC(LogCharacterDemo, Log, All);
 
 FName APM_CharacterDemo::CapsuleComponentName(TEXT("CapsuleComponent"));
+FName APM_CharacterDemo::CharacterMovementComponentName(TEXT("CharacterMovement"));
 
 APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
@@ -44,7 +46,8 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 
 	m_playableInputComp = CreateDefaultSubobject<UPM_PlayableInputCompDemo>(TEXT("PlayableInputComp"));
 	m_abilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComp"));
-
+	m_characterMovement = CreateDefaultSubobject<UPM_CharacterMovementDemo>(CharacterMovementComponentName);
+	
 	// Structure to hold one-time initialization
 	struct FConstructorStaticsDemoCharacter
 	{
@@ -129,6 +132,11 @@ void APM_CharacterDemo::AddMovementInput(FVector WorldDirection, float ScaleValu
 	DEBUG_LOG(TEXT("Add Movement Input"));
 
 	Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
+}
+
+UPawnMovementComponent* APM_CharacterDemo::GetMovementComponent() const
+{
+	return m_characterMovement;
 }
 
 void APM_CharacterDemo::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const

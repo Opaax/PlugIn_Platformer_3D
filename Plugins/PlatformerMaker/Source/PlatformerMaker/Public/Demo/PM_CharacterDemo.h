@@ -13,6 +13,7 @@
 //PM Plugin
 class APM_PlayerControllerDemo;
 class UPM_PlayableInputCompDemo;
+class UPM_CharacterMovementDemo;
 
 //Unreal
 class UCapsuleComponent;
@@ -43,6 +44,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "GetAbilitySystemComp")
 	TObjectPtr<UAbilitySystemComponent> m_abilitySystemComp;
 
+	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "CharacterMovement")
+	TObjectPtr<UPM_CharacterMovementDemo> m_characterMovement;
+
 #if WITH_EDITORONLY_DATA
 	UPROPERTY()
 	TObjectPtr<UArrowComponent> m_arrowComponent;
@@ -50,6 +54,7 @@ private:
 
 public:
 	static FName CapsuleComponentName;
+	static FName CharacterMovementComponentName;
 
 	/*---------------------------------- FUNCTION ----------------------------------*/
 private:
@@ -75,6 +80,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE UAbilitySystemComponent* GetAbilitySystemComp() const { return m_abilitySystemComp; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE UPM_CharacterMovementDemo* CharacterMovement() const { return m_characterMovement; }
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 #pragma region Pawn_Override
 protected:
@@ -86,6 +94,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void PawnClientRestart() override;
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
+
 #pragma endregion Pawn_Override
 
 #pragma region Tag_Interface_Override

@@ -62,8 +62,13 @@ struct FPMBrakingDemo {
 	GENERATED_USTRUCT_BODY()
 
 private:
+	UPROPERTY(Category = "Braking", EditDefaultsOnly)
 	float m_brakingFriction;
+
+	UPROPERTY(Category = "Braking", EditDefaultsOnly)
 	float m_brakingDecelerationWalking;
+
+	UPROPERTY(Category = "Braking", EditDefaultsOnly)
 	float m_brakingFrictionFactor;
 
 protected:
@@ -124,6 +129,10 @@ private:
 	UPROPERTY(Category = "Movement Info", EditAnywhere, meta = (ClampMin = "0", UIMin = "0", ForceUnits = "cm"))
 	float m_maxStepHeight;
 
+	/** The maximum ground speed when walking. Also determines maximum lateral speed when falling. */
+	UPROPERTY(Category = "Movement Info", EditAnywhere, meta = (ClampMin = "0", UIMin = "0", ForceUnits = "cm/s"))
+	float m_maxWalkSpeed;
+
 	/**
 	 * Whether we always force floor checks for stationary Characters while walking.
 	 * Normally floor checks are avoided if possible when not moving, but this can be used to force them if there are use-cases where they are being skipped erroneously
@@ -150,13 +159,15 @@ private:
 public:
 	FPMCharacterMovementInfoDemo() :
 		m_maxStepHeight(45),
+		m_maxWalkSpeed(2000),
 		bAlwaysCheckFloor(1),
 		bForceNextFloorCheck(1),
 		bUseFlatBaseForFloorChecks(1)
 	{}
 
-	FPMCharacterMovementInfoDemo(const float InMaxStepHeight, const uint8 InAlwaysCheckFloor = 1, const uint8 InForceNextFloorCheck = 1, const uint8 InUseFlatBaseForFloorChecks = 1) :
+	FPMCharacterMovementInfoDemo(const float InMaxStepHeight, const float InMaxWalkSpeed, const uint8 InAlwaysCheckFloor = 1, const uint8 InForceNextFloorCheck = 1, const uint8 InUseFlatBaseForFloorChecks = 1) :
 		m_maxStepHeight(InMaxStepHeight),
+		m_maxWalkSpeed(InMaxWalkSpeed),
 		bAlwaysCheckFloor(InAlwaysCheckFloor),
 		bForceNextFloorCheck(InForceNextFloorCheck),
 		bUseFlatBaseForFloorChecks(InUseFlatBaseForFloorChecks)
@@ -170,9 +181,11 @@ public:
 	FORCEINLINE bool	GetForceNextFloorCheckBool()		const { return (bool)bForceNextFloorCheck; }
 	FORCEINLINE uint8	GetUseFlatBaseForFloorChecks()		const { return bUseFlatBaseForFloorChecks; }
 	FORCEINLINE bool	GetUseFlatBaseForFloorChecksBool()	const { return (bool)bUseFlatBaseForFloorChecks; }
+	FORCEINLINE float	GetMaxSpeed()						const { return m_maxWalkSpeed; }
 
-	FORCEINLINE float	SetMaxStepHeight(const float NewMaxStepHeight) { m_maxStepHeight = NewMaxStepHeight; }
-	FORCEINLINE float	SetForceNextFloorCheck(const uint8 NewForceNextFloorCheck) { bForceNextFloorCheck = NewForceNextFloorCheck; }
+	FORCEINLINE float	SetMaxStepHeight(const float NewMaxStepHeight)				{ m_maxStepHeight = NewMaxStepHeight; }
+	FORCEINLINE float	SetForceNextFloorCheck(const uint8 NewForceNextFloorCheck)	{ bForceNextFloorCheck = NewForceNextFloorCheck; }
+	FORCEINLINE float	SetMaxSpeed(const float NewMaxSpeed)						{ m_maxWalkSpeed = NewMaxSpeed; }
 };
 
 /**
@@ -204,6 +217,9 @@ private:
 	UPROPERTY(Transient, DuplicateTransient, Category = "Runtime", BlueprintGetter = "GetDemoOwner", BlueprintSetter = "SetDemoOwner")
 	TObjectPtr<APM_CharacterDemo> m_demoOwner;
 
+	UPROPERTY(Transient, DuplicateTransient, VisibleAnywhere, Category = "Runtime")
+	FVector m_currentFrameInput;
+
 protected:
 	UPROPERTY(Category = "Character Movement: MovementMode", BlueprintReadOnly)
 	TEnumAsByte<enum EMovementMode> m_movementMode;
@@ -215,13 +231,15 @@ protected:
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 private:
 	UFUNCTION()
-	void CharacterControlledInput(const FVector& InputVector, float DeltaSeconds);
+	void CharacterControlledInput(float DeltaSeconds);
 
 	UFUNCTION()
 	FVector ContraintInputZ(FVector& InputVector);
 
 	UFUNCTION()
-	void PerformMovement(float DeltaSeconds);
+	void PerformWalkingMovement(float DeltaSeconds);
+	void PerformFallMovement(float DeltaSeconds);
+	void PerformBrakingMovement(float DeltaSeconds);
 
 	UFUNCTION()
 	void OnMovementModeUpdated(EMovementMode NewMoveMode);
@@ -231,6 +249,9 @@ private:
 	
 	UFUNCTION()
 	void ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration);
+
+	UFUNCTION()
+	void ApplyVelocityGravity(float DeltaTime);
 
 protected:
 	/*/!\ VERY IMPORTANT /!\*\
@@ -315,6 +336,7 @@ public:
 	virtual float GetGravityZ() const override;
 	virtual bool IsMovingOnGround() const override;
 	virtual bool IsFalling() const override;
+	virtual float GetMaxSpeed() const override;
 
 	virtual void PostLoad() override;
 	virtual void SetUpdatedComponent(USceneComponent* NewUpdatedComponent) override;

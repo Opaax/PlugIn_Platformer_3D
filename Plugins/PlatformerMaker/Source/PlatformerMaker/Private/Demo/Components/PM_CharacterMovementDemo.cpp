@@ -54,15 +54,15 @@ void UPM_CharacterMovementDemo::TickComponent(float DeltaTime, ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	DEBUG_LOG_SCREEN(22, 10, FColor::Red, TEXT("Speed: %lf"), Velocity.Length());
+	DEBUG_LOG_SCREEN(23, 10, FColor::Red, TEXT("Acceleration: %s"), *m_acceleration.GetAcceleration().ToString());
+
 	if (ShouldSkipUpdate(DeltaTime)) {
 		return;
 	}
 
-	FVector InputVector = FVector::ZeroVector;
-
 	if (IsValidToMove()) {
-		InputVector = ConsumeInputVector();
-		CharacterControlledInput(InputVector, DeltaTime);
+		CharacterControlledInput(DeltaTime);
 	}
 }
 
@@ -71,10 +71,28 @@ bool UPM_CharacterMovementDemo::IsValidToMove()
 	return IsValid(GetController()) && IsValid(UpdatedComponent) && m_movementMode != EMovementMode::MOVE_None;
 }
 
-void UPM_CharacterMovementDemo::CharacterControlledInput(const FVector& InputVector, float DeltaSeconds)
+void UPM_CharacterMovementDemo::CharacterControlledInput(float DeltaSeconds)
 {
-	m_acceleration.AccumulateAccelerationRef(m_acceleration.GetMaxAcceleration() * InputVector.GetClampedToMaxSize(1.0f));
-	PerformMovement(DeltaSeconds);
+	m_currentFrameInput = ConsumeInputVector();
+
+	if (IsFalling()) {
+		//Set Acceleration for ai control
+		m_acceleration.SetAccelerationRef(FVector::ZeroVector);
+		PerformBrakingMovement(DeltaSeconds); //We need to decelerate X, Y vel
+		PerformFallMovement(DeltaSeconds);
+		return;
+	}
+
+	if (m_currentFrameInput.IsNearlyZero()) {
+		m_acceleration.SetAccelerationRef(FVector::ZeroVector);
+		PerformBrakingMovement(DeltaSeconds);
+		PerformWalkingMovement(DeltaSeconds);
+		return;
+	}
+
+	m_currentFrameInput.Z = 0;
+	m_acceleration.AccumulateAccelerationRef(m_acceleration.GetMaxAcceleration() * m_currentFrameInput.GetClampedToMaxSize(1.0f));
+	PerformWalkingMovement(DeltaSeconds);
 }
 
 FVector UPM_CharacterMovementDemo::ContraintInputZ(FVector& InputVector)
@@ -87,24 +105,42 @@ FVector UPM_CharacterMovementDemo::ContraintInputZ(FVector& InputVector)
 	return InputVector;
 }
 
-void UPM_CharacterMovementDemo::PerformMovement(float DeltaSeconds)
+void UPM_CharacterMovementDemo::PerformWalkingMovement(float DeltaSeconds)
 {
 	if (!IsMovingOnGround()) {
-		if (IsFalling()) {
-			//Apply Fall
+		FindFloor(UpdatedComponent->GetComponentLocation(), m_currentFloor, false);
+
+		if (!m_currentFloor.bWalkableFloor) {
+			if (m_movementMode != EMovementMode::MOVE_Falling) {
+				SetMovementMode(EMovementMode::MOVE_Falling);
+			}
+
 			return;
 		}
 
-
-	}
-
-	if (m_acceleration.GetAcceleration().IsNearlyZero()) {
-		ApplyVelocityBraking(DeltaSeconds, m_braking.GetBreakingFriction(), m_braking.GetBrakingDecelerationWalking());
-		return;
+		FHitResult Hit(1.f);
+		SafeMoveUpdatedComponent(Velocity, UpdatedComponent->GetComponentQuat(), true, Hit);
 	}
 
 	Velocity += m_acceleration.GetAcceleration();
+	Velocity = Velocity.GetClampedToMaxSize(m_characterInfo.GetMaxSpeed());
 	MoveAlongFloor(Velocity, DeltaSeconds);
+
+	FindFloor(UpdatedComponent->GetComponentLocation(), m_currentFloor, false);
+}
+
+void UPM_CharacterMovementDemo::PerformFallMovement(float DeltaSeconds)
+{
+	if (IsMovingOnGround()) {
+		return;
+	}
+
+	ApplyVelocityGravity(DeltaSeconds);
+}
+
+void UPM_CharacterMovementDemo::PerformBrakingMovement(float DeltaSeconds)
+{
+	ApplyVelocityBraking(DeltaSeconds, m_braking.GetBreakingFriction(), m_braking.GetBrakingDecelerationWalking());
 }
 
 void UPM_CharacterMovementDemo::OnMovementModeUpdated(EMovementMode NewMoveMode)
@@ -122,9 +158,10 @@ void UPM_CharacterMovementDemo::MoveAlongFloor(const FVector& InVelocity, float 
 		return;
 	}
 
-	const FVector lVelocityDelta = FVector(InVelocity.X, InVelocity.Y, 0.f) * DeltaSeconds;//Remap vel making sure the Z is 0 and moving along delta time
 	FHitResult Hit(1.f);
-	SafeMoveUpdatedComponent(lVelocityDelta, UpdatedComponent->GetComponentQuat(), true, Hit);
+	if (!SafeMoveUpdatedComponent(Velocity * DeltaSeconds, UpdatedComponent->GetComponentQuat(), true, Hit)) {
+		Velocity = FVector::ZeroVector; //we hit something that stop us
+	}
 }
 
 void UPM_CharacterMovementDemo::ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration) 
@@ -172,6 +209,25 @@ void UPM_CharacterMovementDemo::ApplyVelocityBraking(float DeltaTime, float Fric
 	const float lVSizeSq = Velocity.SizeSquared();
 	if (lVSizeSq <= UE_KINDA_SMALL_NUMBER || (!bZeroBraking && lVSizeSq <= FMath::Square(BRAKE_TO_STOP_VELOCITY))) {
 		Velocity = FVector::ZeroVector;
+	}
+}
+
+void UPM_CharacterMovementDemo::ApplyVelocityGravity(float DeltaTime)
+{
+	//TODO
+	//Manage Air control after
+	Velocity += m_acceleration.GetAcceleration();
+	Velocity.Z += GetGravityZ() * m_gravity.GetGravityScale();
+
+	FHitResult Hit(1.f);
+	SafeMoveUpdatedComponent(Velocity * DeltaTime, UpdatedComponent->GetComponentQuat(), true, Hit);
+
+	FindFloor(UpdatedComponent->GetComponentLocation(), m_currentFloor, false);
+
+	if (m_currentFloor.bWalkableFloor) {
+		if (m_movementMode != EMovementMode::MOVE_Walking) {
+			SetMovementMode(EMovementMode::MOVE_Walking);
+		}
 	}
 }
 
@@ -312,17 +368,17 @@ void UPM_CharacterMovementDemo::ComputeFloorDist(float LineDistance, float Sweep
 		// This also allows us to adjust out of penetrations.
 		const float ShrinkScale = 0.9f;
 		const float ShrinkScaleOverlap = 0.1f;
-		float ShrinkHeight = (PawnHalfHeight - PawnRadius) * (1.f - ShrinkScale);//Unreal stuff, weird to make 0.9 then 1 - 0.9
+		float ShrinkHeight = (PawnHalfHeight - PawnRadius) * (1.f - ShrinkScale);
 
 		float TraceDist = SweepDistance + ShrinkHeight;
-		FCollisionShape CapsuleShape = FCollisionShape::MakeCapsule(lSweepRadius, PawnHalfHeight - ShrinkHeight);
+		FCollisionShape lCapsuleShape = FCollisionShape::MakeCapsule(lSweepRadius, PawnHalfHeight - ShrinkHeight);
 		const FVector lSweepTestTargetLoc = lCapsuleLocation + FVector(0.f, 0.f, -TraceDist);
 
 		DrawDebugCapsule(GetWorld(), lCapsuleLocation, PawnHalfHeight - ShrinkHeight, lSweepRadius, m_demoOwner->GetCapsuleComponent()->GetComponentQuat(), FColor::Green, false, 2.f);
 		DrawDebugCapsule(GetWorld(), lSweepTestTargetLoc, PawnHalfHeight - ShrinkHeight, lSweepRadius, m_demoOwner->GetCapsuleComponent()->GetComponentQuat(), FColor::Blue, false, 2.f);
 
 		FHitResult Hit(1.f);
-		//bBlockingHit = FloorSweepTest(Hit, lCapsuleLocation, lSweepTestTargetLoc, lCollisionChannel, CapsuleShape, lQueryParams, lResponseParam);
+		bBlockingHit = FloorSweepTest(Hit, lCapsuleLocation, lSweepTestTargetLoc, lCollisionChannel, lCapsuleShape, lQueryParams, lResponseParam);
 
 		if (bBlockingHit) {
 			// Reject hits adjacent to us, we only care about hits on the bottom portion of our capsule.
@@ -330,15 +386,15 @@ void UPM_CharacterMovementDemo::ComputeFloorDist(float LineDistance, float Sweep
 			if (Hit.bStartPenetrating /*|| !IsWithinEdgeTolerance(CapsuleLocation, Hit.ImpactPoint, CapsuleShape.Capsule.Radius)*/) {
 				// Use a capsule with a slightly smaller radius and shorter height to avoid the adjacent object.
 				// Capsule must not be nearly zero or the trace will fall back to a line trace from the start point and have the wrong length.
-				CapsuleShape.Capsule.Radius = FMath::Max(0.f, CapsuleShape.Capsule.Radius - SWEEP_EDGE_REJECT_DISTANCE - UE_KINDA_SMALL_NUMBER);
-				if (!CapsuleShape.IsNearlyZero())
+				lCapsuleShape.Capsule.Radius = FMath::Max(0.f, lCapsuleShape.Capsule.Radius - SWEEP_EDGE_REJECT_DISTANCE - UE_KINDA_SMALL_NUMBER);
+				if (!lCapsuleShape.IsNearlyZero())
 				{
 					ShrinkHeight = (PawnHalfHeight - PawnRadius) * (1.f - ShrinkScaleOverlap);
 					TraceDist = SweepDistance + ShrinkHeight;
-					CapsuleShape.Capsule.HalfHeight = FMath::Max(PawnHalfHeight - ShrinkHeight, CapsuleShape.Capsule.Radius);
+					lCapsuleShape.Capsule.HalfHeight = FMath::Max(PawnHalfHeight - ShrinkHeight, lCapsuleShape.Capsule.Radius);
 					Hit.Reset(1.f, false);
 
-					bBlockingHit = FloorSweepTest(Hit, lCapsuleLocation, lSweepTestTargetLoc, lCollisionChannel, CapsuleShape, lQueryParams, lResponseParam);
+					bBlockingHit = FloorSweepTest(Hit, lCapsuleLocation, lSweepTestTargetLoc, lCollisionChannel, lCapsuleShape, lQueryParams, lResponseParam);
 				}
 			}
 
@@ -354,13 +410,22 @@ void UPM_CharacterMovementDemo::ComputeFloorDist(float LineDistance, float Sweep
 				{
 					// Hit within test distance.
 					OutFloorResult.bWalkableFloor = true;
+					if (!lMutableThis->IsMovingOnGround()) {
+						lMutableThis->SetMovementMode(EMovementMode::MOVE_Walking);
+					}
+
 					return;
 				}
 			}
 		}
 	}
 
-	lMutableThis->SetMovementMode(EMovementMode::MOVE_Falling);
+	OutFloorResult.bWalkableFloor = false;
+	OutFloorResult.Clear();
+
+	if (!lMutableThis->IsFalling()) {
+		lMutableThis->SetMovementMode(EMovementMode::MOVE_Falling);
+	}
 }
 
 bool UPM_CharacterMovementDemo::FloorSweepTest(FHitResult& OutHit, const FVector& Start, const FVector& End, ECollisionChannel TraceChannel, const FCollisionShape& CollisionShape, const FCollisionQueryParams& Params, const FCollisionResponseParams& ResponseParam) const
@@ -404,6 +469,11 @@ bool UPM_CharacterMovementDemo::IsFalling() const
 	return (m_movementMode == MOVE_Falling) && IsValid(UpdatedComponent);
 }
 
+float UPM_CharacterMovementDemo::GetMaxSpeed() const
+{
+	return m_characterInfo.GetMaxSpeed();
+}
+
 void UPM_CharacterMovementDemo::PostLoad()
 {
 	Super::PostLoad();
@@ -425,7 +495,7 @@ void UPM_CharacterMovementDemo::SetUpdatedComponent(USceneComponent* NewUpdatedC
 ///////////////////////////////////////////////////////////////////////////////////////////
 void FPMAccelerationDemo::UpdateAcceleration()
 {
-	m_acceleration.GetClampedToMaxSize(MaxAcceleration);
+	m_acceleration = m_acceleration.GetClampedToMaxSize(MaxAcceleration);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

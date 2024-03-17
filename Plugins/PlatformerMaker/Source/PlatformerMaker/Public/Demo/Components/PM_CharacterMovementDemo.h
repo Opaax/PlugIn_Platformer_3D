@@ -44,6 +44,39 @@ public:
 	FORCEINLINE void SetMaxAcceleration(float NewMaxAcceleration) { MaxAcceleration = NewMaxAcceleration; }
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FPMBrakingDemo {
+	GENERATED_USTRUCT_BODY()
+
+private:
+	float m_brakingFriction;
+	float m_brakingDecelerationWalking;
+	float m_brakingFrictionFactor;
+
+protected:
+
+public:
+	FPMBrakingDemo() :
+		m_brakingFriction(1),
+		m_brakingDecelerationWalking(500.f),
+		m_brakingFrictionFactor(1)
+	{}
+
+	FPMBrakingDemo(const float InBrakingFriction, const float InBrakingDecelerationWalking, const float InBrakingFrictionFactor) :
+		m_brakingFriction(InBrakingFriction),
+		m_brakingDecelerationWalking(InBrakingDecelerationWalking),
+		m_brakingFrictionFactor(InBrakingFrictionFactor)
+	{}
+
+	FORCEINLINE float GetBreakingFriction() const { return m_brakingFriction; }
+	FORCEINLINE float GetBrakingDecelerationWalking() const { return m_brakingDecelerationWalking; }
+	FORCEINLINE float GetBrakingFactor() const { return m_brakingFrictionFactor; }
+
+	FORCEINLINE void SetBreakingFriction(float InBrakingFriction) { m_brakingFriction = InBrakingFriction; }
+	FORCEINLINE void SetBrakingDecelerationWalking(float InBrakingDecelerationWalking) { m_brakingDecelerationWalking = InBrakingDecelerationWalking; }
+	FORCEINLINE void SetBrakingFrictionFactor(float InBrakingFrictionFactor) { m_brakingFrictionFactor = InBrakingFrictionFactor; }
+};
+
 /**
  * Character movement for the Demo
  */
@@ -56,6 +89,9 @@ class PLATFORMERMAKER_API UPM_CharacterMovementDemo : public UPawnMovementCompon
 private:
 	UPROPERTY(EditAnywhere, Category = "Acceleration", meta = (AllowPrivateAccess = "True", DisplayName = "Acceleration"))
 	FPMAccelerationDemo m_acceleration;
+
+	UPROPERTY(EditAnywhere, Category = "Character Braking", meta = (AllowPrivateAccess = "True", DisplayName = "Braking"))
+	FPMBrakingDemo m_braking;
 
 protected:
 	UPROPERTY(Category = "Character Movement: MovementMode", BlueprintReadOnly)

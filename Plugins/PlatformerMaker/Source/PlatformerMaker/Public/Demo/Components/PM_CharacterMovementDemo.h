@@ -215,9 +215,6 @@ protected:
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 private:
 	UFUNCTION()
-	bool IsValidToMove();
-
-	UFUNCTION()
 	void CharacterControlledInput(const FVector& InputVector, float DeltaSeconds);
 
 	UFUNCTION()
@@ -234,6 +231,16 @@ private:
 	
 	UFUNCTION()
 	void ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration);
+
+protected:
+	/*/!\ VERY IMPORTANT /!\*\
+
+	/*
+	* The UpdateComponent could be clear by the Super::TickComponent in MovementComponentBase class
+	* It could be clear like UpdateComponent is not null but no valid because the update component is pending kill but not kill yet
+	*/
+	UFUNCTION()
+	bool IsValidToMove();
 
 	UFUNCTION()
 	virtual void FindFloor(const FVector& CapsuleLocation, FFindFloorResult& OutFloorResult, bool bCanUseCachedLocation) const;

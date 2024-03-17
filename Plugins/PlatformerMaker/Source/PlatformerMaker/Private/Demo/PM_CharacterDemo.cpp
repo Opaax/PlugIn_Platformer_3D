@@ -116,14 +116,22 @@ void APM_CharacterDemo::PossessedBy(AController* NewController)
 
 	m_pmController = Cast<APM_PlayerControllerDemo>(NewController);
 	
-	if (m_pmController) {
-		m_pmController->SetDemoCharacter(this);
+	if (!m_pmController) {
+		DEBUG_ERROR(TEXT("[%s] New controller is not a [%s]"), *GetNameSafe(this), *GetNameSafe(APM_PlayerControllerDemo::StaticClass()));
+		return;
 	}
+
+	m_pmController->SetDemoCharacter(this);
+	CharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 }
 
 void APM_CharacterDemo::PawnClientRestart()
 {
 	Super::PawnClientRestart();
+
+	if (!m_pmController) {
+		return;
+	}
 
 	CheckAutoAddMappingContext();
 }

@@ -184,6 +184,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Character Info", meta = (AllowPrivateAccess = "True", DisplayName = "CharacterInfo"))
 	FPMCharacterMovementInfoDemo m_characterInfo;
 
+	/** Used by movement code to determine if a change in position is based on normal movement or a teleport. If not a teleport, velocity can be recomputed based on the change in position. */
+	UPROPERTY(Category = "Runtime", Transient, VisibleInstanceOnly)
+	uint8 bJustTeleported : 1;
+
+	UPROPERTY(Transient, DuplicateTransient, Category = "Runtime", BlueprintGetter = "GetDemoOwner", BlueprintSetter = "SetDemoOwner")
+	TObjectPtr<APM_CharacterDemo> m_demoOwner;
+
 protected:
 	UPROPERTY(Category = "Character Movement: MovementMode", BlueprintReadOnly)
 	TEnumAsByte<enum EMovementMode> m_movementMode;
@@ -216,6 +223,21 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Pawn|Components|Movement")
 	virtual void SetMovementMode(EMovementMode NewMovementMode, uint8 NewCustomMode = 0);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE uint8 GetJustTeleported() const { return bJustTeleported; };
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetJustTeleported(uint8 JustTeleported) { bJustTeleported = JustTeleported; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE bool GetJustTeleportedBool()const { return (bool)bJustTeleported; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE APM_CharacterDemo* GetDemoOwner() const { return m_demoOwner; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetDemoOwner(APM_CharacterDemo* InOwner) { m_demoOwner = InOwner; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 public:

@@ -49,6 +49,10 @@ void UPM_CharacterMovementDemo::TickComponent(float DeltaTime, ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (ShouldSkipUpdate(DeltaTime)) {
+		return;
+	}
+
 	FVector InputVector = FVector::ZeroVector;
 
 	if (IsValidToMove()) {
@@ -64,7 +68,7 @@ bool UPM_CharacterMovementDemo::IsValidToMove()
 
 void UPM_CharacterMovementDemo::CharacterControlledInput(const FVector& InputVector, float DeltaSeconds)
 {
-
+	m_acceleration.AccumulateAccelerationRef(m_acceleration.GetMaxAcceleration() * InputVector.GetClampedToMaxSize(1.0f));
 	PerformMovement(DeltaSeconds);
 }
 
@@ -80,6 +84,20 @@ FVector UPM_CharacterMovementDemo::ContraintInputZ(FVector& InputVector)
 
 void UPM_CharacterMovementDemo::PerformMovement(float DeltaSeconds)
 {
+	if (!IsMovingOnGround()) {
+		if (IsFalling()) {
+			//Apply Fall
+			return;
+		}
+	}
+
+	if (m_acceleration.GetAcceleration().IsNearlyZero()) {
+		ApplyVelocityBraking(DeltaSeconds, m_braking.GetBreakingFriction(), m_braking.GetBrakingDecelerationWalking());
+		return;
+	}
+
+	Velocity += m_acceleration.GetAcceleration();
+	MoveAlongFloor(Velocity, DeltaSeconds);
 }
 
 void UPM_CharacterMovementDemo::OnMovementModeUpdated(EMovementMode NewMoveMode)

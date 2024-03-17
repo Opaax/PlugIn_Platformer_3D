@@ -2,7 +2,14 @@
 
 
 #include "Demo/Components/PM_CharacterMovementDemo.h"
+#include "Demo/PM_CharacterDemo.h"
 #include "Utils/DebugMacro.h"
+
+const float UPM_CharacterMovementDemo::MIN_TICK_TIME = 1e-6f;
+const float UPM_CharacterMovementDemo::MIN_FLOOR_DIST = 1.9f;
+const float UPM_CharacterMovementDemo::MAX_FLOOR_DIST = 2.4f;
+const float UPM_CharacterMovementDemo::BRAKE_TO_STOP_VELOCITY = 10.f;
+const float UPM_CharacterMovementDemo::SWEEP_EDGE_REJECT_DISTANCE = 0.15f;
 
 UPM_CharacterMovementDemo::UPM_CharacterMovementDemo(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
@@ -100,6 +107,35 @@ void UPM_CharacterMovementDemo::ComputeFloorDist(float LineDistance, float Sweep
 bool UPM_CharacterMovementDemo::FloorSweepTest(FHitResult& OutHit, const FVector& Start, const FVector& End, ECollisionChannel TraceChannel, const FCollisionShape& CollisionShape, const FCollisionQueryParams& Params, const FCollisionResponseParams& ResponseParam) const
 {
 	return false;
+}
+
+float UPM_CharacterMovementDemo::GetGravityZ() const
+{
+	return Super::GetGravityZ() * m_gravity.GetGravityScale();
+}
+
+bool UPM_CharacterMovementDemo::IsMovingOnGround() const
+{
+	return ((m_movementMode == MOVE_Walking) || (m_movementMode == MOVE_NavWalking)) && IsValid(UpdatedComponent);
+}
+
+bool UPM_CharacterMovementDemo::IsFalling() const
+{
+	return (m_movementMode == MOVE_Falling) && IsValid(UpdatedComponent);
+}
+
+void UPM_CharacterMovementDemo::PostLoad()
+{
+	Super::PostLoad();
+
+	m_demoOwner = Cast<APM_CharacterDemo>(PawnOwner);
+}
+
+void UPM_CharacterMovementDemo::SetUpdatedComponent(USceneComponent* NewUpdatedComponent)
+{
+	Super::SetUpdatedComponent(NewUpdatedComponent);
+
+	m_demoOwner = Cast<APM_CharacterDemo>(PawnOwner);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

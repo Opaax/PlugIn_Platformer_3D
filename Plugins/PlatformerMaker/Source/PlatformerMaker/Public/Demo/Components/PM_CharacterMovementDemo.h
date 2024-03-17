@@ -304,4 +304,27 @@ public:
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 public:
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	virtual float GetGravityZ() const override;
+	virtual bool IsMovingOnGround() const override;
+	virtual bool IsFalling() const override;
+
+	virtual void PostLoad() override;
+	virtual void SetUpdatedComponent(USceneComponent* NewUpdatedComponent) override;
+
+	/*---------------------------------- CONST ----------------------------------*/
+	/** Minimum delta time considered when ticking. Delta times below this are not considered. This is a very small non-zero value to avoid potential divide-by-zero in simulation code. */
+	static const float MIN_TICK_TIME;
+
+	/** Minimum acceptable distance for Character capsule to float above floor when walking. */
+	static const float MIN_FLOOR_DIST;
+
+	/** Maximum acceptable distance for Character capsule to float above floor when walking. */
+	static const float MAX_FLOOR_DIST;
+
+	/** Reject sweep impacts that are this close to the edge of the vertical portion of the capsule when performing vertical sweeps, and try again with a smaller capsule. */
+	static const float SWEEP_EDGE_REJECT_DISTANCE;
+
+	/** Stop completely when braking and velocity magnitude is lower than this. */
+	static const float BRAKE_TO_STOP_VELOCITY;
 };

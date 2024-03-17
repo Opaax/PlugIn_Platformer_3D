@@ -77,6 +77,31 @@ public:
 	FORCEINLINE void SetBrakingFrictionFactor(float InBrakingFrictionFactor) { m_brakingFrictionFactor = InBrakingFrictionFactor; }
 };
 
+USTRUCT(BlueprintType, Blueprintable)
+struct FPMGravityDemo {
+	GENERATED_USTRUCT_BODY()
+
+private:
+	UPROPERTY(Category = "Gravity", EditDefaultsOnly, meta = (DisplayName = "GravityScale"))
+	float m_gravityScale;
+	float m_minGravityScale = 0.0001f;
+
+public:
+
+public:
+	FPMGravityDemo() :
+		m_gravityScale(1)
+	{}
+
+	FPMGravityDemo(const float InGravityScale)
+	{
+		m_gravityScale = FMath::Max(InGravityScale, m_minGravityScale);
+	}
+
+	FORCEINLINE float GetGravityScale() const { return m_gravityScale; }
+	FORCEINLINE float SetGravityScale(const float NewScale) { m_gravityScale = NewScale; }
+};
+
 /**
  * Character movement for the Demo
  */
@@ -92,6 +117,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Character Braking", meta = (AllowPrivateAccess = "True", DisplayName = "Braking"))
 	FPMBrakingDemo m_braking;
+
+	UPROPERTY(EditAnywhere, Category = "Character Gravity", meta = (AllowPrivateAccess = "True", DisplayName = "Gravity"))
+	FPMGravityDemo m_gravity;
 
 protected:
 	UPROPERTY(Category = "Character Movement: MovementMode", BlueprintReadOnly)

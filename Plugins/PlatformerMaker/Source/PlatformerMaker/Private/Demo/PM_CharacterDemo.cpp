@@ -97,6 +97,7 @@ void APM_CharacterDemo::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	m_characterMovement->SetMovementMode(EMovementMode::MOVE_Walking);
 }
 
 void APM_CharacterDemo::Tick(float DeltaTime)

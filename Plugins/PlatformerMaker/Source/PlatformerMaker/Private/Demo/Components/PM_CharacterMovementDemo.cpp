@@ -83,6 +83,20 @@ void UPM_CharacterMovementDemo::MoveAlongFloor(const FVector& InVelocity, float 
 {
 }
 
+void UPM_CharacterMovementDemo::ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration) 
+{
+
+}
+
+void UPM_CharacterMovementDemo::FindFloor(const FVector& CapsuleLocation, FFindFloorResult& OutFloorResult, bool bCanUseCachedLocation) const
+{
+}
+
+void UPM_CharacterMovementDemo::ComputeFloorDist(float LineDistance, float SweepDistance, FFindFloorResult& OutFloorResult) const
+{
+
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Struct Acceleration ///////////////////////////////////////

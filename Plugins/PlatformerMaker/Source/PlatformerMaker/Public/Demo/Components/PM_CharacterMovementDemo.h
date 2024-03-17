@@ -221,6 +221,27 @@ private:
 
 	UFUNCTION()
 	void MoveAlongFloor(const FVector& InVelocity, float DeltaSeconds);
+	
+	UFUNCTION()
+	void ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration);
+
+	UFUNCTION()
+	virtual void FindFloor(const FVector& CapsuleLocation, FFindFloorResult& OutFloorResult, bool bCanUseCachedLocation) const;
+
+	/**
+	 * Compute distance to the floor from bottom sphere of capsule and store the result in OutFloorResult.
+	 * This distance is the swept distance of the capsule to the first point impacted by the lower hemisphere, or distance from the bottom of the capsule in the case of a line trace.
+	 * This function does not care if collision is disabled on the capsule (unlike FindFloor).
+	 * @see FindFloor
+	 *
+	 * @param CapsuleLocation:	Location of the capsule used for the query
+	 * @param LineDistance:		If non-zero, max distance to test for a simple line check from the capsule base. Used only if the sweep test fails to find a walkable floor, and only returns a valid result if the impact normal is a walkable normal.
+	 * @param SweepDistance:	If non-zero, max distance to use when sweeping a capsule downwards for the test. MUST be greater than or equal to the line distance.
+	 * @param OutFloorResult:	Result of the floor check. The HitResult will contain the valid sweep or line test upon success, or the result of the sweep upon failure.
+	 * @param SweepRadius:		The radius to use for sweep tests. Should be <= capsule radius.
+	 */
+	UFUNCTION()
+	virtual void ComputeFloorDist(float LineDistance, float SweepDistance, FFindFloorResult& OutFloorResult) const;
 
 public:
 	UPM_CharacterMovementDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h" //ofc Unreal put every struct in one file which that force weird include like that, as I made here
 #include "PM_CharacterMovementDemo.generated.h"
+
+struct FFindFloorResult;
 
 USTRUCT(BlueprintType, Blueprintable)
 struct FPMAccelerationDemo {
@@ -195,6 +198,10 @@ protected:
 	UPROPERTY(Category = "Character Movement: MovementMode", BlueprintReadOnly)
 	TEnumAsByte<enum EMovementMode> m_movementMode;
 
+	/** Information about the floor the Character is standing on (updated only during walking movement). */
+	UPROPERTY(Category = "Character Movement: Walking", VisibleInstanceOnly, BlueprintGetter = "GetCurrentFloor")
+	FFindFloorResult m_currentFloor;
+
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 private:
 	UFUNCTION()
@@ -211,6 +218,9 @@ private:
 
 	UFUNCTION()
 	void OnMovementModeUpdated(EMovementMode NewMoveMode);
+
+	UFUNCTION()
+	void MoveAlongFloor(const FVector& InVelocity, float DeltaSeconds);
 
 public:
 	UPM_CharacterMovementDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -238,6 +248,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetDemoOwner(APM_CharacterDemo* InOwner) { m_demoOwner = InOwner; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE FFindFloorResult GetCurrentFloor() const { return m_currentFloor; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void GetCurrentFloorRef(FFindFloorResult& OutFindFloor) const { OutFindFloor = m_currentFloor; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 public:

@@ -97,6 +97,11 @@ void UPM_CharacterMovementDemo::ComputeFloorDist(float LineDistance, float Sweep
 
 }
 
+bool UPM_CharacterMovementDemo::FloorSweepTest(FHitResult& OutHit, const FVector& Start, const FVector& End, ECollisionChannel TraceChannel, const FCollisionShape& CollisionShape, const FCollisionQueryParams& Params, const FCollisionResponseParams& ResponseParam) const
+{
+	return false;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////// Struct Acceleration ///////////////////////////////////////

@@ -8,7 +8,17 @@
 #include "PM_CharacterMovementDemo.generated.h"
 
 struct FFindFloorResult;
+struct FCollisionShape;
+struct FCollisionQueryParams;
+struct FCollisionResponseParams;
 
+/* 
+* This is not attented to be inherited
+* All theses struct should be in independant file
+* 
+* Maybe it could be nice to make a plug in to make character comp easier to understand in code
+* For now the character component is 12k line long which I thin is not good but on networking is better?
+*/
 USTRUCT(BlueprintType, Blueprintable)
 struct FPMAccelerationDemo {
 	GENERATED_USTRUCT_BODY()
@@ -242,6 +252,21 @@ private:
 	 */
 	UFUNCTION()
 	virtual void ComputeFloorDist(float LineDistance, float SweepDistance, FFindFloorResult& OutFloorResult) const;
+
+	/**
+	 * Sweep against the world and return the first blocking hit.
+	 * Intended for tests against the floor, because it may change the result of impacts on the lower area of the test (especially if bUseFlatBaseForFloorChecks is true).
+	 *
+	 * @param OutHit			First blocking hit found.
+	 * @param Start				Start location of the capsule.
+	 * @param End				End location of the capsule.
+	 * @param TraceChannel		The 'channel' that this trace is in, used to determine which components to hit.
+	 * @param CollisionShape	Capsule collision shape.
+	 * @param Params			Additional parameters used for the trace.
+	 * @param ResponseParam		ResponseContainer to be used for this trace.
+	 * @return True if OutHit contains a blocking hit entry.
+	 */
+	virtual bool FloorSweepTest(FHitResult& OutHit, const FVector& Start, const FVector& End, ECollisionChannel TraceChannel, const FCollisionShape& CollisionShape, const FCollisionQueryParams& Params, const FCollisionResponseParams& ResponseParam) const;
 
 public:
 	UPM_CharacterMovementDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

@@ -57,7 +57,7 @@ void UPM_PlayableInputCompDemo::InitializePlayerInput_Implementation(APM_PlayerC
 
 	lSubsystem->ClearAllMappings();
 
-	UInputMappingContext* lIMC = m_defaultMappingContext.MappingContext.Get();
+	UInputMappingContext* lIMC = m_defaultMappingContext.SoftMappingContext.Get();
 
 	if (IsValid(lIMC)) {
 		

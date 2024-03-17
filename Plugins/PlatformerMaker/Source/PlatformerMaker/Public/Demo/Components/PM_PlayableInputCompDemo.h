@@ -23,7 +23,7 @@ struct FInputMappingContextAndPriority
 	/*---------------------------------- MEMBERS ----------------------------------*/
 public://explicit public even struct is public by default
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TSoftObjectPtr<UInputMappingContext> MappingContext;
+	TSoftObjectPtr<UInputMappingContext> SoftMappingContext;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	int32 InputPriority;
@@ -38,23 +38,9 @@ public://explicit public even struct is public by default
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 public://explicit public even struct is public by default
 	FInputMappingContextAndPriority() :
-		MappingContext(nullptr),
-		InputPriority(-1)
-	{
-		bRegisterWithSettings = false;
-	}
-
-	explicit FInputMappingContextAndPriority(UInputMappingContext* const InMappingContext, int32 const InPriority) :
-		MappingContext(InMappingContext),
-		InputPriority(InPriority)
-	{
-		bRegisterWithSettings = false;
-	}
-
-	explicit FInputMappingContextAndPriority(UInputMappingContext* const InMappingContext, int32 const InPriority, bool RegisterWithSettings) :
-		MappingContext(InMappingContext),
-		InputPriority(InPriority),
-		bRegisterWithSettings(RegisterWithSettings)
+		SoftMappingContext(nullptr),
+		InputPriority(-1),
+		bRegisterWithSettings(false)
 	{
 	}
 

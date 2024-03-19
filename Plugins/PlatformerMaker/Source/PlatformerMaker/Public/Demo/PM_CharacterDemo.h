@@ -12,6 +12,7 @@
 
 //PM Plugin
 class APM_PlayerControllerDemo;
+class APM_PlayerControllerDemo;
 class UPM_PlayableInputCompDemo;
 class UPM_CharacterMovementDemo;
 

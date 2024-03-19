@@ -22,6 +22,7 @@ UPM_CharacterMovementDemo::UPM_CharacterMovementDemo(const FObjectInitializer& O
 	m_movementMode = EMovementMode::MOVE_None;
 
 	NavAgentProps.bCanWalk = true;
+	NavAgentProps.bCanJump = true;
 }
 
 void UPM_CharacterMovementDemo::SetMovementMode(EMovementMode NewMovementMode, uint8 NewCustomMode)
@@ -54,6 +55,8 @@ void UPM_CharacterMovementDemo::TickComponent(float DeltaTime, ELevelTick TickTy
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	DEBUG_LOG_SCREEN(20, 10, FColor::Red, TEXT("Is Floor Walkable: %s"), m_currentFloor.bWalkableFloor ? *FString("Walkable") : *FString("NotWalkable"));
+	DEBUG_LOG_SCREEN(21, 10, FColor::Red, TEXT("Velocity: %s"), *Velocity.ToString());
 	DEBUG_LOG_SCREEN(22, 10, FColor::Red, TEXT("Speed: %lf"), Velocity.Length());
 	DEBUG_LOG_SCREEN(23, 10, FColor::Red, TEXT("Acceleration: %s"), *m_acceleration.GetAcceleration().ToString());
 
@@ -79,6 +82,11 @@ void UPM_CharacterMovementDemo::CharacterControlledInput(float DeltaSeconds)
 		//Set Acceleration for ai control
 		m_acceleration.SetAccelerationRef(FVector::ZeroVector);
 		PerformBrakingMovement(DeltaSeconds); //We need to decelerate X, Y vel
+		
+		if (m_jump.IsJumpRequested()) {
+			m_jump.SetJumpRequested(false);
+		}
+
 		PerformFallMovement(DeltaSeconds);
 		return;
 	}
@@ -136,6 +144,18 @@ void UPM_CharacterMovementDemo::PerformFallMovement(float DeltaSeconds)
 	}
 
 	ApplyVelocityGravity(DeltaSeconds);
+
+	if (Velocity.Z > 0) {
+		return;
+	}
+
+	FindFloor(UpdatedComponent->GetComponentLocation(), m_currentFloor, false);
+
+	if (m_currentFloor.bWalkableFloor) {
+		if (m_movementMode != EMovementMode::MOVE_Walking) {
+			SetMovementMode(EMovementMode::MOVE_Walking);
+		}
+	}
 }
 
 void UPM_CharacterMovementDemo::PerformBrakingMovement(float DeltaSeconds)
@@ -160,7 +180,8 @@ void UPM_CharacterMovementDemo::MoveAlongFloor(const FVector& InVelocity, float 
 
 	FHitResult Hit(1.f);
 	if (!SafeMoveUpdatedComponent(Velocity * DeltaSeconds, UpdatedComponent->GetComponentQuat(), true, Hit)) {
-		Velocity = FVector::ZeroVector; //we hit something that stop us
+		DEBUG_WARNING_CUSTOM_CATEGORY(LogPlatformerPlugin, TEXT("[%s] Impact, to move"), *GetNameSafe(this));
+		//Velocity = FVector(0,0,Velocity.Z); //we hit something that stop us
 	}
 }
 
@@ -216,19 +237,11 @@ void UPM_CharacterMovementDemo::ApplyVelocityGravity(float DeltaTime)
 {
 	//TODO
 	//Manage Air control after
-	Velocity += m_acceleration.GetAcceleration();
+	//Velocity += m_acceleration.GetAcceleration();
 	Velocity.Z += GetGravityZ() * m_gravity.GetGravityScale();
 
 	FHitResult Hit(1.f);
 	SafeMoveUpdatedComponent(Velocity * DeltaTime, UpdatedComponent->GetComponentQuat(), true, Hit);
-
-	FindFloor(UpdatedComponent->GetComponentLocation(), m_currentFloor, false);
-
-	if (m_currentFloor.bWalkableFloor) {
-		if (m_movementMode != EMovementMode::MOVE_Walking) {
-			SetMovementMode(EMovementMode::MOVE_Walking);
-		}
-	}
 }
 
 void UPM_CharacterMovementDemo::FindFloor(const FVector& CapsuleLocation, FFindFloorResult& OutFloorResult, bool bCanUseCachedLocation) const
@@ -452,6 +465,25 @@ bool UPM_CharacterMovementDemo::FloorSweepTest(FHitResult& OutHit, const FVector
 	}
 	
 	return bBlockingHit;
+}
+
+bool UPM_CharacterMovementDemo::Jump()
+{
+	if (IsValid(m_demoOwner) && CanJump()) {
+		m_jump.SetJumpRequested(true);
+		Velocity.Z = FMath::Max<FVector::FReal>(Velocity.Z, m_jump.GetJumpForce());
+
+		SetMovementMode(MOVE_Falling);
+
+		return true;
+	}
+
+	return false;
+}
+
+bool UPM_CharacterMovementDemo::CanJump()
+{
+	return NavAgentProps.bCanJump;
 }
 
 float UPM_CharacterMovementDemo::GetGravityZ() const

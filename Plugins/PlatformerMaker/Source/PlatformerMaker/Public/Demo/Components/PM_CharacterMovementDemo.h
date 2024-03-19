@@ -121,6 +121,36 @@ public:
 };
 
 USTRUCT(BlueprintType, Blueprintable)
+struct FPMJumpDemo {
+	GENERATED_USTRUCT_BODY()
+
+private:
+	UPROPERTY(Category = "Jump", EditDefaultsOnly, meta = (DisplayName = "JumpForce"))
+	float m_jumpForce;
+
+	bool bIsJumpRequested;
+public:
+
+public:
+	FPMJumpDemo() :
+		m_jumpForce(700),
+		bIsJumpRequested(false)
+	{}
+
+	FPMJumpDemo(const float InJumpForce):
+		bIsJumpRequested(false)
+	{
+		m_jumpForce = FMath::Max(0, InJumpForce);
+	}
+
+	FORCEINLINE float GetJumpForce() const { return m_jumpForce; }
+	FORCEINLINE bool IsJumpRequested() const { return bIsJumpRequested; }
+
+	FORCEINLINE float SetJumpForce(const float NewJumpForce) { m_jumpForce = NewJumpForce; }
+	FORCEINLINE void SetJumpRequested(const bool RequestJump) { bIsJumpRequested = RequestJump; }
+};
+
+USTRUCT(BlueprintType, Blueprintable)
 struct FPMCharacterMovementInfoDemo {
 	GENERATED_USTRUCT_BODY()
 
@@ -198,7 +228,7 @@ class PLATFORMERMAKER_API UPM_CharacterMovementDemo : public UPawnMovementCompon
 	
 	/*---------------------------------- MEMBERS ----------------------------------*/
 private:
-	UPROPERTY(EditAnywhere, Category = "Acceleration", meta = (AllowPrivateAccess = "True", DisplayName = "Acceleration"))
+	UPROPERTY(EditAnywhere, Category = "Character Acceleration", meta = (AllowPrivateAccess = "True", DisplayName = "Acceleration"))
 	FPMAccelerationDemo m_acceleration;
 
 	UPROPERTY(EditAnywhere, Category = "Character Braking", meta = (AllowPrivateAccess = "True", DisplayName = "Braking"))
@@ -209,6 +239,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Character Info", meta = (AllowPrivateAccess = "True", DisplayName = "CharacterInfo"))
 	FPMCharacterMovementInfoDemo m_characterInfo;
+
+	UPROPERTY(EditAnywhere, Category = "Character Jump", meta = (AllowPrivateAccess = "True", DisplayName = "Jump"))
+	FPMJumpDemo m_jump;
 
 	/** Used by movement code to determine if a change in position is based on normal movement or a teleport. If not a teleport, velocity can be recomputed based on the change in position. */
 	UPROPERTY(Category = "Runtime", Transient, VisibleInstanceOnly)
@@ -230,27 +263,29 @@ protected:
 
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 private:
-	UFUNCTION()
+	UFUNCTION(Category = "Walk|Input")
 	void CharacterControlledInput(float DeltaSeconds);
 
-	UFUNCTION()
+	UFUNCTION(Category = "Walk|Input")
 	FVector ContraintInputZ(FVector& InputVector);
 
-	UFUNCTION()
+	UFUNCTION(Category = "Walk")
 	void PerformWalkingMovement(float DeltaSeconds);
+	UFUNCTION(Category = "Fall")
 	void PerformFallMovement(float DeltaSeconds);
+	UFUNCTION(Category = "Braking")
 	void PerformBrakingMovement(float DeltaSeconds);
 
-	UFUNCTION()
+	UFUNCTION(Category = "Walk")
 	void OnMovementModeUpdated(EMovementMode NewMoveMode);
 
-	UFUNCTION()
+	UFUNCTION(Category = "Walk")
 	void MoveAlongFloor(const FVector& InVelocity, float DeltaSeconds);
 	
-	UFUNCTION()
+	UFUNCTION(Category = "Walk|Braking")
 	void ApplyVelocityBraking(float DeltaTime, float Friction, float BrakingDeceleration);
 
-	UFUNCTION()
+	UFUNCTION(Category = "Walk|Gravity")
 	void ApplyVelocityGravity(float DeltaTime);
 
 protected:
@@ -260,10 +295,10 @@ protected:
 	* The UpdateComponent could be clear by the Super::TickComponent in MovementComponentBase class
 	* It could be clear like UpdateComponent is not null but no valid because the update component is pending kill but not kill yet
 	*/
-	UFUNCTION()
+	UFUNCTION(Category = "Walk")
 	bool IsValidToMove();
 
-	UFUNCTION()
+	UFUNCTION(Category = "Walk|Floor")
 	virtual void FindFloor(const FVector& CapsuleLocation, FFindFloorResult& OutFloorResult, bool bCanUseCachedLocation) const;
 
 	/**
@@ -278,7 +313,7 @@ protected:
 	 * @param OutFloorResult:	Result of the floor check. The HitResult will contain the valid sweep or line test upon success, or the result of the sweep upon failure.
 	 * @param SweepRadius:		The radius to use for sweep tests. Should be <= capsule radius.
 	 */
-	UFUNCTION()
+	UFUNCTION(Category = "Walk|Floor")
 	virtual void ComputeFloorDist(float LineDistance, float SweepDistance, FFindFloorResult& OutFloorResult) const;
 
 	/**
@@ -296,6 +331,10 @@ protected:
 	 */
 	virtual bool FloorSweepTest(FHitResult& OutHit, const FVector& Start, const FVector& End, ECollisionChannel TraceChannel, const FCollisionShape& CollisionShape, const FCollisionQueryParams& Params, const FCollisionResponseParams& ResponseParam) const;
 
+	UFUNCTION(BlueprintCallable, Category = "Jump")
+	virtual bool Jump();
+
+	virtual bool CanJump();
 public:
 	UPM_CharacterMovementDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

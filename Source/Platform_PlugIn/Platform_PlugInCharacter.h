@@ -7,7 +7,6 @@
 #include "InputActionValue.h"
 #include "Platform_PlugInCharacter.generated.h"
 
-
 UCLASS(config=Game)
 class APlatform_PlugInCharacter : public ACharacter
 {

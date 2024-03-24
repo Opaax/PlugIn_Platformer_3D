@@ -6,6 +6,7 @@
 #include "Demo/Components/PM_PlayableInputCompDemo.h"
 #include "Demo/Components/PM_CharacterMovementDemo.h"
 #include "Utils/DebugMacro.h"
+#include "Movement/PMCharacterMovement.h"
 
 //Unreal
 #include "Components/CapsuleComponent.h"
@@ -46,7 +47,7 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 
 	m_playableInputComp = CreateDefaultSubobject<UPM_PlayableInputCompDemo>(TEXT("PlayableInputComp"));
 	m_abilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComp"));
-	m_characterMovement = CreateDefaultSubobject<UPM_CharacterMovementDemo>(CharacterMovementComponentName);
+	m_characterMovement = CreateDefaultSubobject<UPMCharacterMovement>(CharacterMovementComponentName);
 	
 	// Structure to hold one-time initialization
 	struct FConstructorStaticsDemoCharacter
@@ -97,7 +98,7 @@ void APM_CharacterDemo::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	m_characterMovement->SetMovementMode(EMovementMode::MOVE_Walking);
+	CharacterMovement()->SetMovementTag(GetMovementWalkTag());
 }
 
 void APM_CharacterDemo::Tick(float DeltaTime)
@@ -122,7 +123,7 @@ void APM_CharacterDemo::PossessedBy(AController* NewController)
 	}
 
 	m_pmController->SetDemoCharacter(this);
-	CharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	CharacterMovement()->SetMovementTag(GetMovementWalkTag());
 }
 
 void APM_CharacterDemo::PawnClientRestart()

@@ -14,7 +14,7 @@
 class APM_PlayerControllerDemo;
 class APM_PlayerControllerDemo;
 class UPM_PlayableInputCompDemo;
-class UPM_CharacterMovementDemo;
+class UPMCharacterMovement;
 
 //Unreal
 class UCapsuleComponent;
@@ -46,7 +46,10 @@ private:
 	TObjectPtr<UAbilitySystemComponent> m_abilitySystemComp;
 
 	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "CharacterMovement")
-	TObjectPtr<UPM_CharacterMovementDemo> m_characterMovement;
+	TObjectPtr<UPMCharacterMovement> m_characterMovement;
+
+	UPROPERTY(VisibleAnywhere, Category = " PM|Movement", BlueprintGetter = "GetMovementWalkTag")
+	FGameplayTag m_walkMovementTag;
 
 #if WITH_EDITORONLY_DATA
 	UPROPERTY()
@@ -83,7 +86,10 @@ public:
 	FORCEINLINE UAbilitySystemComponent* GetAbilitySystemComp() const { return m_abilitySystemComp; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FORCEINLINE UPM_CharacterMovementDemo* CharacterMovement() const { return m_characterMovement; }
+	FORCEINLINE UPMCharacterMovement* CharacterMovement() const { return m_characterMovement; }
+
+	UFUNCTION(BlueprintPure)
+	FGameplayTag GetMovementWalkTag() const { return m_walkMovementTag; }
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 #pragma region Pawn_Override
 protected:

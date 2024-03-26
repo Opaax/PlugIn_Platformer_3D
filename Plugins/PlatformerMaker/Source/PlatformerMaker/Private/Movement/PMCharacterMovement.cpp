@@ -3,12 +3,15 @@
 
 #include "Movement/PMCharacterMovement.h"
 #include "Movement/PMMovementMode.h"
+#include "Utils/DebugMacro.h"
 
 //Unreal
 #include "Engine/ScopedMovementUpdate.h"
 #include "GameFramework/Character.h" //Need it for namespace utility
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+
+#include UE_INLINE_GENERATED_CPP_BY_NAME(PMCharacterMovement)
 
 //TAGS
 UE_DEFINE_GAMEPLAY_TAG(Movement_Native_Mode_Walking, "Movement.Native.Mode.Walking");
@@ -19,8 +22,50 @@ UE_DEFINE_GAMEPLAY_TAG(Movement_Native_Mode_Jump, "Movement.Native.Mode.Jump");
 UE_DEFINE_GAMEPLAY_TAG(Movement_Native_Sate_WantsCrouch, "Movement.Native.Sate.WantsCrouch");
 UE_DEFINE_GAMEPLAY_TAG(Movement_Native_Sate_IsCrouch, "Movement.Native.Sate.IsCrouch");
 
+//Const
+const float UPMCharacterMovement::MIN_TICK_TIME = 1e-6f;
+const float UPMCharacterMovement::MIN_FLOOR_DIST = 1.9f;
+const float UPMCharacterMovement::MAX_FLOOR_DIST = 2.4f;
+const float UPMCharacterMovement::BRAKE_TO_STOP_VELOCITY = 10.f;
+const float UPMCharacterMovement::SWEEP_EDGE_REJECT_DISTANCE = 0.15f;
+
+DEFINE_LOG_CATEGORY_STATIC(LogPMCharacterMovement, Log, All);
+
 UPMCharacterMovement::UPMCharacterMovement(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {
+	PrimaryComponentTick.bCanEverTick = true;
+
+	m_maxSimulationIterations = 8;
+}
+
+void UPMCharacterMovement::ControlledCharacterMove(const FVector& InputVector, float DeltaSeconds)
+{
+	{
+		//// We need to check the jump state before adjusting input acceleration, to minimize latency
+		//// and to make sure acceleration respects our potentially new falling state.
+		//CharacterOwner->CheckJumpInput(DeltaSeconds);
+
+		// apply input to acceleration
+		m_acceleration.SetAcceleration(ScaleInputAcceleration(ConstrainInputAcceleration(InputVector)));
+		//AnalogInputModifier = ComputeAnalogInputModifier();
+	}
+
+	PerformMovement(DeltaSeconds);
+}
+
+FVector UPMCharacterMovement::ScaleInputAcceleration(const FVector& InputAcceleration) const
+{
+	return m_acceleration.MaxAcceleration * InputAcceleration.GetClampedToMaxSize(1.0f);
+}
+
+FVector UPMCharacterMovement::ConstrainInputAcceleration(const FVector& InputAcceleration) const
+{
+	// walking or falling pawns ignore up/down sliding
+	if (InputAcceleration.Z != 0.f && (IsMovingOnGround() || IsFalling())) {
+		return FVector(InputAcceleration.X, InputAcceleration.Y, 0.f);
+	}
+
+	return InputAcceleration;
 }
 
 bool UPMCharacterMovement::IsValidToMove()
@@ -71,6 +116,33 @@ void UPMCharacterMovement::CallMovementUpdateDelegate(float DeltaSeconds, const 
 	if (IsValidBaseData()) {
 		OnMovementUpdatedDelegate.Broadcast(GetPawnOwner(), DeltaSeconds, OldLocation, OldVelocity);
 	}
+}
+
+float UPMCharacterMovement::GetSimulationTimeStep(float RemainingTime, int32 Iterations) const
+{
+	static uint32 s_WarningCount = 0;
+	if (RemainingTime > m_maxSimulationTimeStep)
+	{
+		if (Iterations < m_maxSimulationIterations)
+		{
+			// Subdivide moves to be no longer than MaxSimulationTimeStep seconds
+			RemainingTime = FMath::Min(m_maxSimulationTimeStep, RemainingTime * 0.5f);
+		}
+		else
+		{
+			// If this is the last iteration, just use all the remaining time. This is usually better than cutting things short, as the simulation won't move far enough otherwise.
+			// Print a throttled warning.
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+			if ((s_WarningCount++ < 100) || (GFrameCounter & 15) == 0)
+			{
+				UE_LOG(LogPMCharacterMovement, Warning, TEXT("GetSimulationTimeStep() - Max iterations %d hit while remaining time %.6f > MaxSimulationTimeStep (%.3f) for '%s', movement '%s'"), m_maxSimulationIterations, RemainingTime, m_maxSimulationTimeStep, *GetNameSafe(GetPawnOwner()), *m_currentMovementTag.ToString());
+			}
+#endif
+		}
+	}
+
+	// no less than MIN_TICK_TIME (to avoid potential divide-by-zero during simulation).
+	return FMath::Max(MIN_TICK_TIME, RemainingTime);
 }
 
 void UPMCharacterMovement::UpdateBasedMovement(float DeltaSeconds)
@@ -272,8 +344,7 @@ void UPMCharacterMovement::PerformMovement_Implementation(float DeltaTime)
 	bTeleportedSinceLastUpdate = UpdatedComponent->GetComponentLocation() != m_lastUpdateLocation;
 
 	// no movement if we can't move, or if currently doing physical simulation on UpdatedComponent
-	if (!m_currentMovementTag.IsValid() || UpdatedComponent->Mobility != EComponentMobility::Movable || UpdatedComponent->IsSimulatingPhysics())
-	{
+	if (!m_currentMovementTag.IsValid() || UpdatedComponent->Mobility != EComponentMobility::Movable || UpdatedComponent->IsSimulatingPhysics()) {
 		//Root motioin for later
 		/*
 		//if (!CharacterOwner->bClientUpdating && !CharacterOwner->bServerMoveIgnoreRootMotion)
@@ -523,7 +594,14 @@ void UPMCharacterMovement::PerformMovement_Implementation(float DeltaTime)
 		//CharacterOwner->ClearJumpInput(DeltaSeconds);
 		//NumJumpApexAttempts = 0;
 
+		if (m_previousMovementTag != m_currentMovementTag) {
+			if (!m_currentMovement->StartMovement(DeltaTime, this)) {
+				SetMovementTag(Movement_Native_Mode_Fall);
+			}
+		}
 		// change position
+		m_owningDeltaTime = DeltaTime;
+		m_owningInteration = 0;
 		StartNewPhysics(DeltaTime, 0);
 
 		if (!IsValidBaseData()) {
@@ -660,6 +738,28 @@ void UPMCharacterMovement::PerformMovement_Implementation(float DeltaTime)
 
 void UPMCharacterMovement::StartNewPhysics_Implementation(float DeltaTime, int32 Interation)
 {
+	if ((DeltaTime < MIN_TICK_TIME) || (Interation >= m_maxSimulationIterations) || !IsValidBaseData()) {
+		return;
+	}
+
+	if (UpdatedComponent->IsSimulatingPhysics()) {
+		return;
+	}
+
+	DEBUG_LOG_SCREEN(1, 5.F, FColor::Red, TEXT("Velocity: %s"), *Velocity.ToString());
+	DEBUG_LOG_SCREEN(2, 5.F, FColor::Blue, TEXT("Acceleration: %s"), *m_acceleration.GetAcceleration().ToString());
+	DEBUG_LOG_SCREEN(3, 5.F, FColor::Green, TEXT("Input: %s"), *m_inputVector.ToString());
+
+	const bool bSavedMovementInProgress = bMovementInProgress;
+	bMovementInProgress = true;
+
+	if (IsValid(m_currentMovement)) {
+		m_currentMovement->PhysMovement(DeltaTime, Interation, this);
+	} else {
+		SetMovementTag(Movement_Native_Mode_Walking);
+	}
+
+	bMovementInProgress = bSavedMovementInProgress;
 }
 
 void UPMCharacterMovement::OnMoveTagChanged_Implementation()
@@ -673,11 +773,32 @@ bool UPMCharacterMovement::IsSameMovementMode(const FGameplayTag& NewMoveTag)
 
 bool UPMCharacterMovement::ChangeMovement(const UPMMovementMode* NewMovement)
 {
+	m_previousMovementTag = m_currentMovementTag;
 	m_currentMovement = const_cast<UPMMovementMode*>(NewMovement);
 	m_currentMovementTag = NewMovement->MovementTag;
+
 	OnMoveTagChanged();
 
-	return true;
+	DEBUG_LOG_SCREEN(-1, 10, FColor::Red, TEXT("%s change movement %s"), *GetNameSafe(this), *GetNameSafe(NewMovement));
+
+	return 	m_currentMovement->StartMovement(m_owningDeltaTime, this);
+}
+
+void UPMCharacterMovement::FindCapsuleComponent()
+{
+	if (IsValid(UpdatedPrimitive) && UpdatedPrimitive->IsA<UCapsuleComponent>()) {
+		m_capsuleComponent = Cast<UCapsuleComponent>(UpdatedPrimitive);
+	}
+	else {
+		if (GetPawnOwner()) {
+			m_capsuleComponent = GetPawnOwner()->FindComponentByClass<UCapsuleComponent>();
+		}
+	}
+
+	if (!m_capsuleComponent) {
+		DEBUG_ERROR(TEXT("[%s] no capsule comp"), *GetNameSafe(this));
+		//DEBUG ERROR
+	}
 }
 
 void UPMCharacterMovement::ClearAccumulatedForces()
@@ -707,14 +828,26 @@ bool UPMCharacterMovement::SetMovementTag(const FGameplayTag& NewMoveTag)
 	bool lHasChangeTag = false;
 
 	if (IsSameMovementMode(NewMoveTag)) {
+		DEBUG_LOG_SCREEN(-1, 10, FColor::Red, TEXT("%s Same on new tag set "), *GetNameSafe(this));
 		lHasChangeTag = false;
 		return lHasChangeTag;
 	}
 
-	UClass* lMoveClass = m_allMoveMode.Find(NewMoveTag)->Get();
+	// I need to optimize that
+	if (!m_allMoveMode.Find(NewMoveTag)) {
+		DEBUG_LOG_SCREEN(-1, 10, FColor::Red, TEXT("%s change movement tag not found"), *GetNameSafe(this));
+		return false;
+	}
+
+	UClass* lMoveClass = const_cast<UClass*>(m_allMoveMode.Find(NewMoveTag)->Get());
+
+	if (!lMoveClass) {
+		m_allMoveMode.Find(NewMoveTag)->LoadSynchronous();
+		lMoveClass = const_cast<UClass*>(m_allMoveMode.Find(NewMoveTag)->Get());
+	}
+	//
 
 	if (IsValid(lMoveClass)) {
-
 		UPMMovementMode* lTmp = lMoveClass->GetDefaultObject<UPMMovementMode>();
 
 		if (lTmp == nullptr) {
@@ -729,8 +862,16 @@ bool UPMCharacterMovement::SetMovementTag(const FGameplayTag& NewMoveTag)
 			lHasChangeTag = true;
 		}
 	}
+	else {
+		DEBUG_LOG_SCREEN(-1, 10, FColor::Red, TEXT("%s move class not valid"), *GetNameSafe(this));
+	}
 
 	return lHasChangeTag;
+}
+
+void UPMCharacterMovement::SetVelocity(FVector InVel)
+{
+	Velocity = InVel;
 }
 
 /*-------------------------------------------------------------------------------------*/
@@ -743,18 +884,7 @@ void UPMCharacterMovement::PostLoad()
 {
 	Super::PostLoad();
 
-	if (IsValid(UpdatedPrimitive) && UpdatedPrimitive->IsA<UCapsuleComponent>()) {
-		m_capsuleComponent = Cast<UCapsuleComponent>(UpdatedPrimitive);
-	}
-	else {
-		if (GetPawnOwner()) {
-			m_capsuleComponent = GetPawnOwner()->FindComponentByClass<UCapsuleComponent>();
-		}
-	}
-
-	if (!m_capsuleComponent) {
-		//DEBUG ERROR
-	}
+	FindCapsuleComponent();
 
 	if (bFindMeshInOwner && GetPawnOwner()) {
 		m_ownerMesh = GetPawnOwner()->FindComponentByClass<USkeletalMeshComponent>();
@@ -763,6 +893,13 @@ void UPMCharacterMovement::PostLoad()
 	if (!m_ownerMesh && bFindMeshInOwner) {
 		//DEBUG ERROR
 	}
+}
+
+void UPMCharacterMovement::BeginPlay()
+{
+	Super::BeginPlay();
+
+	FindCapsuleComponent();
 }
 
 float UPMCharacterMovement::GetGravityZ() const
@@ -792,5 +929,33 @@ void UPMCharacterMovement::SetUpdatedComponent(USceneComponent* NewUpdatedCompon
 
 void UPMCharacterMovement::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	if (!IsValidBaseData() || ShouldSkipUpdate(DeltaTime)) {
+		return;
+	}
+
+	m_inputVector = ConsumeInputVector();
+
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// Super tick may destroy/invalidate CharacterOwner or UpdatedComponent, so we need to re-check.
+	if (!IsValidBaseData()) {
+		return;
+	}
+
+	// See if we fell out of the world.
+	const bool lbIsSimulatingPhysics = UpdatedComponent->IsSimulatingPhysics();
+
+	if ((lbIsSimulatingPhysics) && !GetPawnOwner()->CheckStillInWorld()) {
+		return;
+	}
+
+	// We don't update if simulating physics (eg ragdolls).
+	if (lbIsSimulatingPhysics) {
+		ClearAccumulatedForces();
+		return;
+	}
+
+	if (GetPawnOwner()->IsLocallyControlled() || !GetController()) {
+		ControlledCharacterMove(m_inputVector, DeltaTime);
+	}
 }

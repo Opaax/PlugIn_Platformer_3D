@@ -139,7 +139,7 @@ void APM_CharacterDemo::PawnClientRestart()
 
 void APM_CharacterDemo::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
 {
-	DEBUG_LOG(TEXT("Add Movement Input"));
+	DEBUG_LOG(TEXT("Add Movement Input: %s"), *WorldDirection.ToString());
 
 	Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
 }

@@ -48,7 +48,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "CharacterMovement")
 	TObjectPtr<UPMCharacterMovement> m_characterMovement;
 
-	UPROPERTY(VisibleAnywhere, Category = " PM|Movement", BlueprintGetter = "GetMovementWalkTag")
+	UPROPERTY(EditAnywhere, Category = " PM|Movement", BlueprintGetter = "GetMovementWalkTag", meta = (AllowPrivateAcess = "True"))
 	FGameplayTag m_walkMovementTag;
 
 #if WITH_EDITORONLY_DATA

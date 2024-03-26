@@ -26,7 +26,7 @@ public:
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 public:
-	virtual bool PhysMovement_Implementation(float DeltaTime, int32 Iterations, const APawn* MoveComp) override;
-	virtual bool StartMovement_Implementation(float DeltaTime, const APawn* MoveComp) override;
+	virtual bool PhysMovement_Implementation(float DeltaTime, int32 Iterations, UPMCharacterMovement* MoveComp) override;
+	virtual bool StartMovement_Implementation(float DeltaTime, const UPMCharacterMovement* MoveComp) override;
 
 };

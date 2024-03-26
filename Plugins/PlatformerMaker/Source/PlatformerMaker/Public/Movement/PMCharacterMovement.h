@@ -52,6 +52,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Movement", BlueprintReadOnly, meta = (DisplayName = "CurrentMovementTag"))
 	FGameplayTag m_currentMovementTag;
 
+	UPROPERTY(VisibleAnywhere, Category = "Movement", BlueprintReadOnly, meta = (DisplayName = "PreviousMovementTag"))
+	FGameplayTag m_previousMovementTag;
+
 	UPROPERTY(VisibleAnywhere, Category = "Movement", BlueprintReadWrite, meta = (DisplayName = "CurrentMovement"))
 	TObjectPtr<UPMMovementMode> m_currentMovement;
 
@@ -66,6 +69,11 @@ protected:
 	UPROPERTY(Category = "General_Settings", EditAnywhere, BlueprintReadWrite)
 	FGameplayTagContainer m_allTagsToAllowCrouch;
 
+	UPROPERTY(VisibleAnywhere, Category = "Runtime")
+	FVector m_inputVector;
+
+	float m_owningDeltaTime = 0;
+	int32 m_owningInteration = 0;
 #pragma region CharacterMovementUE Interface
 	/**
 	 * If true, high-level movement updates will be wrapped in a movement scope that accumulates updates and defers a bulk of the work until the end.
@@ -116,6 +124,10 @@ protected:
 	UPROPERTY(Category = "Runtime", VisibleInstanceOnly, BlueprintReadWrite, AdvancedDisplay)
 	uint8 bForceNextFloorCheck : 1;
 
+	/** Used by movement code to determine if a change in position is based on normal movement or a teleport. If not a teleport, velocity can be recomputed based on the change in position. */
+	UPROPERTY(Category = "Runtime", VisibleInstanceOnly, BlueprintReadWrite, BlueprintGetter = "IsJustTeleported", BlueprintSetter = "SetJustTeleported")
+	uint8 bJustTeleported : 1;
+
 	/**
 	 * Location after last PerformMovement or SimulateMovement update. Used internally to detect changes in position from outside character movement to try to validate the current floor.
 	 */
@@ -153,6 +165,36 @@ protected:
 	FQuat m_oldBaseQuat;
 	/** Saved location of object we are standing on, for UpdateBasedMovement() to determine if base moved in the last frame, and therefore pawn needs an update. */
 	FVector m_oldBaseLocation;
+
+	/**
+	 * Max number of iterations used for each discrete simulation step.
+	 * Used primarily in the the more advanced movement modes that break up larger time steps (usually those applying gravity such as falling and walking).
+	 * Increasing this value can address issues with fast-moving objects or complex collision scenarios, at the cost of performance.
+	 *
+	 * WARNING: if (MaxSimulationTimeStep * MaxSimulationIterations) is too low for the min framerate, the last simulation step may exceed MaxSimulationTimeStep to complete the simulation.
+	 * @see MaxSimulationTimeStep
+	 */
+	UPROPERTY(Category = "Movement|General_Settings", BlueprintGetter = "GetMaxSimInterations" EditAnywhere, BlueprintReadWrite, AdvancedDisplay, meta = (ClampMin = "1", ClampMax = "25", UIMin = "1", UIMax = "25"))
+	int32 m_maxSimulationIterations;
+
+	/**
+	 * Max time delta for each discrete simulation step.
+	 * Used primarily in the the more advanced movement modes that break up larger time steps (usually those applying gravity such as falling and walking).
+	 * Lowering this value can address issues with fast-moving objects or complex collision scenarios, at the cost of performance.
+	 *
+	 * WARNING: if (MaxSimulationTimeStep * MaxSimulationIterations) is too low for the min framerate, the last simulation step may exceed MaxSimulationTimeStep to complete the simulation.
+	 * @see MaxSimulationIterations
+	 */
+	UPROPERTY(Category = "Movement|General_Settings", EditAnywhere, BlueprintReadWrite, AdvancedDisplay, meta = (ClampMin = "0.0166", ClampMax = "0.50", UIMin = "0.0166", UIMax = "0.50"))
+	float m_maxSimulationTimeStep;
+
+	/**
+	 * True during movement update.
+	 * Used internally so that attempts to change CharacterOwner and UpdatedComponent are deferred until after an update.
+	 * @see IsMovementInProgress()
+	 */
+	UPROPERTY()
+	uint8 bMovementInProgress : 1;
 #pragma endregion CharacterMovementUE Interface
 
 #pragma region Mesh
@@ -202,6 +244,8 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool ChangeMovement(const UPMMovementMode* NewMovement);
 
+	UFUNCTION()
+	void FindCapsuleComponent();
 
 #pragma region CharacterMovementUE Interface
 protected:
@@ -247,6 +291,17 @@ public:
 	UPROPERTY()
 	struct FPMCharacterMovementPrePhysicsTickFunction PrePhysicsTickFunction;
 
+	/**
+	 * Compute remaining time step given remaining time and current iterations.
+	 * The last iteration (limited by MaxSimulationIterations) always returns the remaining time, which may violate MaxSimulationTimeStep.
+	 *
+	 * @param RemainingTime		Remaining time in the tick.
+	 * @param Iterations		Current iteration of the tick (starting at 1).
+	 * @return The remaining time step to use for the next sub-step of iteration.
+	 * @see MaxSimulationTimeStep, MaxSimulationIterations
+	 */
+	float GetSimulationTimeStep(float RemainingTime, int32 Iterations) const;
+
 	/** Update position based on Base movement */
 	virtual void UpdateBasedMovement(float DeltaSeconds);
 
@@ -263,6 +318,18 @@ public:
 
 	/** Handle a pending launch during an update. Returns true if the launch was triggered. */
 	virtual bool HandlePendingLaunch();
+
+	/** Updates acceleration and perform movement, called from the TickComponent on the authoritative side for controlled characters,
+	 *	or on the client for characters without a controller when either playing root motion or bRunPhysicsWithNoController is true.
+	 */
+	virtual void ControlledCharacterMove(const FVector& InputVector, float DeltaSeconds);
+
+	/** Scale input acceleration, based on movement acceleration rate. */
+	virtual FVector ScaleInputAcceleration(const FVector& InputAcceleration) const;
+
+	/** Enforce constraints on input given current state. For instance, don't move upwards if walking and looking up. */
+	virtual FVector ConstrainInputAcceleration(const FVector& InputAcceleration) const;
+
 #pragma endregion CharacterMovementUE Interface
 
 public:
@@ -298,6 +365,18 @@ public:
 	UFUNCTION(BlueprintPure, BlueprintCallable)
 	FORCEINLINE UCapsuleComponent* GetCapsuleComponent() const { return m_capsuleComponent; }
 
+	UFUNCTION(BlueprintCallable)
+	void SetVelocity(FVector InVel);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement|GetterSetter")
+	FORCEINLINE bool IsJustTeleported() const { return (bool)bJustTeleported; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement|GetterSetter")
+	FORCEINLINE void SetJustTeleported(bool InValue) { bJustTeleported = InValue; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE int32 GetMaxSimInterations() const { return m_maxSimulationIterations; }
+
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 public:
 	//UObject
@@ -305,6 +384,7 @@ public:
 
 	//UActorComp
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void BeginPlay() override;
 
 	//Movement Comp
 	virtual float GetGravityZ() const override;
@@ -312,4 +392,21 @@ public:
 	virtual bool IsFalling() const override;
 	virtual float GetMaxSpeed() const override;
 	virtual void SetUpdatedComponent(USceneComponent* NewUpdatedComponent) override;
+
+	/*---------------------------------- CONST ----------------------------------*/
+public:
+	/** Minimum delta time considered when ticking. Delta times below this are not considered. This is a very small non-zero value to avoid potential divide-by-zero in simulation code. */
+	static const float MIN_TICK_TIME;
+
+	/** Minimum acceptable distance for Character capsule to float above floor when walking. */
+	static const float MIN_FLOOR_DIST;
+
+	/** Maximum acceptable distance for Character capsule to float above floor when walking. */
+	static const float MAX_FLOOR_DIST;
+
+	/** Reject sweep impacts that are this close to the edge of the vertical portion of the capsule when performing vertical sweeps, and try again with a smaller capsule. */
+	static const float SWEEP_EDGE_REJECT_DISTANCE;
+
+	/** Stop completely when braking and velocity magnitude is lower than this. */
+	static const float BRAKE_TO_STOP_VELOCITY;
 };

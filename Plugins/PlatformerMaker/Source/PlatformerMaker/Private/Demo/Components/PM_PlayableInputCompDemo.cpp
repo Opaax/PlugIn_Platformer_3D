@@ -59,6 +59,11 @@ void UPM_PlayableInputCompDemo::InitializePlayerInput_Implementation(APM_PlayerC
 
 	UInputMappingContext* lIMC = m_defaultMappingContext.SoftMappingContext.Get();
 
+	if (!IsValid(lIMC)) {
+		m_defaultMappingContext.SoftMappingContext.LoadSynchronous();
+		lIMC = m_defaultMappingContext.SoftMappingContext.Get();
+	}
+
 	if (IsValid(lIMC)) {
 		
 		DEBUG_LOG(TEXT("%s, add mapping context"), *GetNameSafe(this));

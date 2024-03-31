@@ -530,7 +530,7 @@ bool UPMMovement_Walk::StepUp(const FVector& InGravDir, const FVector& Delta, co
 
 		// See if we can validate the floor as a result of this step down. In almost all cases this should succeed, and we can avoid computing the floor outside this method.
 		if (OutStepDownResult != NULL) {
-			//FindFloor(m_currentMoveComp->UpdatedComponent->GetComponentLocation(), lStepDownResult.FloorResult, false, &Hit);
+			FindFloor(m_currentMoveComp->UpdatedComponent->GetComponentLocation(), lStepDownResult.FloorResult, false, &Hit);
 
 			// Reject unwalkable normals if we end up higher than our initial height.
 			// It's fine to walk down onto an unwalkable surface, don't reject those moves.

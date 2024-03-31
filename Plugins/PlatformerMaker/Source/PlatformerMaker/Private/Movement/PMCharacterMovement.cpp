@@ -1063,8 +1063,7 @@ void UPMCharacterMovement::OnCharacterStuckInGeometry(const FHitResult* Hit)
 void UPMCharacterMovement::FindFloor(const FVector& CapsuleLocation, FPMFindFloorResult& OutFloorResult, bool bCanUseCachedLocation, const FHitResult* DownwardSweepResult) const
 {
 	// No collision, no floor...
-	if (!IsValidBaseData() || !UpdatedComponent->IsQueryCollisionEnabled())
-	{
+	if (!IsValidBaseData() || !UpdatedComponent->IsQueryCollisionEnabled()) {
 		OutFloorResult.Clear();
 		return;
 	}

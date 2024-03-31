@@ -93,6 +93,13 @@ protected:
 
 	/** Custom version of SlideAlongSurface that handles different movement modes separately; namely during walking physics we might not want to slide up slopes. else call move comp slide */
 	float SlideAlongSurface(const FVector& Delta, float Time, const FVector& Normal, FHitResult& Hit, bool bHandleImpact);
+
+	/**
+	 * Return true if the 2D distance to the impact point is inside the edge tolerance (CapsuleRadius minus a small rejection threshold).
+	 * Useful for rejecting adjacent hits when finding a floor or landing spot.
+	 */
+	virtual bool IsWithinEdgeTolerance(const FVector& CapsuleLocation, const FVector& TestImpactPoint, const float CapsuleRadius) const;
+
 public:
 	UPMMovement_Walk(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

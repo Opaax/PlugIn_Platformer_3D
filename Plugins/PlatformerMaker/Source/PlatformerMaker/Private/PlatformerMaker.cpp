@@ -13,7 +13,7 @@ void FPlatformerMakerModule::StartupModule()
 	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings"))
 	{
 		SettingsModule->RegisterSettings("Project", "Plugins", "PlatformerMaker_Settings",
-			LOCTEXT("RuntimeSettingsName", "Platformer Maker"), LOCTEXT("RuntimeSettingsDescription", "You can set here some value to "),
+			LOCTEXT("RuntimeSettingsName", "Platformer Maker"), LOCTEXT("RuntimeSettingsDescription", "Platformer Maker runtime settings"),
 			GetMutableDefault<UPlatformerMaker_Settings>());
 	}
 }

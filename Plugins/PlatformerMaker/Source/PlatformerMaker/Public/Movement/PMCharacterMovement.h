@@ -1,4 +1,4 @@
-// Copyright Enguerran COBERT, Inc. All Rights Reserved.
+//2024 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -10,6 +10,9 @@
 #include "PMCharacterMovementPrePhysicsTickFunction.h"
 #include "GameplayTagContainer.h"
 #include "NativeGameplayTags.h"
+#include "GameFramework/CharacterMovementComponent.h" //Epic, stick some struct in the same .h than CharacterMovement.h file. I don't want to chnage everythings in the movement comp, so I need to include to get acces in other struct
+#include "PMFindFloorResultStruct.h"
+#include "PMStepDownResultStruct.h"
 #include "PMCharacterMovement.generated.h"
 
 class UPMMovementMode;
@@ -17,7 +20,7 @@ class UPMMovementMode;
 //DELEGATES
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FPMCharacterMovementUpdatedSignature,const APawn*, MovementOwningPawn, float, DeltaSeconds, FVector, OldLocation, FVector, OldVelocity);
 
-//TAGS
+//TAGS, Move to another file ? 
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Native_Mode_Walking);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Native_Mode_Crouch);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(Movement_Native_Mode_Fall);
@@ -174,7 +177,7 @@ protected:
 	 * WARNING: if (MaxSimulationTimeStep * MaxSimulationIterations) is too low for the min framerate, the last simulation step may exceed MaxSimulationTimeStep to complete the simulation.
 	 * @see MaxSimulationTimeStep
 	 */
-	UPROPERTY(Category = "Movement|General_Settings", BlueprintGetter = "GetMaxSimInterations" EditAnywhere, BlueprintReadWrite, AdvancedDisplay, meta = (ClampMin = "1", ClampMax = "25", UIMin = "1", UIMax = "25"))
+	UPROPERTY(Category = "Movement|General_Settings", BlueprintGetter = "GetMaxSimInterations", EditAnywhere, BlueprintReadWrite, AdvancedDisplay, meta = (ClampMin = "1", ClampMax = "25", UIMin = "1", UIMax = "25"))
 	int32 m_maxSimulationIterations;
 
 	/**
@@ -195,6 +198,16 @@ protected:
 	 */
 	UPROPERTY()
 	uint8 bMovementInProgress : 1;
+
+	/** Information about the floor the Character is standing on (updated only during walking movement). */
+	UPROPERTY(Category = "Movement|General_Settings", VisibleInstanceOnly, BlueprintReadOnly, BlueprintGetter = "GetCurrentFloor")
+	FPMFindFloorResult m_currentFloor;
+
+	/**
+	 * Time substepping when applying braking friction. Smaller time steps increase accuracy at the slight cost of performance, especially if there are large frame times.
+	 */
+	UPROPERTY(Category = "Character Movement (General Settings)", EditAnywhere, BlueprintReadWrite, AdvancedDisplay, meta = (ClampMin = "0.0166", ClampMax = "0.05", UIMin = "0.0166", UIMax = "0.05"))
+	float m_brakingSubStepTime;
 #pragma endregion CharacterMovementUE Interface
 
 #pragma region Mesh
@@ -229,10 +242,6 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, Category = "InternalEvents", meta = (DisplayName = "PerformMovement"))
 	void PerformMovement(float DeltaTime);
 	virtual void PerformMovement_Implementation(float DeltaTime);
-
-	UFUNCTION(BlueprintNativeEvent, Category = "InternalEvents", meta = (DisplayName = "StartNewPhysics"))
-	void StartNewPhysics(float DeltaTime, int32 Interation);
-	virtual void StartNewPhysics_Implementation(float DeltaTime, int32 Interation);
 
 	UFUNCTION(BlueprintNativeEvent, Category = "InternalEvents", meta = (DisplayName = "OnMoveTagChanged"))
 	void OnMoveTagChanged();
@@ -330,10 +339,45 @@ public:
 	/** Enforce constraints on input given current state. For instance, don't move upwards if walking and looking up. */
 	virtual FVector ConstrainInputAcceleration(const FVector& InputAcceleration) const;
 
+	/**
+	 * Updates Velocity and Acceleration based on the current state, applying the effects of friction and acceleration or deceleration. Does not apply gravity.
+	 * This is used internally during movement updates. Normally you don't need to call this from outside code, but you might want to use it for custom movement modes.
+	 *
+	 * @param	DeltaTime						time elapsed since last frame.
+	 * @param	Friction						coefficient of friction when not accelerating, or in the direction opposite acceleration.
+	 * @param	bFluid							true if moving through a fluid, causing Friction to always be applied regardless of acceleration.
+	 * @param	BrakingDeceleration				deceleration applied when not accelerating, or when exceeding max velocity.
+	 */
+	UFUNCTION(BlueprintNativeEvent, Category = "InternalEvents", meta = (DisplayName = "CalcVelocity"))
+	void CalcVelocity(float DeltaTime, FPMBraking BrakingSetting, bool bFluid);
+	virtual void CalcVelocity_Implementation(float DeltaTime, FPMBraking BrakingSetting, bool bFluid);
+
+	/** Slows towards stop. */
+	UFUNCTION(BlueprintNativeEvent, Category = "InternalEvents", meta = (DisplayName = "ApplyVelocityBraking"))
+	void ApplyVelocityBraking(float DeltaTime, FPMBraking BrakingSetting, float ComputedFriction);
+	virtual void ApplyVelocityBraking_Implementation(float DeltaTime, FPMBraking BrakingSetting, float ComputedFriction);
+
+	/** Notification that the character is stuck in geometry.  Only called during walking movement. */
+	virtual void OnCharacterStuckInGeometry(const FHitResult* Hit);
+
+	/**
+	 * Sweeps a vertical trace to find the floor for the capsule at the given location. Will attempt to perch if ShouldComputePerchResult() returns true for the downward sweep result.
+	 * No floor will be found if collision is disabled on the capsule!
+	 *
+	 * @param CapsuleLocation		Location where the capsule sweep should originate
+	 * @param OutFloorResult		[Out] Contains the result of the floor check. The HitResult will contain the valid sweep or line test upon success, or the result of the sweep upon failure.
+	 * @param bCanUseCachedLocation If true, may use a cached value (can be used to avoid unnecessary floor tests, if for example the capsule was not moving since the last test).
+	 * @param DownwardSweepResult	If non-null and it contains valid blocking hit info, this will be used as the result of a downward sweep test instead of doing it as part of the update.
+	 */
+	virtual void FindFloor(const FVector& CapsuleLocation, FPMFindFloorResult& OutFloorResult, bool bCanUseCachedLocation, const FHitResult* DownwardSweepResult = NULL) const;
 #pragma endregion CharacterMovementUE Interface
 
 public:
 	UPMCharacterMovement(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UFUNCTION(BlueprintNativeEvent, Category = "InternalEvents", meta = (DisplayName = "StartNewPhysics"))
+	void StartNewPhysics(float DeltaTime, int32 Interation);
+	virtual void StartNewPhysics_Implementation(float DeltaTime, int32 Interation);
 
 	/*/!\ VERY IMPORTANT /!\*\
 
@@ -345,7 +389,7 @@ public:
 	bool IsValidToMove();
 
 	UFUNCTION(Category = "Movement")
-	bool IsValidBaseData();
+	bool IsValidBaseData() const;
 
 	UFUNCTION(BlueprintPure, Category = "Movement|Acceleration")
 	FORCEINLINE FPMAcceleration GetAcceleration() const { return m_acceleration; }
@@ -371,11 +415,17 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement|GetterSetter")
 	FORCEINLINE bool IsJustTeleported() const { return (bool)bJustTeleported; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Movement|GetterSetter")
+	UFUNCTION(BlueprintCallable, Category = "Movement|GetterSetter")
 	FORCEINLINE void SetJustTeleported(bool InValue) { bJustTeleported = InValue; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	FORCEINLINE int32 GetMaxSimInterations() const { return m_maxSimulationIterations; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE FPMFindFloorResult GetCurrentFloor() const { return m_currentFloor; }
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void GetCurrentFloorRef(FPMFindFloorResult& OutFindFloor) const { OutFindFloor = m_currentFloor; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 public:

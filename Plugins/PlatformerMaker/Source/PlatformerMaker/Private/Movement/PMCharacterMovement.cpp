@@ -73,7 +73,7 @@ bool UPMCharacterMovement::IsValidToMove()
 	return IsValid(GetController()) && IsValidBaseData() && IsValid(m_currentMovement) && m_currentMovementTag.IsValid();
 }
 
-bool UPMCharacterMovement::IsValidBaseData()
+bool UPMCharacterMovement::IsValidBaseData() const
 {
 	return UpdatedComponent && IsValid(m_capsuleComponent) && IsValid(GetPawnOwner());
 }
@@ -909,17 +909,17 @@ float UPMCharacterMovement::GetGravityZ() const
 
 bool UPMCharacterMovement::IsMovingOnGround() const
 {
-	return false;
+	return m_currentMovementTag == Movement_Native_Mode_Walking && IsValid(UpdatedComponent);
 }
 
 bool UPMCharacterMovement::IsFalling() const
 {
-	return false;
+	return m_currentMovementTag == Movement_Native_Mode_Fall && UpdatedComponent;
 }
 
 float UPMCharacterMovement::GetMaxSpeed() const
 {
-	return 0;
+	return IsValid(m_currentMovement) ? m_currentMovement->GetMaxSpeed() : 0;
 }
 
 void UPMCharacterMovement::SetUpdatedComponent(USceneComponent* NewUpdatedComponent)
@@ -957,5 +957,201 @@ void UPMCharacterMovement::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 	if (GetPawnOwner()->IsLocallyControlled() || !GetController()) {
 		ControlledCharacterMove(m_inputVector, DeltaTime);
+	}
+}
+
+void UPMCharacterMovement::CalcVelocity_Implementation(float DeltaTime, FPMBraking BrakingSetting, bool bFluid)
+{
+	// Do not update velocity
+	if (!IsValidBaseData() || DeltaTime < MIN_TICK_TIME) {
+		return;
+	}
+
+	float lFriction = FMath::Max(0.f, BrakingSetting.BrakingFriction);
+	const float lMaxAccel = m_acceleration.MaxAcceleration;
+	float lMaxSpeed = GetMaxSpeed();
+
+
+	// Apply braking or deceleration
+	const bool bZeroAcceleration = m_acceleration.GetAcceleration().IsZero();
+	const bool bVelocityOverMax = IsExceedingMaxSpeed(lMaxSpeed);
+
+	// Only apply braking if there is no acceleration, or we are over our max speed and need to slow down to it.
+	if ((bZeroAcceleration) || bVelocityOverMax) {
+		const FVector lOldVelocity = Velocity;
+
+		const float lActualBrakingFriction = lFriction;
+		ApplyVelocityBraking(DeltaTime, BrakingSetting, lActualBrakingFriction);
+
+		// Don't allow braking to lower us below max speed if we started above it.
+		if (bVelocityOverMax && Velocity.SizeSquared() < FMath::Square(lMaxSpeed) && FVector::DotProduct(m_acceleration.GetAcceleration(), lOldVelocity) > 0.0f) {
+			Velocity = lOldVelocity.GetSafeNormal() * lMaxSpeed;
+		}
+	}
+	else if (!bZeroAcceleration) {
+		// Friction affects our ability to change direction. This is only done for input acceleration, not path following.
+		const FVector lAccelDir = m_acceleration.GetAcceleration().GetSafeNormal();
+		const float lVelSize = Velocity.Size();
+		Velocity = Velocity - (Velocity - lAccelDir * lVelSize) * FMath::Min(DeltaTime * lFriction, 1.f);
+	}
+
+	// Apply fluid friction
+	if (bFluid) {
+		Velocity = Velocity * (1.f - FMath::Min(lFriction * DeltaTime, 1.f));
+	}
+
+	// Apply input acceleration
+	if (!bZeroAcceleration) {
+		const float lNewMaxInputSpeed = IsExceedingMaxSpeed(lMaxSpeed) ? Velocity.Size() : lMaxSpeed;
+		Velocity += m_acceleration.GetAcceleration() * DeltaTime;
+		Velocity = Velocity.GetClampedToMaxSize(lNewMaxInputSpeed);
+	}
+}
+
+void UPMCharacterMovement::ApplyVelocityBraking_Implementation(float DeltaTime, FPMBraking BrakingSetting, float ComputedFriction)
+{
+	if (Velocity.IsZero() || !IsValidBaseData() || DeltaTime < MIN_TICK_TIME) {
+		return;
+	}
+
+	const float lFrictionFactor = FMath::Max(0.f, BrakingSetting.BrakingFrictionFactor);
+	ComputedFriction = FMath::Max(0.f, ComputedFriction * lFrictionFactor);
+	float lBrakingDeceleration = FMath::Max(0.f, BrakingSetting.BrakingDeceleration);
+	const bool bZeroFriction = (ComputedFriction == 0.f);
+	const bool bZeroBraking = (lBrakingDeceleration == 0.f);
+
+	if (bZeroFriction && bZeroBraking) {
+		return;
+	}
+
+	const FVector lOldVel = Velocity;
+
+	// subdivide braking to get reasonably consistent results at lower frame rates
+	// (important for packet loss situations w/ networking)
+	float lRemainingTime = DeltaTime;
+	const float lMaxTimeStep = FMath::Clamp(m_brakingSubStepTime, 1.0f / 75.0f, 1.0f / 20.0f);
+
+	// Decelerate to brake to a stop
+	const FVector lRevAccel = (bZeroBraking ? FVector::ZeroVector : (-lBrakingDeceleration * Velocity.GetSafeNormal()));
+	while (lRemainingTime >= MIN_TICK_TIME) {
+		// Zero friction uses constant deceleration, so no need for iteration.
+		const float ldt = ((lRemainingTime > lMaxTimeStep && !bZeroFriction) ? FMath::Min(lMaxTimeStep, lRemainingTime * 0.5f) : lRemainingTime);
+		lRemainingTime -= ldt;
+
+		// apply friction and braking
+		Velocity = Velocity + ((-ComputedFriction) * Velocity + lRevAccel) * ldt;
+
+		// Don't reverse direction
+		if ((Velocity | lOldVel) <= 0.f) {
+			Velocity = FVector::ZeroVector;
+			return;
+		}
+	}
+
+	// Clamp to zero if nearly zero, or if below min threshold and braking.
+	const float VSizeSq = Velocity.SizeSquared();
+	if (VSizeSq <= UE_KINDA_SMALL_NUMBER || (!bZeroBraking && VSizeSq <= FMath::Square(BRAKE_TO_STOP_VELOCITY))) {
+		Velocity = FVector::ZeroVector;
+	}
+}
+
+void UPMCharacterMovement::OnCharacterStuckInGeometry(const FHitResult* Hit)
+{
+	bJustTeleported = true;
+}
+
+void UPMCharacterMovement::FindFloor(const FVector& CapsuleLocation, FPMFindFloorResult& OutFloorResult, bool bCanUseCachedLocation, const FHitResult* DownwardSweepResult) const
+{
+	// No collision, no floor...
+	if (!IsValidBaseData() || !UpdatedComponent->IsQueryCollisionEnabled())
+	{
+		OutFloorResult.Clear();
+		return;
+	}
+
+	// Increase height check slightly if walking, to prevent floor height adjustment from later invalidating the floor result.
+	const float HeightCheckAdjust = (IsMovingOnGround() ? MAX_FLOOR_DIST + UE_KINDA_SMALL_NUMBER : -MAX_FLOOR_DIST);
+
+	float FloorSweepTraceDist = FMath::Max(MAX_FLOOR_DIST, MaxStepHeight + HeightCheckAdjust);
+	float FloorLineTraceDist = FloorSweepTraceDist;
+	bool bNeedToValidateFloor = true;
+
+	// Sweep floor
+	if (FloorLineTraceDist > 0.f || FloorSweepTraceDist > 0.f)
+	{
+		UCharacterMovementComponent* MutableThis = const_cast<UCharacterMovementComponent*>(this);
+
+		if (bAlwaysCheckFloor || !bCanUseCachedLocation || bForceNextFloorCheck || bJustTeleported)
+		{
+			MutableThis->bForceNextFloorCheck = false;
+			ComputeFloorDist(CapsuleLocation, FloorLineTraceDist, FloorSweepTraceDist, OutFloorResult, CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleRadius(), DownwardSweepResult);
+		}
+		else
+		{
+			// Force floor check if base has collision disabled or if it does not block us.
+			UPrimitiveComponent* MovementBase = CharacterOwner->GetMovementBase();
+			const AActor* BaseActor = MovementBase ? MovementBase->GetOwner() : NULL;
+			const ECollisionChannel CollisionChannel = UpdatedComponent->GetCollisionObjectType();
+
+			if (MovementBase != NULL)
+			{
+				MutableThis->bForceNextFloorCheck = !MovementBase->IsQueryCollisionEnabled()
+					|| MovementBase->GetCollisionResponseToChannel(CollisionChannel) != ECR_Block
+					|| MovementBaseUtility::IsDynamicBase(MovementBase);
+			}
+
+			const bool IsActorBasePendingKill = BaseActor && !IsValid(BaseActor);
+
+			if (!bForceNextFloorCheck && !IsActorBasePendingKill && MovementBase)
+			{
+				//UE_LOG(LogCharacterMovement, Log, TEXT("%s SKIP check for floor"), *CharacterOwner->GetName());
+				OutFloorResult = CurrentFloor;
+				bNeedToValidateFloor = false;
+			}
+			else
+			{
+				MutableThis->bForceNextFloorCheck = false;
+				ComputeFloorDist(CapsuleLocation, FloorLineTraceDist, FloorSweepTraceDist, OutFloorResult, CharacterOwner->GetCapsuleComponent()->GetScaledCapsuleRadius(), DownwardSweepResult);
+			}
+		}
+	}
+
+	// OutFloorResult.HitResult is now the result of the vertical floor check.
+	// See if we should try to "perch" at this location.
+	if (bNeedToValidateFloor && OutFloorResult.bBlockingHit && !OutFloorResult.bLineTrace)
+	{
+		const bool bCheckRadius = true;
+		if (ShouldComputePerchResult(OutFloorResult.HitResult, bCheckRadius))
+		{
+			float MaxPerchFloorDist = FMath::Max(MAX_FLOOR_DIST, MaxStepHeight + HeightCheckAdjust);
+			if (IsMovingOnGround())
+			{
+				MaxPerchFloorDist += FMath::Max(0.f, PerchAdditionalHeight);
+			}
+
+			FFindFloorResult PerchFloorResult;
+			if (ComputePerchResult(GetValidPerchRadius(), OutFloorResult.HitResult, MaxPerchFloorDist, PerchFloorResult))
+			{
+				// Don't allow the floor distance adjustment to push us up too high, or we will move beyond the perch distance and fall next time.
+				const float AvgFloorDist = (MIN_FLOOR_DIST + MAX_FLOOR_DIST) * 0.5f;
+				const float MoveUpDist = (AvgFloorDist - OutFloorResult.FloorDist);
+				if (MoveUpDist + PerchFloorResult.FloorDist >= MaxPerchFloorDist)
+				{
+					OutFloorResult.FloorDist = AvgFloorDist;
+				}
+
+				// If the regular capsule is on an unwalkable surface but the perched one would allow us to stand, override the normal to be one that is walkable.
+				if (!OutFloorResult.bWalkableFloor)
+				{
+					// Floor distances are used as the distance of the regular capsule to the point of collision, to make sure AdjustFloorHeight() behaves correctly.
+					OutFloorResult.SetFromLineTrace(PerchFloorResult.HitResult, OutFloorResult.FloorDist, FMath::Max(OutFloorResult.FloorDist, MIN_FLOOR_DIST), true);
+				}
+			}
+			else
+			{
+				// We had no floor (or an invalid one because it was unwalkable), and couldn't perch here, so invalidate floor (which will cause us to start falling).
+				OutFloorResult.bWalkableFloor = false;
+			}
+		}
 	}
 }

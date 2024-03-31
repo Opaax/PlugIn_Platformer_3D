@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
 #include "GameplayTagAssetInterface.h"
 #include "AbilitySystemInterface.h"
 #include "PM_CharacterDemo.generated.h"
@@ -25,15 +25,12 @@ class UAbilitySystemComponent;
 * Custom Pawn for the Demo for the plugin 'Platformer Maker'
 */
 UCLASS(Config=DemoGame)
-class PLATFORMERMAKER_API APM_CharacterDemo : public APawn, public IGameplayTagAssetInterface, public IAbilitySystemInterface
+class PLATFORMERMAKER_API APM_CharacterDemo : public ACharacter, public IGameplayTagAssetInterface, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 	/*---------------------------------- MEMBERS ----------------------------------*/
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintGetter = "GetCapsuleComponent", meta = (AllowPrivateAccess = "True"))
-	TObjectPtr<UCapsuleComponent> m_capsuleComponent;
-
 	UPROPERTY(VisibleInstanceOnly, Category = " PM|Runtime",BlueprintGetter = "GetPlayerControllerDemo", meta = (DisplayName = "bAutoAddMappingContext"))
 	TObjectPtr<APM_PlayerControllerDemo> m_pmController;
 
@@ -42,14 +39,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "GetAbilitySystemComp")
 	TObjectPtr<UAbilitySystemComponent> m_abilitySystemComp;
-
-#if WITH_EDITORONLY_DATA
-	UPROPERTY()
-	TObjectPtr<UArrowComponent> m_arrowComponent;
-#endif
-
-public:
-	static FName CapsuleComponentName;
 
 	/*---------------------------------- FUNCTION ----------------------------------*/
 private:
@@ -64,9 +53,6 @@ public:
 
 	/*---------------------------------- GETTER / SETTER ----------------------------------*/
 public:
-	UFUNCTION(BlueprintPure, BlueprintCallable)
-	FORCEINLINE UCapsuleComponent* GetCapsuleComponent() const { return m_capsuleComponent; }
-
 	UFUNCTION(BlueprintPure, BlueprintCallable)
 	FORCEINLINE APM_PlayerControllerDemo* GetPlayerControllerDemo() const { return m_pmController; }
 

@@ -23,19 +23,8 @@
 
 DEFINE_LOG_CATEGORY_STATIC(LogCharacterDemo, Log, All);
 
-FName APM_CharacterDemo::CapsuleComponentName(TEXT("CapsuleComponent"));
-
 APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
-	m_capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(CapsuleComponentName);
-	m_capsuleComponent->InitCapsuleSize(34.0f, 88.0f);
-	m_capsuleComponent->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
-	m_capsuleComponent->CanCharacterStepUpOn = ECB_No;
-	m_capsuleComponent->SetShouldUpdatePhysicsVolume(true);
-	m_capsuleComponent->SetCanEverAffectNavigation(false);
-	m_capsuleComponent->bDynamicObstacle = true;
-	RootComponent = m_capsuleComponent;
-
 	PrimaryActorTick.bCanEverTick = true;
 
 	bUseControllerRotationPitch = false;
@@ -44,34 +33,6 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 
 	m_playableInputComp = CreateDefaultSubobject<UPM_PlayableInputCompDemo>(TEXT("PlayableInputComp"));
 	m_abilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComp"));
-
-	// Structure to hold one-time initialization
-	struct FConstructorStaticsDemoCharacter
-	{
-		FName ID_Characters;
-		FText NAME_Characters;
-		FConstructorStaticsDemoCharacter()
-			: ID_Characters(TEXT("DemoCharacters"))
-			, NAME_Characters(NSLOCTEXT("SpriteCategory", "DemoCharacters", "DemoCharacters"))
-		{
-		}
-	};
-	static FConstructorStaticsDemoCharacter ConstructorStatics;
-
-#if WITH_EDITORONLY_DATA
-	m_arrowComponent = CreateEditorOnlyDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
-	if (m_arrowComponent)
-	{
-		m_arrowComponent->ArrowColor = FColor(255, 200, 255);
-		m_arrowComponent->ArrowSize = 2.f;
-		m_arrowComponent->bTreatAsASprite = true;
-		m_arrowComponent->SpriteInfo.Category = ConstructorStatics.ID_Characters;
-		m_arrowComponent->SpriteInfo.DisplayName = ConstructorStatics.NAME_Characters;
-		m_arrowComponent->SetupAttachment(m_capsuleComponent);
-		m_arrowComponent->bIsScreenSizeScaled = true;
-		m_arrowComponent->SetSimulatePhysics(false);
-	}
-#endif // WITH_EDITORONLY_DATA
 }
 
 void APM_CharacterDemo::Input_Movement(const FInputActionValue& InputActionValue)

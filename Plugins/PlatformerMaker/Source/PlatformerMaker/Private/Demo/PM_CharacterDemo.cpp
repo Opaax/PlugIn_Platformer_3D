@@ -14,6 +14,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/Controller.h"
 #include "AbilitySystemComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Controller.h"
 
 #if WITH_EDITORONLY_DATA
 #include "Components/ArrowComponent.h"
@@ -35,6 +37,16 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 	m_abilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComp"));
 }
 
+void APM_CharacterDemo::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void APM_CharacterDemo::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
 void APM_CharacterDemo::Input_Movement(const FInputActionValue& InputActionValue)
 {
 	const FVector2D Value = InputActionValue.Get<FVector2D>();
@@ -51,15 +63,29 @@ void APM_CharacterDemo::Input_Movement(const FInputActionValue& InputActionValue
 	}
 }
 
-void APM_CharacterDemo::BeginPlay()
+void APM_CharacterDemo::SetupConstraints()
 {
-	Super::BeginPlay();
-	
+	FVector lForward	= FVector::ForwardVector;
+	FVector lUpward		= FVector::UpVector;
+
+	if (GetController()) {
+		if (GetController()->StartSpot != nullptr) {
+			lForward = GetController()->StartSpot->GetActorForwardVector();
+		}
+	}
+	else {
+		lForward = GetActorRotation().RotateVector(lForward);
+	}
+
+	SetDirectionContraint(lForward, lUpward);
 }
 
-void APM_CharacterDemo::Tick(float DeltaTime)
+void APM_CharacterDemo::SetDirectionContraint(const FVector& ForwardConstraint, const FVector& UpConstraint)
 {
-	Super::Tick(DeltaTime);
+	ensure(GetMovementComponent());
+
+	GetMovementComponent()->SetPlaneConstraintEnabled(true);
+	GetMovementComponent()->SetPlaneConstraintFromVectors(ForwardConstraint, UpConstraint);
 }
 
 void APM_CharacterDemo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -87,9 +113,22 @@ void APM_CharacterDemo::PawnClientRestart()
 
 void APM_CharacterDemo::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
 {
-	DEBUG_LOG(TEXT("Add Movement Input"));
-
 	Super::AddMovementInput(WorldDirection, ScaleValue, bForce);
+}
+
+void APM_CharacterDemo::SetPlayerDefaults()
+{
+	Super::SetPlayerDefaults();
+
+	SetupConstraints();
+}
+
+void APM_CharacterDemo::TeleportSucceeded(bool bIsATest)
+{
+	//The parent character call OnTeleported localized In character movement, but if any custom movement do not implement this, lets go ahead here
+	Super::TeleportSucceeded(bIsATest);
+
+	SetupConstraints();
 }
 
 void APM_CharacterDemo::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const

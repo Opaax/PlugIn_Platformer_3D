@@ -48,18 +48,24 @@ private:
 public:
 	APM_CharacterDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "DemoCharacter")
 	void Input_Movement(const FInputActionValue& InputActionValue);
+
+	UFUNCTION(BlueprintCallable, Category = "DemoCharacter")
+	void SetupConstraints();
+
+	UFUNCTION(BlueprintCallable, Category = "DemoCharacter")
+	void SetDirectionContraint(const FVector& ForwardConstraint, const FVector& UpConstraint);
 
 	/*---------------------------------- GETTER / SETTER ----------------------------------*/
 public:
-	UFUNCTION(BlueprintPure, BlueprintCallable)
+	UFUNCTION(BlueprintPure, BlueprintCallable, Category = "DemoCharacter")
 	FORCEINLINE APM_PlayerControllerDemo* GetPlayerControllerDemo() const { return m_pmController; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DemoCharacter")
 	FORCEINLINE UPM_PlayableInputCompDemo* GetPlayableInputComp() const { return m_playableInputComp; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DemoCharacter")
 	FORCEINLINE UAbilitySystemComponent* GetAbilitySystemComp() const { return m_abilitySystemComp; }
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 #pragma region Pawn_Override
@@ -72,6 +78,8 @@ public:
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void PawnClientRestart() override;
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
+	virtual void SetPlayerDefaults() override;
+	virtual void TeleportSucceeded(bool bIsATest) override;
 #pragma endregion Pawn_Override
 
 #pragma region Tag_Interface_Override

@@ -26,6 +26,7 @@ protected:
 	TObjectPtr<APawn> m_currentPawn;
 
 	float m_distanceToTarget;
+	float m_forwardOffset;
 	ECameraViewSide m_viewSide;
 	FRotator m_pawnBaseRotation;
 

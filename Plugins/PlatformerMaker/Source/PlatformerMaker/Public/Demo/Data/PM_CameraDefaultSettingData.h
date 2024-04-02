@@ -21,5 +21,8 @@ public:
 	float DistanceToTarget = 500.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setting")
+	float ForwardOffset = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Setting")
 	ECameraViewSide ViewSide = ECameraViewSide::ECV_Right;
 };

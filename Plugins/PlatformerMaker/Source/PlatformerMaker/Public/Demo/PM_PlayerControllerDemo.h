@@ -8,6 +8,7 @@
 
 class UInputMappingContext;
 class APM_CharacterDemo;
+class APM_PlayerCameraManagerDemo;
 
 /**
  * Custom Player Controller for the Demo for the plugin 'Platformer Maker'
@@ -21,6 +22,9 @@ class PLATFORMERMAKER_API APM_PlayerControllerDemo : public APlayerController
 private:
 	UPROPERTY(VisibleInstanceOnly)
 	TObjectPtr<APM_CharacterDemo> m_demoCharacter;
+
+	UPROPERTY(VisibleInstanceOnly)
+	TObjectPtr<APM_PlayerCameraManagerDemo> m_demoCamManager;
 
 	/*---------------------------------- FUNCTION ----------------------------------*/
 public:
@@ -38,6 +42,13 @@ public:
 	UFUNCTION()
 	FORCEINLINE APM_CharacterDemo* GetDemoCharacter() const { return m_demoCharacter; }
 
-
 	/*---------------------------------- OVERRIDE ----------------------------------*/
+
+#pragma region PlayerController
+public:
+	virtual void OnPossess(APawn* aPawn) override;
+	virtual void OnUnPossess() override;
+	virtual void SpawnPlayerCameraManager();
+#pragma endregion PlayerController
+
 };

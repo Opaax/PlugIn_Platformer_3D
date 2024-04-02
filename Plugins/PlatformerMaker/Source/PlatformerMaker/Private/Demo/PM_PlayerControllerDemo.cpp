@@ -2,6 +2,8 @@
 
 #include "Demo/PM_PlayerControllerDemo.h"
 #include "Utils/DebugMacro.h"
+#include "Demo/PM_CharacterDemo.h"
+#include "Demo/PM_PlayerCameraManagerDemo.h"
 
 //Unreal
 #include "EnhancedInputSubsystems.h"
@@ -13,6 +15,8 @@ DEFINE_LOG_CATEGORY_STATIC(LogPlayerControllerDemo, Log, All);
 
 APM_PlayerControllerDemo::APM_PlayerControllerDemo(const FObjectInitializer& ObjectInitializer)
 {
+	bAutoManageActiveCameraTarget = false;
+	PlayerCameraManagerClass = APM_PlayerCameraManagerDemo::StaticClass();
 }
 
 void APM_PlayerControllerDemo::AddInputMappingContext(const UInputMappingContext* InputMappingContext, const int32 Priority)
@@ -47,5 +51,40 @@ void APM_PlayerControllerDemo::RemoveInputMappingContext(const UInputMappingCont
 			DEBUG_WARNING_CUSTOM_CATEGORY(LogPlayerControllerDemo, TEXT("Input Mapping Context: %s, is not on the input mapping context list"), *InputMappingContext->GetName());
 		}
 	}
+}
 
+void APM_PlayerControllerDemo::OnPossess(APawn* aPawn)
+{
+	Super::OnPossess(aPawn);
+
+	bool lbHasCamera = false;
+
+	if (aPawn) {
+		if (APM_CharacterDemo* lDemoCharacter = Cast<APM_CharacterDemo>(aPawn)) {
+			if (m_demoCamManager) {
+				m_demoCamManager->SpawnCameraDemo(aPawn);
+				lbHasCamera = true;
+			}
+		}
+	}
+
+	if (!lbHasCamera) {
+		SetViewTarget(aPawn);
+	}
+}
+
+void APM_PlayerControllerDemo::OnUnPossess()
+{
+	Super::OnUnPossess();
+
+	if (m_demoCamManager) {
+		m_demoCamManager->DestroyCameraDemo();
+	}
+}
+
+void APM_PlayerControllerDemo::SpawnPlayerCameraManager()
+{
+	Super::SpawnPlayerCameraManager();
+
+	m_demoCamManager = CastChecked<APM_PlayerCameraManagerDemo>(PlayerCameraManager, ECastCheckedType::NullAllowed);
 }

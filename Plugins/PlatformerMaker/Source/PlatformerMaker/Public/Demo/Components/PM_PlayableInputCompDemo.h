@@ -23,7 +23,7 @@ struct FInputMappingContextAndPriority
 	/*---------------------------------- MEMBERS ----------------------------------*/
 public://explicit public even struct is public by default
 	UPROPERTY(EditAnywhere, Category = "Input")
-	TSoftObjectPtr<UInputMappingContext> SoftMappingContext;
+	TObjectPtr<UInputMappingContext> MappingContext;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	int32 InputPriority;
@@ -38,7 +38,7 @@ public://explicit public even struct is public by default
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 public://explicit public even struct is public by default
 	FInputMappingContextAndPriority() :
-		SoftMappingContext(nullptr),
+		MappingContext(nullptr),
 		InputPriority(-1),
 		bRegisterWithSettings(false)
 	{
@@ -69,8 +69,15 @@ private:
 	TObjectPtr<APM_CharacterDemo> m_demoCharacter;
 
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
+private:
 	UFUNCTION()
 	void Input_Movement_Internal(const FInputActionValue& InputActionValue);
+
+	UFUNCTION()
+	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
+
+	UFUNCTION()
+	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
 
 public:
 	UPM_PlayableInputCompDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

@@ -10,7 +10,7 @@ public class Platform_PlugIn : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] 
 		{ "ModularGameplay", "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", 
-			"EnhancedInput", "PlatformerMaker", "GameplayTags", "GameplayAbilities" });
+			"EnhancedInput", "PlatformerMaker", "GameplayTags", "GameplayTasks", "GameplayAbilities" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {});
 	}

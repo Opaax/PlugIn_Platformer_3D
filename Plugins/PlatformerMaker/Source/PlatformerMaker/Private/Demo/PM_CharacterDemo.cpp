@@ -5,6 +5,7 @@
 #include "Demo/PM_PlayerControllerDemo.h"
 #include "Demo/Components/PM_PlayableInputCompDemo.h"
 #include "Utils/DebugMacro.h"
+#include "Demo/Components/PM_AbilitySystemComponentDemo.h"
 
 //Unreal
 #include "Components/CapsuleComponent.h"
@@ -34,7 +35,7 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 	bUseControllerRotationYaw = false;
 
 	m_playableInputComp = CreateDefaultSubobject<UPM_PlayableInputCompDemo>(TEXT("PlayableInputComp"));
-	m_abilitySystemComp = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComp"));
+	m_abilitySystemComp = CreateDefaultSubobject<UPM_AbilitySystemComponentDemo>(TEXT("AbilitySystemComp"));
 }
 
 void APM_CharacterDemo::BeginPlay()

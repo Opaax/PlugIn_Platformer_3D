@@ -7,22 +7,13 @@
 #include "Utils/DebugMacro.h"
 #include "Demo/PM_CharacterDemo.h"
 #include "Demo/FDemoTags.h"
+#include "Demo/Components/PM_AbilitySystemComponentDemo.h"
 
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
 
 //Unreal Forward
 class ULocalPlayer;
-
-void UPM_PlayableInputCompDemo::Input_Movement_Internal(const FInputActionValue& InputActionValue)
-{
-	if (!IsValid(m_demoCharacter)) {
-		DEBUG_ERROR(TEXT("[%s] is owner is not a demo character"), *GetNameSafe(this));
-		return;
-	}
-
-	m_demoCharacter->Input_Movement(InputActionValue);
-}
 
 UPM_PlayableInputCompDemo::UPM_PlayableInputCompDemo(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
@@ -57,11 +48,7 @@ void UPM_PlayableInputCompDemo::InitializePlayerInput_Implementation(APM_PlayerC
 
 	lSubsystem->ClearAllMappings();
 
-	if (m_defaultMappingContext.SoftMappingContext && !m_defaultMappingContext.SoftMappingContext.Get()) {
-		m_defaultMappingContext.SoftMappingContext.LoadSynchronous();
-	}
-
-	UInputMappingContext* lIMC = m_defaultMappingContext.SoftMappingContext.Get();
+	UInputMappingContext* lIMC = m_defaultMappingContext.MappingContext;
 
 	if (IsValid(lIMC)) {
 		
@@ -87,12 +74,39 @@ void UPM_PlayableInputCompDemo::InitializePlayerInput_Implementation(APM_PlayerC
 			}
 		}
 
-		lDemoInputComp->BindNativeAction(m_inputConfig, DemoTags::Input_Native_Move.GetTag(), ETriggerEvent::Triggered, this, &ThisClass::Input_Movement_Internal, false);
-		//TODO bind native & default ability such as jump
-		//LyraIC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+		lDemoInputComp->BindAbilityActions(m_inputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, m_bindHandles);
 
+		lDemoInputComp->BindNativeAction(m_inputConfig, DemoTags::Input_Native_Move.GetTag(), ETriggerEvent::Triggered, this, &ThisClass::Input_Movement_Internal, false);
 	}
 	else {
 		DEBUG_WARNING(TEXT("%s, add mapping context fail"), *GetNameSafe(this));
+	}
+}
+
+void UPM_PlayableInputCompDemo::Input_Movement_Internal(const FInputActionValue& InputActionValue)
+{
+	if (!IsValid(m_demoCharacter)) {
+		DEBUG_ERROR(TEXT("[%s] is owner is not a demo character"), *GetNameSafe(this));
+		return;
+	}
+
+	m_demoCharacter->Input_Movement(InputActionValue);
+}
+
+void UPM_PlayableInputCompDemo::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (IsValid(GetOwner()) && InputTag.IsValid()) {
+		if (UPM_AbilitySystemComponentDemo* lAbilityComp = UPM_AbilitySystemComponentDemo::FindGetAbilityCompDemoInActor(GetOwner())) {
+			lAbilityComp->AbilityInputTagPressed(InputTag);
+		}
+	}
+}
+
+void UPM_PlayableInputCompDemo::Input_AbilityInputTagReleased(FGameplayTag InputTag)
+{
+	if (IsValid(GetOwner()) && InputTag.IsValid()) {
+		if (UPM_AbilitySystemComponentDemo* lAbilityComp = UPM_AbilitySystemComponentDemo::FindGetAbilityCompDemoInActor(GetOwner())) {
+			lAbilityComp->AbilityInputTagReleased(InputTag);
+		}
 	}
 }

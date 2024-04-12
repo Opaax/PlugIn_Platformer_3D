@@ -13,12 +13,12 @@
 //PM Plugin
 class APM_PlayerControllerDemo;
 class UPM_PlayableInputCompDemo;
+class UPM_AbilitySystemComponentDemo;
 
 //Unreal
 class UCapsuleComponent;
 class UInputMappingContext;
 class UArrowComponent;
-class UAbilitySystemComponent;
 
 
 /* 
@@ -38,7 +38,7 @@ private:
 	TObjectPtr<UPM_PlayableInputCompDemo> m_playableInputComp;
 
 	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "GetAbilitySystemComp")
-	TObjectPtr<UAbilitySystemComponent> m_abilitySystemComp;
+	TObjectPtr<UPM_AbilitySystemComponentDemo> m_abilitySystemComp;
 
 	/*---------------------------------- FUNCTION ----------------------------------*/
 private:
@@ -66,7 +66,7 @@ public:
 	FORCEINLINE UPM_PlayableInputCompDemo* GetPlayableInputComp() const { return m_playableInputComp; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DemoCharacter")
-	FORCEINLINE UAbilitySystemComponent* GetAbilitySystemComp() const { return m_abilitySystemComp; }
+	FORCEINLINE UPM_AbilitySystemComponentDemo* GetAbilitySystemComp() const { return m_abilitySystemComp; }
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 #pragma region Pawn_Override
 protected:

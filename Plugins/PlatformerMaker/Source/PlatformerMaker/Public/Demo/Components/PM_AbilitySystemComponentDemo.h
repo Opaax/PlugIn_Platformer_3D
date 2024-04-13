@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "Demo/Structs/PMAbilityStructData.h"
 #include "PM_AbilitySystemComponentDemo.generated.h"
 
 /**
@@ -29,11 +30,17 @@ protected:
 public:
 	static UPM_AbilitySystemComponentDemo* FindGetAbilityCompDemoInActor(AActor* const InCheckActor);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DemoAbilityComp")
+	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
+
+	UFUNCTION(BlueprintCallable, Category = "DemoAbilityComp")
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "DemoAbilityComp")
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
+
+	UFUNCTION(BlueprintCallable, Category = "DemoAbilityComp")
+	void SetUpAbility(const FPMAbilityDataDemo& InAbilityData);
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 
 };

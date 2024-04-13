@@ -6,6 +6,7 @@
 #include "Demo/Components/PM_PlayableInputCompDemo.h"
 #include "Utils/DebugMacro.h"
 #include "Demo/Components/PM_AbilitySystemComponentDemo.h"
+#include "Demo/Data/PM_PlayerPawnData.h"
 
 //Unreal
 #include "Components/CapsuleComponent.h"
@@ -89,6 +90,13 @@ void APM_CharacterDemo::SetDirectionContraint(const FVector& ForwardConstraint, 
 	GetMovementComponent()->SetPlaneConstraintFromVectors(ForwardConstraint, UpConstraint);
 }
 
+void APM_CharacterDemo::ProcessInputForAbility(const float DeltaTime, const bool bGamePaused)
+{
+	if (GetAbilitySystemComp()) {
+		GetAbilitySystemComp()->ProcessAbilityInput(DeltaTime, bGamePaused);
+	}
+}
+
 void APM_CharacterDemo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -103,6 +111,15 @@ void APM_CharacterDemo::PossessedBy(AController* NewController)
 	if (m_pmController) {
 		m_pmController->SetDemoCharacter(this);
 	}
+
+	PopulateAbilityComponentDefault();
+}
+
+void APM_CharacterDemo::UnPossessed()
+{
+	Super::UnPossessed();
+
+	ClearAbilityComponent();
 }
 
 void APM_CharacterDemo::PawnClientRestart()
@@ -178,4 +195,20 @@ void APM_CharacterDemo::CheckAutoAddMappingContext()
 	check(m_playableInputComp);
 
 	m_playableInputComp->InitializePlayerInput(m_pmController);
+}
+
+void APM_CharacterDemo::PopulateAbilityComponentDefault()
+{
+	if (GetAbilitySystemComp() && IsValid(m_pawnData) && !m_pawnData->GetAbilities().IsEmpty()) {
+		for (auto& lAbilityData : m_pawnData->GetAbilities()) {
+			GetAbilitySystemComp()->SetUpAbility(lAbilityData);
+		}
+	}
+}
+
+void APM_CharacterDemo::ClearAbilityComponent()
+{
+	if (GetAbilitySystemComp()) {
+		GetAbilitySystemComp()->ClearAllAbilities();
+	}
 }

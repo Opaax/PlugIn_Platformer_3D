@@ -49,6 +49,7 @@ public:
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void OnUnPossess() override;
 	virtual void SpawnPlayerCameraManager();
+	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 #pragma endregion PlayerController
 
 };

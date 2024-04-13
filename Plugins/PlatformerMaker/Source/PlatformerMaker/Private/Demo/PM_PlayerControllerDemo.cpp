@@ -88,3 +88,12 @@ void APM_PlayerControllerDemo::SpawnPlayerCameraManager()
 
 	m_demoCamManager = CastChecked<APM_PlayerCameraManagerDemo>(PlayerCameraManager, ECastCheckedType::NullAllowed);
 }
+
+void APM_PlayerControllerDemo::PostProcessInput(const float DeltaTime, const bool bGamePaused)
+{
+	Super::PostProcessInput(DeltaTime, bGamePaused);
+
+	if (m_demoCharacter) {
+		m_demoCharacter->ProcessInputForAbility(DeltaTime, bGamePaused);
+	}
+}

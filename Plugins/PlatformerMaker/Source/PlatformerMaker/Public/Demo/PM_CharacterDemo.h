@@ -14,6 +14,7 @@
 class APM_PlayerControllerDemo;
 class UPM_PlayableInputCompDemo;
 class UPM_AbilitySystemComponentDemo;
+class UPM_PlayerPawnData;
 
 //Unreal
 class UCapsuleComponent;
@@ -40,10 +41,19 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "GetAbilitySystemComp")
 	TObjectPtr<UPM_AbilitySystemComponentDemo> m_abilitySystemComp;
 
+	UPROPERTY(EditDefaultsOnly, Category = "PawnData", meta = (DisplayName = "PawnData"))
+	TObjectPtr<UPM_PlayerPawnData> m_pawnData;
+
 	/*---------------------------------- FUNCTION ----------------------------------*/
 private:
-	UFUNCTION()
+	UFUNCTION(Category = "DemoCharacter")
 	void CheckAutoAddMappingContext();
+
+	UFUNCTION(Category = "DemoCharacter")
+	void PopulateAbilityComponentDefault();
+
+	UFUNCTION(Category = "DemoCharacter")
+	void ClearAbilityComponent();
 
 public:
 	APM_CharacterDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -56,6 +66,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "DemoCharacter")
 	void SetDirectionContraint(const FVector& ForwardConstraint, const FVector& UpConstraint);
+
+	UFUNCTION(BlueprintCallable, Category = "DemoCharacter")
+	void ProcessInputForAbility(const float DeltaTime, const bool bGamePaused);
 
 	/*---------------------------------- GETTER / SETTER ----------------------------------*/
 public:
@@ -76,6 +89,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
 	virtual void PawnClientRestart() override;
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 	virtual void SetPlayerDefaults() override;

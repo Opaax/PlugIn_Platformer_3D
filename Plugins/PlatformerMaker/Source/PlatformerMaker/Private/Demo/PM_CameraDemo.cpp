@@ -29,9 +29,19 @@ void APM_CameraDemo::SetSettings(UPM_CameraDefaultSettingData* InSettings)
 {
 	if (InSettings) {
 		m_viewSide = InSettings->ViewSide;
-		m_distanceToTarget = InSettings->DistanceToTarget;
+		m_defaultDistanceToTarget = m_distanceToTarget = InSettings->DistanceToTarget;
 		m_forwardOffset = InSettings->ForwardOffset;
 	}
+}
+
+void APM_CameraDemo::SetDistanceToTarget(const float NewDistance)
+{
+	m_distanceToTarget = NewDistance;
+}
+
+void APM_CameraDemo::ResetDistanceToTarget()
+{
+	m_distanceToTarget = m_defaultDistanceToTarget;
 }
 
 void APM_CameraDemo::Tick(float DeltaSeconds)

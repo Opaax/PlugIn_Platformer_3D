@@ -23,7 +23,7 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, Category = "Camera|Settings", meta = (DisplayName = "CameraDefaultSettings"))
 	TObjectPtr<UPM_CameraDefaultSettingData> m_cameraDefaultSettings;
 
-	UPROPERTY(VisibleInstanceOnly, Category = "Runtime", meta = (DisplayName = "CurrentCamera"))
+	UPROPERTY(VisibleInstanceOnly, Category = "Runtime",BlueprintGetter = "GetCurrentCamera", meta = (DisplayName = "CurrentCamera"))
 	TObjectPtr<APM_CameraDemo> m_currentCamera;
 
 	/*---------------------------------- FUNCTION ----------------------------------*/
@@ -37,6 +37,10 @@ public:
 
 	UFUNCTION(Category = "DemoCameraManager")
 	void DestroyCameraDemo();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DemoCameraManager")
+	FORCEINLINE APM_CameraDemo* GetCurrentCamera() const { return m_currentCamera; }
+
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 
 };

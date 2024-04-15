@@ -26,6 +26,7 @@ protected:
 	TObjectPtr<APawn> m_currentPawn;
 
 	float m_distanceToTarget;
+	float m_defaultDistanceToTarget;
 	float m_forwardOffset;
 	ECameraViewSide m_viewSide;
 	FRotator m_pawnBaseRotation;
@@ -41,6 +42,15 @@ public:
 
 	UFUNCTION(Category = "CameraDemo")
 	void SetSettings(UPM_CameraDefaultSettingData* InSettings);
+
+	UFUNCTION(Category = "CameraDemo", BlueprintCallable)
+	void SetDistanceToTarget(const float NewDistance);
+
+	UFUNCTION(Category = "CameraDemo", BlueprintCallable)
+	void ResetDistanceToTarget();
+
+	UFUNCTION(Category = "CameraDemo", BlueprintCallable, BlueprintPure)
+	FORCEINLINE float GetDistanceToTarget() const { return m_distanceToTarget; };
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 public:

@@ -48,7 +48,7 @@ void APM_HUDDemo::OnDefaultWidgetAddedOnScreen(UUserWidget* AddedWidget)
 	ReceiveOnDefaultWidgetAddedOnScreen(AddedWidget);
 }
 
-void APM_HUDDemo::LaunchDeathTranstion(const float AnimSpeed, const FDeathTransitionCallback& FinishCallback)
+void APM_HUDDemo::LaunchDeathTransition(const float AnimSpeed, const FDeathTransitionCallback& FinishCallback)
 {
 	if (!m_deathTransitionWidget) {
 		CreateDeathTranstionWidget();
@@ -63,6 +63,23 @@ void APM_HUDDemo::LaunchDeathTranstion(const float AnimSpeed, const FDeathTransi
 
 	m_deathTransitionWidget->AddToPlayerScreen(10);
 	m_deathTransitionWidget->StartTransition(lRealSpeed, FinishCallback);
+}
+
+void APM_HUDDemo::SetLifeComponent(const UPMLifeComponent* InLifeComp)
+{
+	if (m_currentLifeComp != nullptr && m_currentLifeComp == InLifeComp) {
+		OnSetLifeComponent(m_currentLifeComp, false);
+		return;
+	}
+
+	m_currentLifeComp = const_cast<UPMLifeComponent*>(InLifeComp);
+
+	OnSetLifeComponent(m_currentLifeComp, true);
+}
+
+void APM_HUDDemo::OnSetLifeComponent(const UPMLifeComponent* InLifeComp, bool HasChange)
+{
+	ReceiveOnSetLifeComponent(InLifeComp, HasChange);
 }
 
 void APM_HUDDemo::BeginPlay()

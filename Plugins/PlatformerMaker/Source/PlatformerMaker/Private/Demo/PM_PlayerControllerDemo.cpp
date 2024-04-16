@@ -57,6 +57,25 @@ void APM_PlayerControllerDemo::RemoveInputMappingContext(const UInputMappingCont
 	}
 }
 
+void APM_PlayerControllerDemo::SetDemoCharacter(APM_CharacterDemo* InCharacter)
+{
+	if (m_demoCharacter != nullptr && m_demoCharacter == InCharacter) {
+		return;
+	}
+
+	m_demoCharacter = InCharacter;
+
+	if (m_demoCharacter) {
+		if (MyHUD) {
+			APM_HUDDemo* lDemoHUD = GetHUD<APM_HUDDemo>();
+
+			if (lDemoHUD) {
+				lDemoHUD->SetLifeComponent(m_demoCharacter->GetLifeComp());
+			}
+		}
+	}
+}
+
 void APM_PlayerControllerDemo::OnPossess(APawn* aPawn)
 {
 	Super::OnPossess(aPawn);
@@ -123,7 +142,7 @@ void APM_PlayerControllerDemo::PawnPendingDestroy(APawn* inPawn)
 
 				lTransitionCallback.BindUFunction(this, FName("ProcessRestartDemo"));
 
-				lHUD->LaunchDeathTranstion(3, lTransitionCallback);
+				lHUD->LaunchDeathTransition(3, lTransitionCallback);
 
 				lbIsOnAnim = true;
 			}

@@ -7,6 +7,7 @@
 #include "Utils/DebugMacro.h"
 #include "Demo/Components/PM_AbilitySystemComponentDemo.h"
 #include "Demo/Data/PM_PlayerPawnData.h"
+#include "Components/PMLifeComponent.h"
 
 //Unreal
 #include "Components/CapsuleComponent.h"
@@ -37,6 +38,7 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 
 	m_playableInputComp = CreateDefaultSubobject<UPM_PlayableInputCompDemo>(TEXT("PlayableInputComp"));
 	m_abilitySystemComp = CreateDefaultSubobject<UPM_AbilitySystemComponentDemo>(TEXT("AbilitySystemComp"));
+	m_lifeComponent		= CreateDefaultSubobject<UPMLifeComponent>(TEXT("LifeComponent"));
 }
 
 void APM_CharacterDemo::BeginPlay()

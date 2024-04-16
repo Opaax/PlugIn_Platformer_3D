@@ -15,6 +15,7 @@ class APM_PlayerControllerDemo;
 class UPM_PlayableInputCompDemo;
 class UPM_AbilitySystemComponentDemo;
 class UPM_PlayerPawnData;
+class UPMLifeComponent;
 
 //Unreal
 class UCapsuleComponent;
@@ -40,6 +41,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "GetAbilitySystemComp")
 	TObjectPtr<UPM_AbilitySystemComponentDemo> m_abilitySystemComp;
+
+	UPROPERTY(VisibleAnywhere, Category = " PM|Components", BlueprintGetter = "GetLifeComp")
+	TObjectPtr<UPMLifeComponent> m_lifeComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "PawnData", meta = (DisplayName = "PawnData"))
 	TObjectPtr<UPM_PlayerPawnData> m_pawnData;
@@ -83,6 +87,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DemoCharacter")
 	FORCEINLINE UPM_AbilitySystemComponentDemo* GetAbilitySystemComp() const { return m_abilitySystemComp; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "DemoCharacter")
+	FORCEINLINE UPMLifeComponent* GetLifeComp() const { return m_lifeComponent; }
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 #pragma region Pawn_Override
 protected:

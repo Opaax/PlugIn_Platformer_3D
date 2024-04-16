@@ -43,7 +43,7 @@ public:
 	void RemoveInputMappingContext(const UInputMappingContext* InputMappingContext);
 
 	UFUNCTION()
-	FORCEINLINE void SetDemoCharacter(APM_CharacterDemo* InCharacter) { m_demoCharacter = InCharacter; }
+	FORCEINLINE void SetDemoCharacter(APM_CharacterDemo* InCharacter);
 
 	UFUNCTION()
 	FORCEINLINE APM_CharacterDemo* GetDemoCharacter() const { return m_demoCharacter; }

@@ -9,6 +9,7 @@
 
 class UUserWidget;
 class UPM_DeathTransitionDemo;
+class UPMLifeComponent;
 
 /**
  * Base HUD class for the demo.
@@ -28,11 +29,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Widgets", meta = (DisplayName = "DeathTransitionWidgetClass"))
 	TSubclassOf<UPM_DeathTransitionDemo> m_deathTransitionWidgetClass;
 
-	UPROPERTY(VisibleInstanceOnly, Category = "Runtime")
+	UPROPERTY(VisibleInstanceOnly, BlueprintGetter = "GetDefaultWidget", Category = "Runtime")
 	TObjectPtr<UUserWidget> m_defaultWidget;
 
 	UPROPERTY(VisibleInstanceOnly, Category = "Runtime")
 	TObjectPtr<UPM_DeathTransitionDemo> m_deathTransitionWidget;
+
+	UPROPERTY(VisibleInstanceOnly, BlueprintGetter = "GetCurrentLifeComp", Category = "Runtime")
+	TObjectPtr<UPMLifeComponent> m_currentLifeComp;
 
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 protected:
@@ -52,7 +56,19 @@ protected:
 
 public:
 	UFUNCTION(Category = "DemoHUD")
-	void LaunchDeathTranstion(const float AnimSpeed, const FDeathTransitionCallback& FinishCallback);
+	void LaunchDeathTransition(const float AnimSpeed, const FDeathTransitionCallback& FinishCallback);
+
+	virtual void SetLifeComponent(const UPMLifeComponent* InLifeComp);
+
+	void OnSetLifeComponent(const UPMLifeComponent* InLifeComp, bool HasChange);
+	UFUNCTION(BlueprintImplementableEvent, Category = "Event", meta = (DisplayName = "OnSetLifeComponent"))
+	void ReceiveOnSetLifeComponent(const UPMLifeComponent* InLifeComp, bool HasChange);
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE UUserWidget* GetDefaultWidget() const { return m_defaultWidget; }
+
+	UFUNCTION(BlueprintPure)
+	FORCEINLINE UPMLifeComponent* GetCurrentLifeComp() const { return m_currentLifeComp; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 protected:

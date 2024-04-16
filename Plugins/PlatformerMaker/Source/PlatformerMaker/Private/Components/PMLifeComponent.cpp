@@ -14,6 +14,10 @@ UPMLifeComponent::UPMLifeComponent(const FObjectInitializer& ObjectInitializer):
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
+	bStartWithMaxLife = true;
+	m_startLife = 100.f;
+	m_maxLife = 100.f;
+
 #if WITH_EDITORONLY_DATA
 	bRegisterConsoleFunctions = true;
 #endif
@@ -102,7 +106,8 @@ void UPMLifeComponent::DebugRemoveLife(const TArray<FString>& Args)
 {
 	if (Args.Num() < 1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't Remove life, Not enough arguments"));
+		UE_LOG(LogTemp, Error, TEXT("Can't Remove life, Not enough arguments"));
+		return;
 	}
 	else if (Args.Num() > 1)
 	{

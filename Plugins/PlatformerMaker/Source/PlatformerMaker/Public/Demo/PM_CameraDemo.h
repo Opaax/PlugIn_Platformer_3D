@@ -28,6 +28,7 @@ protected:
 	float m_distanceToTarget;
 	float m_defaultDistanceToTarget;
 	float m_forwardOffset;
+	float m_upwardOffset;
 	ECameraViewSide m_viewSide;
 	FRotator m_pawnBaseRotation;
 

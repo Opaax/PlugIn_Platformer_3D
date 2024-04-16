@@ -24,5 +24,8 @@ public:
 	float ForwardOffset = 100.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Setting")
+	float UpwardOffset = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Setting")
 	ECameraViewSide ViewSide = ECameraViewSide::ECV_Right;
 };

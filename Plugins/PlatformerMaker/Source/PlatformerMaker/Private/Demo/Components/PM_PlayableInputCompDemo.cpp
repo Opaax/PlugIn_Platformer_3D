@@ -58,6 +58,10 @@ void UPM_PlayableInputCompDemo::InitializePlayerInput_Implementation(APM_PlayerC
 
 		UPM_InputComponentDemo* lDemoInputComp = Cast<UPM_InputComponentDemo>(lCharac->InputComponent);
 		check(lDemoInputComp);
+
+		if (!IsValid(lDemoInputComp)) {
+			return;
+		}
 		
 		if (!IsValid(m_inputConfig)) {
 			DEBUG_ERROR(TEXT("[%s] Input Config is not set correctly"), *GetNameSafe(this));
@@ -80,6 +84,41 @@ void UPM_PlayableInputCompDemo::InitializePlayerInput_Implementation(APM_PlayerC
 	}
 	else {
 		DEBUG_WARNING(TEXT("%s, add mapping context fail"), *GetNameSafe(this));
+	}
+}
+
+void UPM_PlayableInputCompDemo::ClearPlayerInput_Implementation(APM_PlayerControllerDemo* PlayerControllerDemo)
+{
+	DEBUG_LOG(TEXT("%s,Start init player input"), *GetNameSafe(this));
+
+	check(PlayerControllerDemo);
+
+	APM_CharacterDemo* lCharac = PlayerControllerDemo->GetDemoCharacter();
+	check(lCharac);
+
+	const ULocalPlayer* lLocalPlayer = PlayerControllerDemo->GetLocalPlayer();
+	check(lLocalPlayer);
+
+	UEnhancedInputLocalPlayerSubsystem* lSubsystem = lLocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
+	check(lSubsystem);
+
+	lSubsystem->ClearAllMappings();
+
+	if (!IsValid(lCharac->InputComponent)) {
+		return;
+	}
+
+	UPM_InputComponentDemo* lDemoInputComp = Cast<UPM_InputComponentDemo>(lCharac->InputComponent);
+	check(lDemoInputComp);
+
+	lDemoInputComp->RemoveBinds(m_bindHandles);
+	lDemoInputComp->ClearActionBindings();
+	lDemoInputComp->ClearBindingsForObject(this);
+	lDemoInputComp->ClearBindingsForObject(lCharac);
+	lDemoInputComp->ClearBindingsForObject(PlayerControllerDemo);
+
+	if (lCharac->OnEndPlay.Contains(lDemoInputComp, FName("OnInputOwnerEndPlayed"))) {
+		lCharac->OnEndPlay.Remove(lDemoInputComp, FName("OnInputOwnerEndPlayed"));
 	}
 }
 

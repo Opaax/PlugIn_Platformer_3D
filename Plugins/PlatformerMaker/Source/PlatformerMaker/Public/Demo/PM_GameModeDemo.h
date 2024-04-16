@@ -12,7 +12,7 @@
 UCLASS()
 class PLATFORMERMAKER_API APM_GameModeDemo : public AGameModeBase
 {
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 	
 	/*---------------------------------- MEMBERS ----------------------------------*/
 	/*---------------------------------- FUNCTIONS ----------------------------------*/

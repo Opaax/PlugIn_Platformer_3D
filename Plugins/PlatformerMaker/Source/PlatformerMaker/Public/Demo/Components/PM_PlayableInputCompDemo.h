@@ -86,6 +86,10 @@ public:
 	void InitializePlayerInput(APM_PlayerControllerDemo* PlayerControllerDemo);
 	virtual void InitializePlayerInput_Implementation(APM_PlayerControllerDemo* PlayerControllerDemo);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Input")
+	void ClearPlayerInput(APM_PlayerControllerDemo* PlayerControllerDemo);
+	virtual void ClearPlayerInput_Implementation(APM_PlayerControllerDemo* PlayerControllerDemo);
+
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 public:
 	virtual void BeginPlay() override;

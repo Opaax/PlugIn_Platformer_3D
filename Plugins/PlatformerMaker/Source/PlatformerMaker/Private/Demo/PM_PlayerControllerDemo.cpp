@@ -4,10 +4,14 @@
 #include "Utils/DebugMacro.h"
 #include "Demo/PM_CharacterDemo.h"
 #include "Demo/PM_PlayerCameraManagerDemo.h"
+#include "Demo/PM_GameModeDemo.h"
+#include "Demo/PM_HUDDemo.h"
+#include "Demo/PM_DemoCoreDelegates.h"
 
 //Unreal
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
+#include "GameFramework/HUD.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PM_PlayerControllerDemo)
 
@@ -71,6 +75,10 @@ void APM_PlayerControllerDemo::OnPossess(APawn* aPawn)
 	if (!lbHasCamera) {
 		SetViewTarget(aPawn);
 	}
+
+	if (!IsValid(MyHUD)) {
+		SpawnDefaultHUD();
+	}
 }
 
 void APM_PlayerControllerDemo::OnUnPossess()
@@ -95,5 +103,56 @@ void APM_PlayerControllerDemo::PostProcessInput(const float DeltaTime, const boo
 
 	if (m_demoCharacter) {
 		m_demoCharacter->ProcessInputForAbility(DeltaTime, bGamePaused);
+	}
+}
+
+void APM_PlayerControllerDemo::PawnPendingDestroy(APawn* inPawn)
+{
+	bool lbShouldRestartPawn = (m_demoCharacter && inPawn) && (inPawn == m_demoCharacter);
+
+	Super::PawnPendingDestroy(inPawn);
+
+	if (lbShouldRestartPawn) {
+		bool lbIsOnAnim = false;
+
+		if (MyHUD && MyHUD->IsA<APM_HUDDemo>()) {
+			APM_HUDDemo* lHUD = CastChecked<APM_HUDDemo>(MyHUD, ECastCheckedType::NullAllowed);
+			
+			if (lHUD) {
+				FDeathTransitionCallback lTransitionCallback;
+
+				lTransitionCallback.BindUFunction(this, FName("ProcessRestartDemo"));
+
+				lHUD->LaunchDeathTranstion(3, lTransitionCallback);
+
+				lbIsOnAnim = true;
+			}
+		}
+
+		if (!lbIsOnAnim) {
+			ProcessRestartDemo();
+		}
+	}
+}
+
+void APM_PlayerControllerDemo::SpawnDefaultHUD()
+{
+	Super::SpawnDefaultHUD();
+
+	DEBUG_LOG_SCREEN(-1, 4.f, FColor::Yellow, TEXT("Auto spawn HUD"));
+}
+
+void APM_PlayerControllerDemo::DestroyHUD()
+{
+	if (IsValid(MyHUD)) {
+		MyHUD->Destroy();
+	}
+}
+
+void APM_PlayerControllerDemo::ProcessRestartDemo()
+{
+	if (GetWorld()) {
+		FlushPressedKeys();
+		GetWorld()->GetAuthGameMode()->RestartPlayer(this);
 	}
 }

@@ -117,9 +117,11 @@ void APM_CharacterDemo::PossessedBy(AController* NewController)
 
 void APM_CharacterDemo::UnPossessed()
 {
-	Super::UnPossessed();
-
 	ClearAbilityComponent();
+	ClearPlayableInput();
+	DestroyPlayerInputComponent();
+
+	Super::UnPossessed();
 }
 
 void APM_CharacterDemo::PawnClientRestart()
@@ -147,6 +149,20 @@ void APM_CharacterDemo::TeleportSucceeded(bool bIsATest)
 	Super::TeleportSucceeded(bIsATest);
 
 	SetupConstraints();
+}
+
+void APM_CharacterDemo::Destroyed()
+{
+	ClearAbilityComponent();
+	ClearPlayableInput();
+	DestroyPlayerInputComponent();
+
+	Super::Destroyed();
+}
+
+void APM_CharacterDemo::Reset()
+{
+	K2_OnReset();
 }
 
 void APM_CharacterDemo::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
@@ -211,4 +227,11 @@ void APM_CharacterDemo::ClearAbilityComponent()
 	if (GetAbilitySystemComp()) {
 		GetAbilitySystemComp()->ClearAllAbilities();
 	}
+}
+
+void APM_CharacterDemo::ClearPlayableInput()
+{
+	check(m_playableInputComp);
+
+	m_playableInputComp->ClearPlayerInput(m_pmController);
 }

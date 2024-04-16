@@ -27,6 +27,12 @@ private:
 	TObjectPtr<APM_PlayerCameraManagerDemo> m_demoCamManager;
 
 	/*---------------------------------- FUNCTION ----------------------------------*/
+private:
+	void DestroyHUD();
+
+	UFUNCTION()
+	void ProcessRestartDemo();
+
 public:
 	APM_PlayerControllerDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
@@ -50,6 +56,8 @@ public:
 	virtual void OnUnPossess() override;
 	virtual void SpawnPlayerCameraManager();
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
+	virtual void PawnPendingDestroy(APawn* inPawn) override;
+	virtual void SpawnDefaultHUD() override;
 #pragma endregion PlayerController
 
 };

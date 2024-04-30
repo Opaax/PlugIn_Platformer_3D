@@ -6,4 +6,5 @@
 UPlatformerMaker_Settings::UPlatformerMaker_Settings(const FObjectInitializer& ObjectInitializer)
 {
 	SpawnScoreSubSystem = false;
+	SpawnCheckpointSubSystem = false;
 }

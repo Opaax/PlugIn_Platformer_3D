@@ -31,6 +31,7 @@ protected:
 	float m_upwardOffset;
 	ECameraViewSide m_viewSide;
 	FRotator m_pawnBaseRotation;
+	FVector m_pawnBaseLocation;
 
 	/*---------------------------------- FUNCTION ----------------------------------*/
 protected:

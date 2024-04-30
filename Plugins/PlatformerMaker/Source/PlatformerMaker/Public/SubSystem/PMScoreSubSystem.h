@@ -47,7 +47,7 @@ public:
 
 	/**************************** OVERRIDE ******************************/
 public:
-	bool ShouldCreateSubsystem (UObject* Outer) const override;
+	virtual bool ShouldCreateSubsystem (UObject* Outer) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 

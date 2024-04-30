@@ -21,6 +21,8 @@ void APM_CameraDemo::SetPawnToFollow(APawn* InPawn)
 
 	if (m_currentPawn) {
 		m_pawnBaseRotation = m_currentPawn->GetActorRotation();
+		m_pawnBaseLocation = m_currentPawn->GetActorLocation();
+
 		SetActorTickEnabled(true);
 	}
 }
@@ -69,7 +71,7 @@ void APM_CameraDemo::UpdateLocation(float DeltaTime)
 	FVector lLocationOffset = lPawnLocation + (lForwardVec * lFowardOffsetLoc);
 
 	if (m_currentPawn->GetVelocity().Z != 0) {
-		float lUpwardOffsetLoc = m_currentPawn->GetVelocity().Z > 0 ? m_upwardOffset: -m_upwardOffset;
+		float lUpwardOffsetLoc = m_currentPawn->GetVelocity().Z > 0 ? m_upwardOffset : -m_upwardOffset;
 
 		lLocationOffset = lLocationOffset + (FVector::UpVector * lUpwardOffsetLoc);
 	}

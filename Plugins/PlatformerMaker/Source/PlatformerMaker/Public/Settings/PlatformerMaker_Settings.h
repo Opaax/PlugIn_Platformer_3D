@@ -19,6 +19,9 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "PlatformerMaker")
 	bool SpawnScoreSubSystem;
 
+	UPROPERTY(Config, EditAnywhere, Category = "PlatformerMaker")
+	bool SpawnCheckpointSubSystem;
+
 	/**************************** FUNCTION ******************************/
 public:
 	UPlatformerMaker_Settings(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

@@ -8,9 +8,11 @@
 
 void UPMCheckpointSubsytem::OnCheckpointTrigger(APMCheckpointActor* CheckpointTriggered)
 {
-	if (CheckpointTriggered != m_currentCheckPoint) {
+	if (CheckpointTriggered && CheckpointTriggered != m_currentCheckPoint) {
 		m_currentCheckPoint = CheckpointTriggered;
 		m_currentCheckPoint->ValidateCheckpoint();
+
+		OnCheckpointChanged.Broadcast(m_currentCheckPoint, m_currentCheckPoint->GetPlayerStart());
 	}
 }
 

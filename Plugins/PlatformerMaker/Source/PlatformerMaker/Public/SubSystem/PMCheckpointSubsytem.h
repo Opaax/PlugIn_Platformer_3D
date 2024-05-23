@@ -9,6 +9,8 @@
 class APMCheckpointActor;
 class APlayerStart;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FCheckpointSubsystemDelegate, APMCheckpointActor*, TriggeredCheckpoint, APlayerStart*, PlayerStart);
+
 /**
  * Checkpoint subsystem work as manager for the PM plugin
  */
@@ -22,9 +24,13 @@ private:
 
 	UPROPERTY(BlueprintGetter = "GetCurrentCheckPoint")
 	TObjectPtr<APMCheckpointActor> m_currentCheckPoint;
+
+public:
+
+	UPROPERTY(BlueprintAssignable, Category = "Checkpoint|Delegates")
+	FCheckpointSubsystemDelegate OnCheckpointChanged;
 	
 protected:
-
 	UFUNCTION(Category = "CheckpointSubsystem")
 	virtual void OnCheckpointTrigger(APMCheckpointActor* CheckpointTriggered);
 

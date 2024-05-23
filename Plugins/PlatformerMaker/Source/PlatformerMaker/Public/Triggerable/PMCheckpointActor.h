@@ -7,6 +7,7 @@
 #include "PMCheckpointActor.generated.h"
 
 class APlayerStart;
+class UChildActorComponent;
 
 /**
  * Simple Checkpoint actor for PM plugin
@@ -20,9 +21,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Checkpoint|PlayerStart", BlueprintGetter = "GetPlayerStart", BlueprintSetter = "SetPlayerStart")
 	TObjectPtr<APlayerStart> m_playerStart;
 
+	UPROPERTY(VisibleAnywhere, Category = "Checkpoint|PlayerStart")
+	TObjectPtr<UChildActorComponent> m_childActorPlayerStart;
+
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Checkpoint")
 	void SetPlayerStart(APlayerStart* NewPlayerStart) { m_playerStart = NewPlayerStart; }
+
+	UFUNCTION(BlueprintCallable, Category = "Checkpoint")
+	void CheckChildSetPlayerStart();
 
 public:
 	APMCheckpointActor(const FObjectInitializer& ObjectInit = FObjectInitializer::Get());
@@ -35,6 +42,7 @@ public:
 	FORCEINLINE APlayerStart* GetPlayerStart() const { return m_playerStart; }
 	
 protected:
+	virtual void BeginPlay() override;
 	virtual void OnTrigger(AActor* OtherTrigger) override;
 };
 

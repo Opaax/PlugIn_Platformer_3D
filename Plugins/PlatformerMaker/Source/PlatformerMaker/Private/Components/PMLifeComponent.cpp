@@ -2,6 +2,7 @@
 
 #include "Components/PMLifeComponent.h"
 #include "PlatformerMaker.h"
+#include "GameFramework/Actor.h"
 
 //Unreal
 #if WITH_EDITOR
@@ -157,7 +158,7 @@ void UPMLifeComponent::AddLife_Implementation(float Amount)
 
 	CheckLife();
 
-	UE_LOG(LogPlatformerPlugin, Log, TEXT("%s: Add %f to the Current Life: %f in %s"), *GetName(), Amount, m_currentLife, *GetNameSafe(GetOwner()));
+	UE_LOG(LogPlatformerPlugin, Log, TEXT("%s: Add %f to the Current Life: %f in %s"), *GetName(), Amount, m_currentLife, *GetOwner()->GetName());
 }
 
 void UPMLifeComponent::RemoveLife_Implementation(float Amount)
@@ -166,7 +167,7 @@ void UPMLifeComponent::RemoveLife_Implementation(float Amount)
 
 	CheckLife();
 
-	UE_LOG(LogPlatformerPlugin, Log, TEXT("%s: Remove %f to the Current Life: %f in %s"), *GetName(), Amount, m_currentLife, *GetNameSafe(GetOwner()));
+	UE_LOG(LogPlatformerPlugin, Log, TEXT("%s: Remove %f to the Current Life: %f in %s"), *GetName(), Amount, m_currentLife, *GetOwner()->GetName());
 }
 
 void UPMLifeComponent::CheckLife_Implementation()

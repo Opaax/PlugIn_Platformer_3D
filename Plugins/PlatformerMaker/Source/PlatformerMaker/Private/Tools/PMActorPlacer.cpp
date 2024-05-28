@@ -2,6 +2,7 @@
 
 #include "Tools/PMActorPlacer.h"
 #include "PlatformerMaker.h"
+#include "Engine/World.h"
 
 //Unreal
 #include "Components/SplineComponent.h"

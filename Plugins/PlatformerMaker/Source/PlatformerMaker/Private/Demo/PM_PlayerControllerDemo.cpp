@@ -61,11 +61,10 @@ void APM_PlayerControllerDemo::RemoveInputMappingContext(const UInputMappingCont
 
 void APM_PlayerControllerDemo::SetDemoCharacter(APM_CharacterDemo* InCharacter)
 {
-	if (m_demoCharacter != nullptr && m_demoCharacter == InCharacter) {
-		return;
+	if (m_demoCharacter == nullptr || m_demoCharacter != InCharacter) {
+		m_demoCharacter = InCharacter;
 	}
 
-	m_demoCharacter = InCharacter;
 
 	if (m_demoCharacter) {
 		if (MyHUD) {
@@ -74,6 +73,13 @@ void APM_PlayerControllerDemo::SetDemoCharacter(APM_CharacterDemo* InCharacter)
 			if (lDemoHUD) {
 				lDemoHUD->SetLifeComponent(m_demoCharacter->GetLifeComp());
 			}
+		}
+		else {
+			//In case the pawn is already on map.
+			//The pawn will set itself on controller, but te HUD could be null at this moment.
+			//make the HUD spawn then recall set Char
+			SpawnDefaultHUD();
+			SetDemoCharacter(m_demoCharacter);
 		}
 	}
 }
@@ -90,15 +96,16 @@ void APM_PlayerControllerDemo::OnPossess(APawn* aPawn)
 				m_demoCamManager->SpawnCameraDemo(aPawn);
 				lbHasCamera = true;
 			}
+
+			if (!lbHasCamera) {
+				SetViewTarget(aPawn);
+			}
+
+			if (!IsValid(MyHUD)) {
+				SpawnDefaultHUD();
+				SetDemoCharacter(lDemoCharacter);
+			}
 		}
-	}
-
-	if (!lbHasCamera) {
-		SetViewTarget(aPawn);
-	}
-
-	if (!IsValid(MyHUD)) {
-		SpawnDefaultHUD();
 	}
 }
 

@@ -89,7 +89,10 @@ void UPM_PlayableInputCompDemo::InitializePlayerInput_Implementation(APM_PlayerC
 
 void UPM_PlayableInputCompDemo::ClearPlayerInput_Implementation(APM_PlayerControllerDemo* PlayerControllerDemo)
 {
-	DEBUG_LOG(TEXT("%s,Start init player input"), *GetNameSafe(this));
+
+	if (!PlayerControllerDemo) {
+		return;
+	}
 
 	check(PlayerControllerDemo);
 

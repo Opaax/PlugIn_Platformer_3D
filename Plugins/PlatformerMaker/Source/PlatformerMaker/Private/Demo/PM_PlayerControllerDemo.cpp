@@ -7,7 +7,7 @@
 #include "Demo/PM_GameModeDemo.h"
 #include "Demo/PM_HUDDemo.h"
 #include "Demo/PM_DemoCoreDelegates.h"
-#include "SubSystem/PMCheckpointSubsytem.h"
+#include "SubSystem/PMCheckpointSubsystem.h"
 
 //Unreal
 #include "EnhancedInputSubsystems.h"
@@ -182,7 +182,7 @@ void APM_PlayerControllerDemo::ProcessRestartDemo()
 	if (GetWorld()) {
 		FlushPressedKeys();
 
-		UPMCheckpointSubsytem* lCheckPointSubsystem = GetWorld()->GetSubsystem<UPMCheckpointSubsytem>();
+		UPMCheckpointSubsystem* lCheckPointSubsystem = GetWorld()->GetSubsystem<UPMCheckpointSubsystem>();
 
 		if (lCheckPointSubsystem) {
 			if (lCheckPointSubsystem->GetCurrentCheckPoint() && lCheckPointSubsystem->GetCurrentCheckPointPlayerStart()) {

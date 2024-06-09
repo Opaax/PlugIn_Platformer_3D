@@ -212,7 +212,9 @@ void APM_CharacterDemo::CheckAutoAddMappingContext()
 {
 	check(m_playableInputComp);
 
-	m_playableInputComp->InitializePlayerInput(m_pmController);
+	if (!m_playableInputComp->IsInit()) {
+		m_playableInputComp->InitializePlayerInput(m_pmController);
+	}
 }
 
 void APM_CharacterDemo::PopulateAbilityComponentDefault()

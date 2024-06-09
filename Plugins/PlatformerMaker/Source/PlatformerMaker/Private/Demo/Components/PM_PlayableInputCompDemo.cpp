@@ -18,6 +18,7 @@ class ULocalPlayer;
 UPM_PlayableInputCompDemo::UPM_PlayableInputCompDemo(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
 	m_demoCharacter = nullptr;
+	bIsInit = false;
 }
 
 void UPM_PlayableInputCompDemo::BeginPlay()
@@ -81,6 +82,8 @@ void UPM_PlayableInputCompDemo::InitializePlayerInput_Implementation(APM_PlayerC
 		lDemoInputComp->BindAbilityActions(m_inputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, m_bindHandles);
 
 		lDemoInputComp->BindNativeAction(m_inputConfig, DemoTags::Input_Native_Move.GetTag(), ETriggerEvent::Triggered, this, &ThisClass::Input_Movement_Internal, false);
+	
+		bIsInit = true;
 	}
 	else {
 		DEBUG_WARNING(TEXT("%s, add mapping context fail"), *GetNameSafe(this));
@@ -123,6 +126,8 @@ void UPM_PlayableInputCompDemo::ClearPlayerInput_Implementation(APM_PlayerContro
 	if (lCharac->OnEndPlay.Contains(lDemoInputComp, FName("OnInputOwnerEndPlayed"))) {
 		lCharac->OnEndPlay.Remove(lDemoInputComp, FName("OnInputOwnerEndPlayed"));
 	}
+
+	bIsInit = false;
 }
 
 void UPM_PlayableInputCompDemo::Input_Movement_Internal(const FInputActionValue& InputActionValue)

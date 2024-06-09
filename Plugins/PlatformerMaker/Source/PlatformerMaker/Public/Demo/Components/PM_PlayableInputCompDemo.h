@@ -68,6 +68,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<APM_CharacterDemo> m_demoCharacter;
 
+	UPROPERTY(EditDefaultsOnly, Category = "PawnData", meta = (DisplayName = "PawnData"))
+	bool bIsInit;
+
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 private:
 	UFUNCTION()
@@ -89,6 +92,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Input")
 	void ClearPlayerInput(APM_PlayerControllerDemo* PlayerControllerDemo);
 	virtual void ClearPlayerInput_Implementation(APM_PlayerControllerDemo* PlayerControllerDemo);
+
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "IsInit"))
+	FORCEINLINE bool IsInit() const { return bIsInit; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 public:

@@ -5,6 +5,7 @@
 #include "Settings/PlatformerMaker_Settings.h"
 #include "Triggerable/PMCheckpointActor.h"
 #include "Utils/DebugMacro.h"
+#include "EngineUtils.h"
 
 //CTOR
 UPMCheckpointSubsystem::UPMCheckpointSubsystem()
@@ -55,5 +56,15 @@ void UPMCheckpointSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	if (!FCheckpointStaticEvent::OnCheckpointTrigger().IsBoundToObject(this)) {
 		m_checkpointEventHandle = FCheckpointStaticEvent::OnCheckpointTrigger().AddUFunction(this, FName("OnCheckpointTrigger"));
+	}
+
+	for (TActorIterator<APMCheckpointActor> It(GetWorld(), APMCheckpointActor::StaticClass()); It; ++It)
+	{
+		APMCheckpointActor* CheckPoint = *It;
+
+		if (CheckPoint && CheckPoint->IsPlayerStart()) {
+			m_currentCheckPoint = CheckPoint;
+			return;
+		}
 	}
 }

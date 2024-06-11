@@ -17,7 +17,6 @@ UCLASS()
 class PLATFORMERMAKER_API UPMUW_LoadingBase : public UUserWidget
 {
 	GENERATED_UCLASS_BODY()
-	
 
 public:
 	UPROPERTY(BlueprintAssignable, Category = "Loading")

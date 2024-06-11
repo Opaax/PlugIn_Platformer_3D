@@ -24,6 +24,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Checkpoint|PlayerStart")
 	TObjectPtr<UChildActorComponent> m_childActorPlayerStart;
 
+	UPROPERTY(EditInstanceOnly, Category = "Checkpoint|PlayerStart", meta = (DisplayName = "IsStartLevel"))
+	bool bIsStartLevel;
+
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Checkpoint")
 	void SetPlayerStart(APlayerStart* NewPlayerStart) { m_playerStart = NewPlayerStart; }
@@ -40,10 +43,17 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Checkpoint")
 	FORCEINLINE APlayerStart* GetPlayerStart() const { return m_playerStart; }
-	
+
+	UFUNCTION(BlueprintPure, Category = "Checkpoint")
+	FORCEINLINE bool IsPlayerStart() const { return bIsStartLevel; }
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnTrigger(AActor* OtherTrigger) override;
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+#endif //WITH EDITOR
 };
 
 /** GameModeBase events, particularly for use by plugins */

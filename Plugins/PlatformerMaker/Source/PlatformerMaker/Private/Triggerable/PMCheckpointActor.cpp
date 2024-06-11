@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
 #include "Components/ChildActorComponent.h"
+#include "EngineUtils.h"
 
 FCheckpointStaticEvent::FCheckpointTrigger FCheckpointStaticEvent::CheckpointTrigger;
 
@@ -33,6 +34,8 @@ APMCheckpointActor::APMCheckpointActor(const FObjectInitializer& ObjectInit) :Su
 	}
 
 	CheckChildSetPlayerStart();
+
+	bIsStartLevel = false;
 }
 
 void APMCheckpointActor::ValidateCheckpoint_Implementation()
@@ -66,3 +69,35 @@ void APMCheckpointActor::OnTrigger(AActor* OtherTrigger)
 
 	Super::OnTrigger(OtherTrigger);
 }
+
+#if WITH_EDITOR
+void APMCheckpointActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (PropertyChangedEvent.MemberProperty && PropertyChangedEvent.MemberProperty->NamePrivate == "bIsStartLevel") {
+
+		if (GetWorld()) {
+			for (TActorIterator<APMCheckpointActor> It(GetWorld(), APMCheckpointActor::StaticClass()); It; ++It)
+			{
+				APMCheckpointActor* CheckPoint = *It;
+
+				if (CheckPoint && CheckPoint != this && CheckPoint->bIsStartLevel) {
+					CheckPoint->bIsStartLevel = false;
+				}
+			}
+
+			for (TActorIterator<APMCheckpointActor> It(GetWorld(), APMCheckpointActor::StaticClass()); It; ++It)
+			{
+				APMCheckpointActor* CheckPoint = *It;
+
+				if (CheckPoint && CheckPoint->bIsStartLevel) {
+					return;
+				}
+			}
+
+			bIsStartLevel = true;
+		}
+	}
+}
+#endif

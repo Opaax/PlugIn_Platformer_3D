@@ -6,7 +6,7 @@
 #include "UObject/NoExportTypes.h"
 #include "PlatformerMaker_Settings.generated.h"
 
-class UUserWidget;
+class UPMUW_LoadingBase;
 
 /**
  * Settings for the Plugin Platformer Maker
@@ -28,7 +28,7 @@ public:
 	bool CreateLoadingSubsystem;
 
 	UPROPERTY(Config, EditAnywhere, Category = "PlatformerMaker")
-	TSubclassOf<UUserWidget> BaseLoadingWidget;
+	TSubclassOf<UPMUW_LoadingBase> BaseLoadingWidget;
 
 	/**************************** FUNCTION ******************************/
 public:

@@ -4,7 +4,7 @@
 #include "SubSystem/PMLoadingScreenSubsystem.h"
 #include "Settings/PlatformerMaker_Settings.h"
 #include "Utils/DebugMacro.h"
-#include "Blueprint/UserWidget.h"
+#include "Widget/PMUW_LoadingBase.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PMLoadingScreenSubsystem)
 
@@ -12,35 +12,34 @@ UPMLoadingScreenSubsystem::UPMLoadingScreenSubsystem()
 {
 	m_loading = nullptr;
 	m_baseZOrder = 100;
-	bIsAddedManually = false;
 }
 
-void UPMLoadingScreenSubsystem::BeginLoading(const FString& MapName)
+void UPMLoadingScreenSubsystem::PreMapLoading(const FString& MapName)
 {
-	if (bIsAddedManually) {
-		return;
-	}
+	OnPreMapLoad.Broadcast(MapName);
 
 	AddLoadingOnScreen_Internal(m_baseZOrder, NULL);
 }
 
-void UPMLoadingScreenSubsystem::EndLoading(UWorld* InLoadedWorld)
+void UPMLoadingScreenSubsystem::PostMapLoaded(UWorld* InLoadedWorld)
 {
-	if (bIsAddedManually) {
-		return;
-	}
+	OnPostMapLoaded.Broadcast(InLoadedWorld);
 
 	RemoveLoadingFromScreen();
 }
 
-void UPMLoadingScreenSubsystem::AddLoadingOnScreen(int32 ZOrder, UUserWidget* overrideWidget)
+void UPMLoadingScreenSubsystem::AddLoadingOnScreen(int32 ZOrder, UPMUW_LoadingBase* overrideWidget)
 {
-	bIsAddedManually = true;
 	AddLoadingOnScreen_Internal(ZOrder, overrideWidget);
 }
 
-void UPMLoadingScreenSubsystem::AddLoadingOnScreen_Internal(int32 ZOrder, UUserWidget* overrideWidget)
+void UPMLoadingScreenSubsystem::AddLoadingOnScreen_Internal(int32 ZOrder, UPMUW_LoadingBase* overrideWidget)
 {
+	//Added manually
+	if (m_loading) {
+		return;
+	}
+
 	if (IsValid(overrideWidget)) {
 		m_loading = overrideWidget;
 	}
@@ -48,7 +47,7 @@ void UPMLoadingScreenSubsystem::AddLoadingOnScreen_Internal(int32 ZOrder, UUserW
 		UPlatformerMaker_Settings* lPluginSetting = GetMutableDefault<UPlatformerMaker_Settings>();
 
 		if (lPluginSetting->BaseLoadingWidget) {
-			m_loading = NewObject<UUserWidget>(this, lPluginSetting->BaseLoadingWidget);
+			m_loading = NewObject<UPMUW_LoadingBase>(this, lPluginSetting->BaseLoadingWidget);
 		}
 	}
 
@@ -58,6 +57,9 @@ void UPMLoadingScreenSubsystem::AddLoadingOnScreen_Internal(int32 ZOrder, UUserW
 	}
 
 	GEngine->GameViewport->AddViewportWidgetContent(m_loading->TakeWidget(), ZOrder);
+
+	m_loading->OnLoadingBeginAnimDone.Add(m_loadingScreenBeginAnimDelegate);
+	m_loading->StartLoadAnim();
 }
 
 void UPMLoadingScreenSubsystem::RemoveLoadingFromScreen_Internal()
@@ -66,12 +68,25 @@ void UPMLoadingScreenSubsystem::RemoveLoadingFromScreen_Internal()
 		return;
 	}
 
+	m_loading->OnLoadingEndingAnimDone.Add(m_loadingScreenEndingAnimDelegate);
+	m_loading->StopLoadAnim();
+}
+
+void UPMLoadingScreenSubsystem::OnLoadingScreenBeginAnimFinish()
+{
+	m_loading->OnLoadingBeginAnimDone.Remove(m_loadingScreenBeginAnimDelegate);
+	OnLoadingScreenBeginFinish.Broadcast();
+}
+
+void UPMLoadingScreenSubsystem::OnLoadingScreenEndingAnimFinish()
+{
+	m_loading->OnLoadingEndingAnimDone.Remove(m_loadingScreenEndingAnimDelegate);
+	OnLoadingScreenEndingFinish.Broadcast();
 	GEngine->GameViewport->RemoveViewportWidgetContent(m_loading->TakeWidget());
 }
 
 void UPMLoadingScreenSubsystem::RemoveLoadingFromScreen()
 {
-	bIsAddedManually = false;
 	RemoveLoadingFromScreen_Internal();
 }
 
@@ -90,7 +105,10 @@ void UPMLoadingScreenSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	// Show simple loading screen when transitioning between maps
 	if (!IsRunningDedicatedServer()) {
-		FCoreUObjectDelegates::PreLoadMap.AddUObject(this, &UPMLoadingScreenSubsystem::BeginLoading);
-		FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UPMLoadingScreenSubsystem::EndLoading);
+		FCoreUObjectDelegates::PreLoadMap.AddUObject(this, &UPMLoadingScreenSubsystem::PreMapLoading);
+		FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UPMLoadingScreenSubsystem::PostMapLoaded);
+
+		m_loadingScreenBeginAnimDelegate.BindUFunction(this, FName("OnLoadingScreenBeginAnimFinish"));
+		m_loadingScreenEndingAnimDelegate.BindUFunction(this, FName("OnLoadingScreenEndingAnimFinish"));
 	}
 }

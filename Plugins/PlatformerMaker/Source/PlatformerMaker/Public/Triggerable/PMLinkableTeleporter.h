@@ -19,7 +19,7 @@ class PLATFORMERMAKER_API APMLinkableTeleporter : public APMTriggerableActor
 	
 	/*---------------------------------- MEMBERS ----------------------------------*/
 protected:
-	UPROPERTY(Category = "Trigger Teleporter", BlueprintGetter = "GetCurrentTriggeActor", BlueprintSetter = "SetCurrentTriggeActor", meta = (DisplayName = "CurrentTriggerActor"))
+	UPROPERTY(Category = "Trigger Teleporter", BlueprintGetter = "GetCurrentTriggerActor", BlueprintSetter = "SetCurrentTriggerActor", meta = (DisplayName = "CurrentTriggerActor"))
 	TObjectPtr<AActor> m_currentTriggerActor;
 
 	UPROPERTY(EditAnywhere, Category = "Teleporter", meta = (DisplayName = "UseCustomTeleportLocation"))
@@ -45,10 +45,10 @@ protected:
 
 	/*---------------------------------- Getter / Setter ----------------------------------*/
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	FORCEINLINE AActor* GetCurrentTriggeActor() const { return m_currentTriggerActor; }
+	FORCEINLINE AActor* GetCurrentTriggerActor() const { return m_currentTriggerActor; }
 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void SetCurrentTriggeActor(AActor* const NewCurrentTriggerActor) { m_currentTriggerActor = NewCurrentTriggerActor; }
+	FORCEINLINE void SetCurrentTriggerActor(AActor* const NewCurrentTriggerActor) { m_currentTriggerActor = NewCurrentTriggerActor; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 protected:

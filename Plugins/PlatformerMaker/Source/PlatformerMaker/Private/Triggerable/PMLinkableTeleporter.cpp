@@ -32,7 +32,7 @@ void APMLinkableTeleporter::BeginPlay()
 	Super::BeginPlay();
 
 	if (!TargetTeleporter) {
-		DEBUG_ERROR_CUSTOM_CATEGORY(LogPlatformerPlugin, TEXT("[%s], Has Target Teleporter"), *GetNameSafe(this));
+		DEBUG_ERROR_CUSTOM_CATEGORY(LogPlatformerPlugin, TEXT("[%s], Do not Have Target Teleporter"), *GetNameSafe(this));
 	}
 }
 
@@ -40,5 +40,5 @@ void APMLinkableTeleporter::OnTrigger(AActor* OtherTrigger)
 {
 	Super::OnTrigger(OtherTrigger);
 
-	SetCurrentTriggeActor(OtherTrigger);
+	SetCurrentTriggerActor(OtherTrigger);
 }

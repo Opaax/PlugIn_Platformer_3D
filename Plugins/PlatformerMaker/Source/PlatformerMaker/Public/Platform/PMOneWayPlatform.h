@@ -40,6 +40,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Runtime")
 	TObjectPtr<AActor> m_currentTriggerActor;
 
+	UPROPERTY(VisibleAnywhere, Category = "Runtime")
+	TObjectPtr<UPrimitiveComponent> m_currentActorRootPrimitive;
+
 #if WITH_EDITORONLY_DATA
 	/** Component shown in the editor only to indicate oneway facing facing */
 	UPROPERTY()

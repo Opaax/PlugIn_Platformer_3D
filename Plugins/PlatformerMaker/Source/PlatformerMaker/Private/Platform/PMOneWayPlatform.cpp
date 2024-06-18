@@ -32,6 +32,7 @@ void APMOneWayPlatform::OnTriggerComponentOverlapped(UPrimitiveComponent* Overla
 	if (IsValid(OtherActor) && m_validClassToTrigger.Contains(OtherActor->GetClass())) {
 
 		m_currentTriggerActor = OtherActor;
+		m_currentActorRootPrimitive = CastChecked<UPrimitiveComponent>(m_currentTriggerActor->GetRootComponent(), ECastCheckedType::NullAllowed);
 
 		ComputeOneWayCollision();
 		OnTrigger(OtherActor);
@@ -42,6 +43,7 @@ void APMOneWayPlatform::OnTriggerComponentEndOverlapped(UPrimitiveComponent* Ove
 {
 	if (IsValid(OtherActor) && m_validClassToTrigger.Contains(OtherActor->GetClass())) {
 		m_currentTriggerActor = nullptr;
+		m_currentActorRootPrimitive = nullptr;
 		OnOutTrigger(OtherActor);
 	}
 }
@@ -65,9 +67,13 @@ void APMOneWayPlatform::ComputeOneWayCollision_Implementation()
 	FVector lToActor = (m_currentTriggerActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
 	
 	if (m_oneWayDirection->GetForwardVector().Dot(lToActor) < 0) {
-		m_meshPlatform->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	} else if(m_meshPlatform->GetCollisionEnabled() == ECollisionEnabled::NoCollision) {
-		m_meshPlatform->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		if (m_currentActorRootPrimitive) {
+			m_currentActorRootPrimitive->IgnoreComponentWhenMoving(m_meshPlatform, true);
+		}
+	} else {
+		if(m_currentActorRootPrimitive) {
+			m_currentActorRootPrimitive->IgnoreComponentWhenMoving(m_meshPlatform, false);
+		}
 	}
 }
 

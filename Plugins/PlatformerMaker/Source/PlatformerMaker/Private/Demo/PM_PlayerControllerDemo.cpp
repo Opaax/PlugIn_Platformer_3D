@@ -166,8 +166,6 @@ void APM_PlayerControllerDemo::PawnPendingDestroy(APawn* inPawn)
 void APM_PlayerControllerDemo::SpawnDefaultHUD()
 {
 	Super::SpawnDefaultHUD();
-
-	DEBUG_LOG_SCREEN(-1, 4.f, FColor::Yellow, TEXT("Auto spawn HUD"));
 }
 
 void APM_PlayerControllerDemo::DestroyHUD()

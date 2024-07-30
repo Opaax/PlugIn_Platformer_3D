@@ -62,6 +62,9 @@ private:
 	UFUNCTION(Category = "DemoCharacter")
 	void ClearPlayableInput();
 
+	UFUNCTION(Category = "DemoCharacter")
+	void OnNoMoreLife();
+
 public:
 	APM_CharacterDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
@@ -104,7 +107,7 @@ public:
 	virtual void AddMovementInput(FVector WorldDirection, float ScaleValue = 1.0f, bool bForce = false) override;
 	virtual void SetPlayerDefaults() override;
 	virtual void TeleportSucceeded(bool bIsATest) override;
-	virtual void Destroyed();
+	virtual void Destroyed() override;
 	virtual void Reset() override;
 #pragma endregion Pawn_Override
 

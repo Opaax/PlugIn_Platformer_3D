@@ -44,6 +44,11 @@ APM_CharacterDemo::APM_CharacterDemo(const FObjectInitializer& ObjectInitializer
 void APM_CharacterDemo::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(IsValid(m_lifeComponent))
+	{
+		m_lifeComponent->OnNoMoreLife.AddDynamic(this, &APM_CharacterDemo::OnNoMoreLife);
+	}
 }
 
 void APM_CharacterDemo::Tick(float DeltaTime)
@@ -238,4 +243,14 @@ void APM_CharacterDemo::ClearPlayableInput()
 	check(m_playableInputComp);
 
 	m_playableInputComp->ClearPlayerInput(m_pmController);
+}
+
+void APM_CharacterDemo::OnNoMoreLife()
+{
+	if(IsValid(m_lifeComponent))
+	{
+		m_lifeComponent->OnNoMoreLife.RemoveDynamic(this, &APM_CharacterDemo::OnNoMoreLife);
+	}
+	
+	Destroy();
 }

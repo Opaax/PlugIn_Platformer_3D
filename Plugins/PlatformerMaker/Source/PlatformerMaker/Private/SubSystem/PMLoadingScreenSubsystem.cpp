@@ -83,6 +83,7 @@ void UPMLoadingScreenSubsystem::OnLoadingScreenEndingAnimFinish()
 	m_loading->OnLoadingEndingAnimDone.Remove(m_loadingScreenEndingAnimDelegate);
 	OnLoadingScreenEndingFinish.Broadcast();
 	GEngine->GameViewport->RemoveViewportWidgetContent(m_loading->TakeWidget());
+	m_loading = nullptr;
 }
 
 void UPMLoadingScreenSubsystem::RemoveLoadingFromScreen()

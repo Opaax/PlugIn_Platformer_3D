@@ -3,6 +3,7 @@
 
 #include "Demo/PM_HUDDemo.h"
 #include "Blueprint/UserWidget.h"
+#include "Demo/PM_PlayerControllerDemo.h"
 #include "Demo/UI/PM_DeathTransitionDemo.h"
 
 APM_HUDDemo::APM_HUDDemo(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
@@ -31,8 +32,21 @@ void APM_HUDDemo::CreateDefaultWidget()
 
 void APM_HUDDemo::CreateDeathTranstionWidget()
 {
-	if (!m_defaultWidgetClass || !GetOwningPlayerController()) {
+	if (!m_defaultWidgetClass || !GetOwningPlayerController())
+	{
 		return;
+	}
+
+	if(GetOwningPlayerController())
+	{
+		if(APM_PlayerControllerDemo* lPMDemoCtr = Cast<APM_PlayerControllerDemo>(GetOwningPlayerController()))
+		{
+			//Do not create Death transition if we are going back to menu.
+			if(lPMDemoCtr->IsReturningToMenu())
+			{
+				return;
+			}
+		}
 	}
 
 	m_deathTransitionWidget = CreateWidget<UPM_DeathTransitionDemo>(GetOwningPlayerController(), m_deathTransitionWidgetClass, FName("TransitionWidgetHUD"));

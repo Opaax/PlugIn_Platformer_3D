@@ -152,6 +152,11 @@ void APMTurret::StartShoot()
 {
 	if (UWorld* lWorld = GetWorld())
 	{
+		if(!m_shootTimerHandle.IsValid())
+		{
+			Shoot();
+		}
+		
 		lWorld->GetTimerManager().SetTimer(m_shootTimerHandle, this, &APMTurret::Shoot, m_fireRate, true);
 	}
 }

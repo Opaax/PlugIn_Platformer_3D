@@ -20,11 +20,15 @@ class PLATFORMERMAKER_API APM_PlayerControllerDemo : public APlayerController
 	
 	/*---------------------------------- MEMBERS ----------------------------------*/
 private:
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Category= "Runtime")
 	TObjectPtr<APM_CharacterDemo> m_demoCharacter;
 
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Category= "Runtime")
 	TObjectPtr<APM_PlayerCameraManagerDemo> m_demoCamManager;
+
+protected:
+	UPROPERTY(VisibleInstanceOnly, Category= "Runtime", BlueprintGetter = "IsReturningToMenu", BlueprintSetter = "SetIsReturningToMenu", meta = (DisplayName = "bIsReturningToMenu"))
+	bool bIsReturningToMenu = false;
 
 	/*---------------------------------- FUNCTION ----------------------------------*/
 private:
@@ -47,6 +51,13 @@ public:
 
 	UFUNCTION()
 	FORCEINLINE APM_CharacterDemo* GetDemoCharacter() const { return m_demoCharacter; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	FORCEINLINE bool IsReturningToMenu() const { return bIsReturningToMenu;}
+	
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE void SetIsReturningToMenu(bool ReturningToMenu) { bIsReturningToMenu = ReturningToMenu;}
+
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 

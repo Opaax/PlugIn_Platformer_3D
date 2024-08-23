@@ -5,6 +5,7 @@
 
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
+#include "Utils/DebugMacro.h"
 
 #if WITH_EDITORONLY_DATA
 #include "Components/ArrowComponent.h"
@@ -65,8 +66,9 @@ void APMOneWayPlatform::ComputeOneWayCollision_Implementation()
 	}
 
 	FVector lToActor = (m_currentTriggerActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
+	float lDot = m_oneWayDirection->GetForwardVector().Dot(lToActor);
 	
-	if (m_oneWayDirection->GetForwardVector().Dot(lToActor) < 0) {
+	if (lDot < 0 || (m_currentTriggerActor->IsOverlappingActor(this) && lDot < m_overlappingDotComputation)) {
 		if (m_currentActorRootPrimitive) {
 			m_currentActorRootPrimitive->IgnoreComponentWhenMoving(m_meshPlatform, true);
 		}

@@ -16,6 +16,7 @@ APMTrigger::APMTrigger(const FObjectInitializer& ObjectInitializer)
 	m_childClass = NULL;
 }
 
+#if WITH_EDITOR
 void APMTrigger::UpdateChildren()
 {
 	//Clear and remove old actor spawn
@@ -106,3 +107,4 @@ void APMTrigger::PostEditMove(bool bFinished)
 
 	UpdateChildren();
 }
+#endif

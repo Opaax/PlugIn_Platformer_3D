@@ -47,8 +47,9 @@ void APMBumperBase::OnTriggerComponentOverlapped(UPrimitiveComponent* Overlapped
 		if (ACharacter* lCharac = Cast<ACharacter>(OtherActor))
 		{
 			FVector lForceVector = OtherActor->GetActorUpVector() * m_bumperForce;
-
-			lCharac->LaunchCharacter(lForceVector, false, true);
+			lForceVector += bOverrideXYCharacterVelocity ? m_customCharacterXYVelocity : FVector();
+			
+			lCharac->LaunchCharacter(lForceVector, bOverrideXYCharacterVelocity, true);
 
 			OnBumped();
 

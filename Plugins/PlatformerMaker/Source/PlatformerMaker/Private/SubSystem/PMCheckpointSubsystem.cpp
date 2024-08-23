@@ -4,8 +4,8 @@
 #include "SubSystem/PMCheckpointSubsystem.h"
 #include "Settings/PlatformerMaker_Settings.h"
 #include "Triggerable/PMCheckpointActor.h"
-#include "Utils/DebugMacro.h"
 #include "EngineUtils.h"
+#include "GameFramework/PlayerStart.h"
 
 //CTOR
 UPMCheckpointSubsystem::UPMCheckpointSubsystem()
@@ -23,7 +23,7 @@ void UPMCheckpointSubsystem::OnCheckpointTrigger(APMCheckpointActor* CheckpointT
 	}
 }
 
-APlayerStart* UPMCheckpointSubsystem::GetCurrentCheckPointPlayerStart() const
+APlayerStart* UPMCheckpointSubsystem::GetCurrentCheckPointPlayerStart()
 {
 	if (m_currentCheckPoint) {
 		return m_currentCheckPoint->GetPlayerStart();

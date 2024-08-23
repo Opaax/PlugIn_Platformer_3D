@@ -31,6 +31,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting", meta = (DisplayName = "ValidClassToTrigger"))
 	TArray<TSubclassOf<AActor>> m_validClassToTrigger;
 
+	/*
+	 *This is used to check is the current trigger actor is still overlapping and is over this value
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting", meta = (DisplayName = "OverlappingDotComputation"))
+	float m_overlappingDotComputation  = 0.1f;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", BlueprintGetter = "GetTriggerComponent", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> m_triggerComponent;
 

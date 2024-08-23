@@ -41,7 +41,7 @@ public:
 	FORCEINLINE APMCheckpointActor* GetCurrentCheckPoint() const { return m_currentCheckPoint; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "CheckpointSubsystem")
-	FORCEINLINE APlayerStart* GetCurrentCheckPointPlayerStart() const;
+	APlayerStart* GetCurrentCheckPointPlayerStart();
 
 public:
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;

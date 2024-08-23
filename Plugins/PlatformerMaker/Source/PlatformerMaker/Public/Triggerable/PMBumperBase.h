@@ -26,6 +26,20 @@ protected:
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "BumperCharacterForce"))
 	float m_bumperForce = 2000.f;
+	
+	/*
+	* False = keep the last character movement velocity XY
+	* TRUE = Use custom XY Velocity
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (DisplayName = "bOverrideXYCharacterVelocity"))
+	bool bOverrideXYCharacterVelocity = false;
+
+	/*
+	* False = keep the last character movement velocity XY
+	* TRUE = Use custom XY Velocity
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bumper|Setting", meta = (EditCondition = "bOverrideXYCharacterVelocity", DisplayName = "CustomCharacterXYVelocity"))
+	FVector m_customCharacterXYVelocity = FVector();
 
 	/*
 	* Basic Actor do not work as same as character

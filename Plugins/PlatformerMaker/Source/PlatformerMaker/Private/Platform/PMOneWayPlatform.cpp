@@ -42,7 +42,8 @@ void APMOneWayPlatform::OnTriggerComponentOverlapped(UPrimitiveComponent* Overla
 
 void APMOneWayPlatform::OnTriggerComponentEndOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (IsValid(OtherActor) && m_validClassToTrigger.Contains(OtherActor->GetClass())) {
+	if (IsValid(OtherActor) && m_currentTriggerActor == OtherActor) {
+		m_currentActorRootPrimitive->IgnoreComponentWhenMoving(m_meshPlatform, false);
 		m_currentTriggerActor = nullptr;
 		m_currentActorRootPrimitive = nullptr;
 		OnOutTrigger(OtherActor);
@@ -65,9 +66,13 @@ void APMOneWayPlatform::ComputeOneWayCollision_Implementation()
 		return;
 	}
 
-	FVector lToActor = (m_currentTriggerActor->GetActorLocation() - GetActorLocation()).GetSafeNormal();
-	float lDot = m_oneWayDirection->GetForwardVector().Dot(lToActor);
 	
+	FVector lLocationOnMesh = GetActorLocation();
+	lLocationOnMesh.X = m_currentTriggerActor->GetActorLocation().X;
+	lLocationOnMesh.Y = m_currentTriggerActor->GetActorLocation().Y;
+	FVector lToActor = (m_currentTriggerActor->GetActorLocation() - lLocationOnMesh).GetSafeNormal();
+	float lDot = m_oneWayDirection->GetForwardVector().Dot(lToActor);
+
 	if (lDot < 0 || (m_currentTriggerActor->IsOverlappingActor(this) && lDot < m_overlappingDotComputation)) {
 		if (m_currentActorRootPrimitive) {
 			m_currentActorRootPrimitive->IgnoreComponentWhenMoving(m_meshPlatform, true);

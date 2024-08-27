@@ -74,6 +74,11 @@ void UPMLoadingScreenSubsystem::RemoveLoadingFromScreen_Internal()
 
 void UPMLoadingScreenSubsystem::OnLoadingScreenBeginAnimFinish()
 {
+	if(!m_loading)
+	{
+		return;
+	}
+	
 	m_loading->OnLoadingBeginAnimDone.Remove(m_loadingScreenBeginAnimDelegate);
 	OnLoadingScreenBeginFinish.Broadcast();
 }

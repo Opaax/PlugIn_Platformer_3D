@@ -23,6 +23,11 @@ UPMSplinePathVisualizerComponent::UPMSplinePathVisualizerComponent(const FObject
 	m_meshInstanceScale = FVector(1,1,1);
 }
 
+void UPMSplinePathVisualizerComponent::SetUpSplineCompConstructor(USplineComponent* InSpline)
+{
+	m_splineInOwner = InSpline;
+}
+
 void UPMSplinePathVisualizerComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -60,6 +65,10 @@ void UPMSplinePathVisualizerComponent::SetupMeshVisualization_Implementation()
 
 bool UPMSplinePathVisualizerComponent::CanSetupMesh_Implementation()
 {
+	if (m_splineInOwner) {
+		return true;
+	}
+
 	if (GetOwner() == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Owner null in %s"), *FString(__FUNCTION__).Left(FString(__FUNCTION__).Find(TEXT(":"))));

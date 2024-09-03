@@ -6,8 +6,10 @@
 #include "UObject/NoExportTypes.h"
 #include "PlatformerMaker_Settings.generated.h"
 
+class UPMUW_LoadingBase;
+
 /**
- * 
+ * Settings for the Plugin Platformer Maker
  */
 UCLASS(config = PlatformerMaker_Settings)
 class PLATFORMERMAKER_API UPlatformerMaker_Settings : public UObject
@@ -18,6 +20,15 @@ class PLATFORMERMAKER_API UPlatformerMaker_Settings : public UObject
 public:
 	UPROPERTY(Config, EditAnywhere, Category = "PlatformerMaker")
 	bool SpawnScoreSubSystem;
+
+	UPROPERTY(Config, EditAnywhere, Category = "PlatformerMaker")
+	bool SpawnCheckpointSubSystem;
+
+	UPROPERTY(Config, EditAnywhere, Category = "PlatformerMaker")
+	bool CreateLoadingSubsystem;
+
+	UPROPERTY(Config, EditAnywhere, Category = "PlatformerMaker")
+	TSubclassOf<UPMUW_LoadingBase> BaseLoadingWidget;
 
 	/**************************** FUNCTION ******************************/
 public:

@@ -83,7 +83,6 @@ void APlatform_PlugInCharacter::SetupPlayerInputComponent(class UInputComponent*
 
 		//Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlatform_PlugInCharacter::Look);
-
 	}
 
 }

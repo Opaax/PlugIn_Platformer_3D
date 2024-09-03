@@ -37,6 +37,10 @@ void APMPlatformMovingAlongSpline::PostEditChangeProperty(FPropertyChangedEvent&
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
+	if (!PropertyChangedEvent.MemberProperty) {
+		return;
+	}
+
 	DEBUG_ERROR(TEXT("edit: %s"), *PropertyChangedEvent.MemberProperty->NamePrivate.ToString());
 
 	if (PropertyChangedEvent.MemberProperty->NamePrivate == "m_splineActor") {

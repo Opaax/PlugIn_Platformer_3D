@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogPlatformerPlugin, Log, All);
+PLATFORMERMAKER_API DECLARE_LOG_CATEGORY_EXTERN(LogPlatformerPlugin, Log, All);
 
 class FPlatformerMakerModule : public IModuleInterface
 {

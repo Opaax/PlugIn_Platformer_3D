@@ -2,6 +2,7 @@
 
 #include "Components/PMLifeComponent.h"
 #include "PlatformerMaker.h"
+#include "GameFramework/Actor.h"
 
 //Unreal
 #if WITH_EDITOR
@@ -12,6 +13,10 @@
 UPMLifeComponent::UPMLifeComponent(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	bStartWithMaxLife = true;
+	m_startLife = 100.f;
+	m_maxLife = 100.f;
 
 #if WITH_EDITORONLY_DATA
 	bRegisterConsoleFunctions = true;
@@ -101,7 +106,8 @@ void UPMLifeComponent::DebugRemoveLife(const TArray<FString>& Args)
 {
 	if (Args.Num() < 1)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Can't Remove life, Not enough arguments"));
+		UE_LOG(LogTemp, Error, TEXT("Can't Remove life, Not enough arguments"));
+		return;
 	}
 	else if (Args.Num() > 1)
 	{
@@ -157,7 +163,7 @@ void UPMLifeComponent::AddLife_Implementation(float Amount)
 
 	CheckLife();
 
-	UE_LOG(LogPlatformerPlugin, Log, TEXT("%s: Add %f to the Current Life: %f in %s"), *GetName(), Amount, m_currentLife, *GetNameSafe(GetOwner()));
+	UE_LOG(LogPlatformerPlugin, Log, TEXT("%s: Add %f to the Current Life: %f in %s"), *GetName(), Amount, m_currentLife, *GetOwner()->GetName());
 }
 
 void UPMLifeComponent::RemoveLife_Implementation(float Amount)
@@ -166,7 +172,7 @@ void UPMLifeComponent::RemoveLife_Implementation(float Amount)
 
 	CheckLife();
 
-	UE_LOG(LogPlatformerPlugin, Log, TEXT("%s: Remove %f to the Current Life: %f in %s"), *GetName(), Amount, m_currentLife, *GetNameSafe(GetOwner()));
+	UE_LOG(LogPlatformerPlugin, Log, TEXT("%s: Remove %f to the Current Life: %f in %s"), *GetName(), Amount, m_currentLife, *GetOwner()->GetName());
 }
 
 void UPMLifeComponent::CheckLife_Implementation()

@@ -39,7 +39,7 @@ protected:
 	/*
 	* The perception component
 	*/
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PMTurret|Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PMTurret|Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPMAIPerceptionComponent> m_perceptionComponent;
 
 	/*

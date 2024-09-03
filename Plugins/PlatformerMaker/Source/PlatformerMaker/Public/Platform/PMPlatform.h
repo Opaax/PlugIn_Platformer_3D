@@ -20,7 +20,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = Component, meta = (allowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> m_root;
 
-	UPROPERTY(VisibleAnywhere, Category = Mesh, meta = (allowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = Mesh, meta = (allowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> m_meshPlatform;
 
 	/**************************** FUNCTION ******************************/

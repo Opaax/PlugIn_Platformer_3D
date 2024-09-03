@@ -44,6 +44,9 @@ protected:
 public:	
 	UPMSplinePathVisualizerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	UFUNCTION(BlueprintCallable)
+	void SetUpSplineCompConstructor(USplineComponent* InSpline);
+	
 	/**************************** OVERRIDE ******************************/
 protected:
 	virtual void BeginPlay() override;

@@ -26,10 +26,10 @@ struct FDemoInputAction
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (Categories = "Input"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Input", Meta = (Categories = "Input"))
 	TObjectPtr<const UInputAction> InputAction = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Meta = (Categories = "InputTag"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category= "Input", Meta = (Categories = "InputTag"))
 	FGameplayTag InputTag;
 };
 

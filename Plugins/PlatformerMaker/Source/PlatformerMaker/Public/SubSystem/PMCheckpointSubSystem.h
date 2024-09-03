@@ -22,7 +22,7 @@ class PLATFORMERMAKER_API UPMCheckpointSubsystem : public UWorldSubsystem
 private:
 	FDelegateHandle m_checkpointEventHandle;
 
-	UPROPERTY(BlueprintGetter = "GetCurrentCheckPoint")
+	UPROPERTY(BlueprintGetter = "GetCurrentCheckPoint", Category= "Checkpoint|Runtime")
 	TObjectPtr<APMCheckpointActor> m_currentCheckPoint;
 
 public:

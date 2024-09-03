@@ -61,11 +61,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input", meta = (DisplayName = "InputConfig"))
 	TObjectPtr<UPM_InputPlayerConfig> m_inputConfig;
-
-	UPROPERTY()
+	
 	TArray<uint32> m_bindHandles;
 
-	UPROPERTY()
+	UPROPERTY(VisibleInstanceOnly, Category = "Runtime")
 	TObjectPtr<APM_CharacterDemo> m_demoCharacter;
 
 	UPROPERTY(EditDefaultsOnly, Category = "PawnData", meta = (DisplayName = "PawnData"))
@@ -73,13 +72,13 @@ private:
 
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 private:
-	UFUNCTION()
+	UFUNCTION(Category = "PlayableInputCompDemo")
 	void Input_Movement_Internal(const FInputActionValue& InputActionValue);
 
-	UFUNCTION()
+	UFUNCTION(Category = "PlayableInputCompDemo")
 	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
 
-	UFUNCTION()
+	UFUNCTION(Category = "PlayableInputCompDemo")
 	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
 
 public:
@@ -93,7 +92,7 @@ public:
 	void ClearPlayerInput(APM_PlayerControllerDemo* PlayerControllerDemo);
 	virtual void ClearPlayerInput_Implementation(APM_PlayerControllerDemo* PlayerControllerDemo);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "IsInit"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "IsInit"),Category = "PlayableInputCompDemo")
 	FORCEINLINE bool IsInit() const { return bIsInit; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/

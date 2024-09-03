@@ -40,14 +40,14 @@ public:
 
 	/*---------------------------------- FUNCTIONS ----------------------------------*/
 protected:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Teleporter")
 	bool TeleportToLinkedTeleporter();
 
 	/*---------------------------------- Getter / Setter ----------------------------------*/
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Teleporter")
 	FORCEINLINE AActor* GetCurrentTriggerActor() const { return m_currentTriggerActor; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Teleporter")
 	FORCEINLINE void SetCurrentTriggerActor(AActor* const NewCurrentTriggerActor) { m_currentTriggerActor = NewCurrentTriggerActor; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/

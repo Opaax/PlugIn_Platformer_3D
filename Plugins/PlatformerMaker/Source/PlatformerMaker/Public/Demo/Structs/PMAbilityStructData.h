@@ -10,13 +10,13 @@ struct PLATFORMERMAKER_API FPMAbilityDataDemo
 {
 	GENERATED_USTRUCT_BODY()
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category= "PMAbilityDataDemo" )
 	TSubclassOf<UGameplayAbility> AbilityClass;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly,Category= "PMAbilityDataDemo")
 	int32 AbilityLevel;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly,Category= "PMAbilityDataDemo")
 	FGameplayTag AbilityDynamicTag;
 
 	FPMAbilityDataDemo():

@@ -22,7 +22,7 @@ class PLATFORMERMAKER_API APM_CameraDemo : public ACameraActor
 
 	/*---------------------------------- MEMBERS ----------------------------------*/
 protected:
-	UPROPERTY(VisibleInstanceOnly)
+	UPROPERTY(VisibleInstanceOnly, Category= "Demo|Runtime")
 	TObjectPtr<APawn> m_currentPawn;
 
 	float m_distanceToTarget;

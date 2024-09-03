@@ -64,13 +64,13 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Event", meta = (DisplayName = "OnSetLifeComponent"))
 	void ReceiveOnSetLifeComponent(const UPMLifeComponent* InLifeComp, bool HasChange);
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure,Category = "DemoHUD")
 	FORCEINLINE UUserWidget* GetDefaultWidget() const { return m_defaultWidget; }
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure,Category = "DemoHUD")
 	FORCEINLINE UPMLifeComponent* GetCurrentLifeComp() const { return m_currentLifeComp; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/
 protected:
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
 };

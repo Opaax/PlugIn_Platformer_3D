@@ -34,28 +34,28 @@ protected:
 private:
 	void DestroyHUD();
 
-	UFUNCTION()
+	UFUNCTION(Category= "PlayerControllerDemo")
 	void ProcessRestartDemo();
 
 public:
 	APM_PlayerControllerDemo(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BLueprintCallable)
+	UFUNCTION(BLueprintCallable,Category= "PlayerControllerDemo")
 	void AddInputMappingContext(const UInputMappingContext* InputMappingContext, const int32 Priority);
 
-	UFUNCTION(BLueprintCallable)
+	UFUNCTION(BLueprintCallable,Category= "PlayerControllerDemo")
 	void RemoveInputMappingContext(const UInputMappingContext* InputMappingContext);
 
-	UFUNCTION()
+	UFUNCTION(Category= "PlayerControllerDemo")
 	FORCEINLINE void SetDemoCharacter(APM_CharacterDemo* InCharacter);
 
-	UFUNCTION()
+	UFUNCTION(Category= "PlayerControllerDemo")
 	FORCEINLINE APM_CharacterDemo* GetDemoCharacter() const { return m_demoCharacter; }
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure,Category= "PlayerControllerDemo")
 	FORCEINLINE bool IsReturningToMenu() const { return bIsReturningToMenu;}
 	
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,Category= "PlayerControllerDemo")
 	FORCEINLINE void SetIsReturningToMenu(bool ReturningToMenu) { bIsReturningToMenu = ReturningToMenu;}
 
 
@@ -65,7 +65,7 @@ public:
 public:
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void OnUnPossess() override;
-	virtual void SpawnPlayerCameraManager();
+	virtual void SpawnPlayerCameraManager() override;
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	virtual void PawnPendingDestroy(APawn* inPawn) override;
 	virtual void SpawnDefaultHUD() override;

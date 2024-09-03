@@ -21,10 +21,10 @@ private:
 	TArray<FPMAbilityDataDemo> m_abilities;
 	/*---------------------------------- FUNCTION ----------------------------------*/
 public:
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "PlayerPawnData")
 	TArray<FPMAbilityDataDemo> GetAbilities() const { return m_abilities; }
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category= "PlayerPawnData")
 	void GetAbilitiesRef(TArray<FPMAbilityDataDemo>& OutAbility) { OutAbility = m_abilities; }
 
 	/*---------------------------------- OVERRIDE ----------------------------------*/

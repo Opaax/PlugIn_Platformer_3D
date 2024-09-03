@@ -2,9 +2,8 @@
 
 
 #include "Platform/PMTimePlatform.h"
-#include "Utils/DebugMacro.h"
-
 #include "Components/BoxComponent.h"
+#include "TimerManager.h"
 
 APMTimePlatform::APMTimePlatform(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {

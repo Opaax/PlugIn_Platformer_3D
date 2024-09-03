@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraActor.h"
 #include "../Demo/PMCameraEnums.h"
+#include "GameFramework/Pawn.h"
 #include "PM_CameraDemo.generated.h"
 
-class APawn;
 class UPM_CameraDefaultSettingData;
 
 /**

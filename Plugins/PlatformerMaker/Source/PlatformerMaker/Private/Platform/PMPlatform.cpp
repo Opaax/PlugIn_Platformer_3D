@@ -1,7 +1,6 @@
 // 2023 Copyright Enguerran COBERT, Inc. All Rights Reserved.
 
 #include "../Public/Platform/PMPlatform.h"
-#include "PlatformerMaker.h"
 
 //Unreal
 #include "Components/StaticMeshComponent.h"

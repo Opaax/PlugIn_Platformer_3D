@@ -97,11 +97,13 @@ void APMTriggerableActor::OnTriggerComponentEndOverlapped(UPrimitiveComponent* O
 
 void APMTriggerableActor::OnTrigger(AActor* OtherTrigger)
 {
+	bIsTrigger = true;
 	ReceiveOnTrigger(OtherTrigger);
 }
 
 void APMTriggerableActor::OnOutTrigger(AActor* OtherTrigger)
 {
+	bIsTrigger = false;
 	ReceiveOnOutTrigger(OtherTrigger);
 }
 

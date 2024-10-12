@@ -23,7 +23,9 @@
 #define DEBUG_ERROR(Format,...) UE_LOG(LogTemp,Error,Format,__VA_ARGS__)
 #define DEBUG_WARNING(Format,...) UE_LOG(LogTemp,Warning,Format,__VA_ARGS__)
 #define DEBUG_LOG(Format,...) UE_LOG(LogTemp,Log,Format,__VA_ARGS__)
-
+#define DEBUG_ERROR_CUSTOM_CATEGORY(Category, Format,...) UE_LOG(Category,Error,Format,__VA_ARGS__)
+#define DEBUG_WARNING_CUSTOM_CATEGORY(Category,Format,...) UE_LOG(Category,Warning,Format,__VA_ARGS__)
+#define DEBUG_LOG_CUSTOM_CATEGORY(Category,Format,...) UE_LOG(Category,Log,Format,__VA_ARGS__)
 /****************************** LOG SCREEN *******************************/
 #define DEBUG_LOG_SCREEN(Key, DisplayTime, Color, Format, ...) if(GEngine){\
 	GEngine->AddOnScreenDebugMessage(Key, DisplayTime, Color, FString::Printf(Format, __VA_ARGS__));\

@@ -37,8 +37,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> m_root;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category= "Triggerable|Runtime", meta = (AllowPrivateAccess = "true", DisplayName = "bIsTrigger"))
+	bool bIsTrigger = false;
+	
 public:
-
 	static FName TriggerComponentName;
 
 	/**************************** FUNCTION ******************************/

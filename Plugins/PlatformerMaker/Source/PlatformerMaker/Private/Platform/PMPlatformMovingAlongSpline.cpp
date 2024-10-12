@@ -8,9 +8,12 @@
 
 //Unreal
 #include "Components/SplineComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 APMPlatformMovingAlongSpline::APMPlatformMovingAlongSpline(const FObjectInitializer& ObjInit):Super(ObjInit)
 {
+	SetRootComponent(m_meshPlatform);
+
 	m_interpSplineFollowComp = CreateDefaultSubobject<UPMInterpSplineFollowMovement>(TEXT("InterpSplineFollowComponent"));
 }
 
@@ -35,7 +38,13 @@ void APMPlatformMovingAlongSpline::PostEditChangeProperty(FPropertyChangedEvent&
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
-	if (PropertyChangedEvent.MemberProperty && PropertyChangedEvent.MemberProperty->NamePrivate == "m_splineActor") {
+	if (!PropertyChangedEvent.MemberProperty) {
+		return;
+	}
+
+	DEBUG_ERROR(TEXT("edit: %s"), *PropertyChangedEvent.MemberProperty->NamePrivate.ToString());
+
+	if (PropertyChangedEvent.MemberProperty->NamePrivate == "m_splineActor") {
 		if (m_splineActor != nullptr && m_interpSplineFollowComp->GetSpline() == nullptr) {
 
 			m_interpSplineFollowComp->SetSpline(m_splineActor->GetSplineComponent());

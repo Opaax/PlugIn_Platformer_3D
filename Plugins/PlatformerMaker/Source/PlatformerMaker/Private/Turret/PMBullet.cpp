@@ -6,20 +6,13 @@
 #include "Components/SceneComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/DamageEvents.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 APMBullet::APMBullet(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer.SetDefaultSubobjectClass<USphereComponent>(TriggerComponentName))
 {
 	PrimaryActorTick.bCanEverTick = false;
-
-	////Create root and set it
-	//m_root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	//SetRootComponent(m_root);
-
-	////Create Trigger comp
-	//m_trigger = CreateDefaultSubobject<USphereComponent>(TEXT("Trigger"));
-	//m_trigger->SetupAttachment(m_root);
-
+	
 	//Create Mesh comp
 	m_bulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));
 	m_bulletMesh->SetupAttachment(m_root);
@@ -33,6 +26,14 @@ APMBullet::APMBullet(const FObjectInitializer& ObjectInitializer):Super(ObjectIn
 
 	//Set default life span
 	SetLifeSpan(5.f);
+}
+
+void APMBullet::DamageActor(AActor* DamageActor)
+{
+	//Apply damage on default damage system that UE provide
+	const FDamageEvent lDamageEvent = FDamageEvent();
+	DamageActor->TakeDamage(m_baseDamage, lDamageEvent, nullptr, this);
+	OnActorDamage(DamageActor);
 }
 
 void APMBullet::BeginPlay()
@@ -51,9 +52,20 @@ void APMBullet::OnTriggerComponentOverlapped(UPrimitiveComponent* OverlappedComp
 	Destroy();
 }
 
+void APMBullet::OnTrigger(AActor* OtherActor)
+{
+	Super::OnTrigger(OtherActor);
+	DamageActor(OtherActor);
+}
+
 void APMBullet::OnHit(AActor* HitActor, UPrimitiveComponent* HitComponent, const FHitResult& SweepResult)
 {
 	ReceiveOnHit(HitActor, HitComponent, SweepResult);
+}
+
+void APMBullet::OnActorDamage(AActor* DamageActor)
+{
+	ReceiveOnActorDamage(DamageActor);
 }
 
 void APMBullet::Tick(float DeltaTime)

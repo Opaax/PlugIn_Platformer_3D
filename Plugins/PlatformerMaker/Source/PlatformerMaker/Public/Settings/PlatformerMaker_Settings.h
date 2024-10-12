@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Runtime/CoreUObject/Public/Templates/SubclassOf.h"
 #include "PlatformerMaker_Settings.generated.h"
 
 class UPMUW_LoadingBase;
@@ -29,7 +29,7 @@ public:
 
 	UPROPERTY(Config, EditAnywhere, Category = "PlatformerMaker")
 	TSubclassOf<UPMUW_LoadingBase> BaseLoadingWidget;
-
+	
 	/**************************** FUNCTION ******************************/
 public:
 	UPlatformerMaker_Settings(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());

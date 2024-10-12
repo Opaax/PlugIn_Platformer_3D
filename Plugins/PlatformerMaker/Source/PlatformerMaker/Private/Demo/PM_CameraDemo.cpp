@@ -4,6 +4,7 @@
 #include "Demo/PM_CameraDemo.h"
 #include "Demo/Data/PM_CameraDefaultSettingData.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Engine/HitResult.h"
 
 APM_CameraDemo::APM_CameraDemo(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {

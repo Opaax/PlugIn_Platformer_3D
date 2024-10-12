@@ -5,6 +5,8 @@
 #include "Settings/PlatformerMaker_Settings.h"
 #include "Utils/DebugMacro.h"
 #include "Widget/PMUW_LoadingBase.h"
+#include "Engine/GameViewportClient.h"
+#include "Engine/Engine.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PMLoadingScreenSubsystem)
 
@@ -55,7 +57,7 @@ void UPMLoadingScreenSubsystem::AddLoadingOnScreen_Internal(int32 ZOrder, UPMUW_
 		DEBUG_WARNING(TEXT("[%s], Trying to add loading on screen with NULL loading --- %s ---"), *GetFName().ToString(), *CURRENT_FUNC);
 		return;
 	}
-
+	
 	GEngine->GameViewport->AddViewportWidgetContent(m_loading->TakeWidget(), ZOrder);
 
 	m_loading->OnLoadingBeginAnimDone.Add(m_loadingScreenBeginAnimDelegate);

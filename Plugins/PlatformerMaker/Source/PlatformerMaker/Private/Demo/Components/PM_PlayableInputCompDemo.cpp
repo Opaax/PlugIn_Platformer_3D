@@ -8,12 +8,9 @@
 #include "Demo/PM_CharacterDemo.h"
 #include "Demo/FDemoTags.h"
 #include "Demo/Components/PM_AbilitySystemComponentDemo.h"
-
 #include "InputMappingContext.h"
 #include "EnhancedInputSubsystems.h"
-
-//Unreal Forward
-class ULocalPlayer;
+#include "Engine/LocalPlayer.h"
 
 UPM_PlayableInputCompDemo::UPM_PlayableInputCompDemo(const FObjectInitializer& ObjectInitializer):Super(ObjectInitializer)
 {
@@ -28,7 +25,7 @@ void UPM_PlayableInputCompDemo::BeginPlay()
 	m_demoCharacter = GetPawn<APM_CharacterDemo>();
 
 	if (!IsValid(m_demoCharacter)) {
-		DEBUG_ERROR(TEXT("Not Demo character"));
+		DEBUG_ERROR(TEXT("[%s] Pawn owner is not Demo character"), *GetNameSafe(this));
 	}
 }
 

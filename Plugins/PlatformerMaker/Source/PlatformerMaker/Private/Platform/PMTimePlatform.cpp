@@ -4,6 +4,8 @@
 #include "Platform/PMTimePlatform.h"
 #include "Components/BoxComponent.h"
 #include "TimerManager.h"
+#include "Engine/World.h"
+#include "Components/StaticMeshComponent.h"
 
 APMTimePlatform::APMTimePlatform(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {

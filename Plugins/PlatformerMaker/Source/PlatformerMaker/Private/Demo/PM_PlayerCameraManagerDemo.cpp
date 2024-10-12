@@ -7,6 +7,7 @@
 
 //Unreal
 #include <Kismet/KismetMathLibrary.h>
+#include "Engine/World.h"
 
 APM_PlayerCameraManagerDemo::APM_PlayerCameraManagerDemo(const FObjectInitializer& ObjectInitializer) :Super(ObjectInitializer)
 {

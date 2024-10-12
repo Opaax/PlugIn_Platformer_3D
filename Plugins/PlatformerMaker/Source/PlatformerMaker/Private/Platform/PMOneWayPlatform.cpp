@@ -2,10 +2,9 @@
 
 
 #include "Platform/PMOneWayPlatform.h"
-
 #include "GameFramework/Character.h"
 #include "Components/BoxComponent.h"
-#include "Utils/DebugMacro.h"
+#include "Components/StaticMeshComponent.h"
 
 #if WITH_EDITORONLY_DATA
 #include "Components/ArrowComponent.h"

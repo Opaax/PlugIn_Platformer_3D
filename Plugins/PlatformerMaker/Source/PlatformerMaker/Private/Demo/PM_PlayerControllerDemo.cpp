@@ -14,6 +14,8 @@
 #include "InputMappingContext.h"
 #include "GameFramework/HUD.h"
 #include "GameFramework/PlayerStart.h"
+#include "Engine/LocalPlayer.h"
+#include "Engine/World.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(PM_PlayerControllerDemo)
 
@@ -28,7 +30,7 @@ APM_PlayerControllerDemo::APM_PlayerControllerDemo(const FObjectInitializer& Obj
 void APM_PlayerControllerDemo::AddInputMappingContext(const UInputMappingContext* InputMappingContext, const int32 Priority)
 {
 	if (!IsValid(InputMappingContext)) {
-		DEBUG_WARNING_CUSTOM_CATEGORY(LogPlayerControllerDemo, TEXT("Trying to add NULL input mapping context"));
+		DEBUG_WARNING_CUSTOM_CATEGORY(LogPlayerControllerDemo, TEXT("[%s] Trying to add NULL input mapping context"), *GetNameSafe(this));
 		return;
 	}
 
@@ -45,7 +47,7 @@ void APM_PlayerControllerDemo::AddInputMappingContext(const UInputMappingContext
 void APM_PlayerControllerDemo::RemoveInputMappingContext(const UInputMappingContext* InputMappingContext)
 {
 	if (!IsValid(InputMappingContext)) {
-		DEBUG_WARNING_CUSTOM_CATEGORY(LogPlayerControllerDemo, TEXT("Trying to remove NULL input mapping context"));
+		DEBUG_WARNING_CUSTOM_CATEGORY(LogPlayerControllerDemo, TEXT("[%s], Trying to remove NULL input mapping context"), *GetNameSafe(this));
 		return;
 	}
 

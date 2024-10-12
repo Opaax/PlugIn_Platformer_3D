@@ -8,6 +8,7 @@
 
 //Unreal
 #include "Components/SplineComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 APMPlatformMovingAlongSpline::APMPlatformMovingAlongSpline(const FObjectInitializer& ObjInit):Super(ObjInit)
 {
